@@ -1,0 +1,223 @@
+/*******************************************************************************
+ * Copyright (C) 2017 Andrea Turrini
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
+options
+{
+  JDK_VERSION = "1.7";
+  LOOKAHEAD = 1;
+  STATIC = false;
+}
+
+PARSER_BEGIN(ProceedingsParser)
+package cn.ac.ios.iscasmc.papersprojects.backend.parser.proceedings;
+import cn.ac.ios.iscasmc.papersprojects.backend.parser.UtilParser;
+import cn.ac.ios.iscasmc.papersprojects.backend.bean.ConferenceBean;
+
+public final class ProceedingsParser {
+	public ConferenceBean parseProceedings() {
+	  try { 
+	  	return actualParser();
+	  } catch (ParseException pe) {
+	    return null;
+	  }
+	}
+}
+
+PARSER_END(ProceedingsParser)
+
+TOKEN_MGR_DECLS : {
+	int nestingLevel;
+}
+
+<*> SKIP :
+{
+	" "
+|	"\r"
+|	"\t"
+|	"\n"
+}
+
+TOKEN :
+{
+	< PROCEEDINGS : "@proceedings" >
+|	< BRACKET_OPEN : "{" >
+|	< COMMA : "," > : BIBENTRY_ENV
+|	< IDENTIFIER : ([ "A"-"Z","a"-"z",":","/","0"-"9" ])+ >
+}
+
+< BIBENTRY_ENV > TOKEN :
+{ 
+	< BE_BRACKET_OPEN : "{" > { nestingLevel = 0; } : ENTRY_ENV 
+|	< BE_BRACKET_CLOSE : "}" > : DEFAULT 
+|	< BE_EDITOR : "editor" >
+|	< BE_TITLE : "title" >
+|	< BE_SERIES : "series" >
+|	< BE_VOLUME : "volume" >
+|	< BE_PUBLISHER : "publisher" >
+|	< BE_YEAR : "year" >
+|	< BE_URL : "url" >
+|	< BE_ISBN : "isbn" >
+|	< BE_TIMESTAMP : "timestamp" >
+|	< BE_BIBURL : "biburl" >
+|	< BE_BIBSOURCE : "bibsource" >
+|	< BE_COMMA : "," >
+|	< BE_EQUAL : "=" >
+}
+
+< ENTRY_ENV > TOKEN :
+{
+	< E_BRACKET_OPEN : "{" > { nestingLevel++; } 
+|	< E_BRACKET_CLOSE : "}" > 
+|	< E_IDENTIFIER : ( ~["{","}"])+ >
+}
+
+TOKEN :
+{
+	< UNEXPECTED_CHAR : ~[] >
+}
+
+private ConferenceBean actualParser() :
+{
+	Token t;
+	ConferenceBean cb = new ConferenceBean();
+	String stringValue;
+	int intValue;
+}
+{
+	< PROCEEDINGS >
+	< BRACKET_OPEN >
+	t = < IDENTIFIER > { cb.setIdentifier(t.toString()); }
+	(
+	    (		      < COMMA >
+	    |
+		      < BE_COMMA >
+	  	)
+	  	(			< BE_EDITOR >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setEditor(stringValue);
+			}
+		|
+			< BE_TITLE >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setTitle(stringValue);
+			}
+		|
+			< BE_SERIES >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setSeries(stringValue);
+			}
+		|
+			< BE_YEAR >
+			< BE_EQUAL >
+			intValue = parseIntValue()
+			{
+				cb.setYear(intValue);
+			}
+		|
+			< BE_VOLUME >
+			< BE_EQUAL >
+			intValue = parseIntValue()
+			{
+				cb.setVolume(intValue);
+			}
+		|
+			< BE_PUBLISHER >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setPublisher(stringValue);
+			}
+		|
+			< BE_URL >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setUrl(stringValue);
+			}
+		|
+			< BE_ISBN >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setIsbn(stringValue);
+			}
+		|
+			< BE_TIMESTAMP >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+		|
+			< BE_BIBURL >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+		|
+			< BE_BIBSOURCE >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+		)
+	)+
+	< BE_BRACKET_CLOSE >
+	<EOF>
+	{
+		return cb;
+	}
+}
+
+private String parseStringValue() :
+{
+	Token t;
+	StringBuilder sb = new StringBuilder();
+}
+{
+	< BE_BRACKET_OPEN >
+	(
+		t = < E_IDENTIFIER > { sb.append(t.toString()); }
+	|
+		t = < E_BRACKET_OPEN > { sb.append(t.toString()); }
+	|
+		LOOKAHEAD( { (token_source.nestingLevel > 0) && (getToken(1).kind == E_BRACKET_CLOSE) })
+		t = < E_BRACKET_CLOSE >
+		{
+			token_source.nestingLevel--;
+			sb.append(t.toString());
+		}
+	)+
+	t = < E_BRACKET_CLOSE >
+	{
+		token_source.SwitchTo(BIBENTRY_ENV);
+		return UtilParser.toTrimmedSingleLine(sb.toString());
+	}
+}
+
+private int parseIntValue() :
+{
+	String value;
+}
+{
+	value = parseStringValue()
+	{
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException nfe) {
+			throw new ParseException();
+		}
+	}
+}

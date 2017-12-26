@@ -1,0 +1,65 @@
+CREATE TABLE Conference (
+	identifier VARCHAR(100) NOT NULL,
+	title TEXT NOT NULL,
+	year INT,
+	series TEXT DEFAULT NULL,
+	volume INT DEFAULT -1,
+	editor TEXT DEFAULT NULL,
+	publisher TEXT DEFAULT NULL,
+	url TEXT DEFAULT NULL,
+	isbn TEXT DEFAULT NULL,
+
+	PRIMARY KEY(identifier)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE Author (
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY(name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE Paper (
+	identifier VARCHAR(100) NOT NULL,
+	title TEXT NOT NULL,
+	booktitle TEXT DEFAULT NULL,
+	year INT,
+	pages VARCHAR(20) DEFAULT NULL,
+	volume INT DEFAULT -1,
+	number INT DEFAULT -1,
+	crossref VARCHAR(100) DEFAULT NULL,
+	journal TEXT DEFAULT NULL,
+	doi TEXT DEFAULT NULL,
+	url TEXT DEFAULT NULL,
+	filepath TEXT DEFAULT NULL,
+
+	PRIMARY KEY(identifier),
+	FOREIGN KEY(crossref) REFERENCES Conference(identifier) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE PaperAuthor (
+	paperIdentifier VARCHAR(100) NOT NULL,
+	authorName VARCHAR(100) NOT NULL,
+
+	PRIMARY KEY(paperIdentifier,authorName),
+	FOREIGN KEY(paperIdentifier) REFERENCES Paper(identifier) ON DELETE CASCADE,
+	FOREIGN KEY(authorName) REFERENCES Author(name) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE Project (
+	identifier VARCHAR(100) NOT NULL,
+	funder VARCHAR(200) NOT NULL,
+	title TEXT DEFAULT NULL,
+	startDate DATE NOT NULL,
+	endDate DATE NOT NULL,
+	
+	PRIMARY KEY(identifier)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE ProjectPaper (
+	projectIdentifier VARCHAR(100) NOT NULL,
+	paperIdentifier VARCHAR(100) NOT NULL,
+
+	PRIMARY KEY(projectIdentifier,paperIdentifier),
+	FOREIGN KEY(paperIdentifier) REFERENCES Paper(identifier) ON DELETE CASCADE,
+	FOREIGN KEY(projectIdentifier) REFERENCES Project(identifier) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
