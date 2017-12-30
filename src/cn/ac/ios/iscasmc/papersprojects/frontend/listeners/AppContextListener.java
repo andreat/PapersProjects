@@ -42,6 +42,8 @@ public class AppContextListener implements ServletContextListener {
 		} else {
 			System.err.println("Error in initializing the DBMS backend");
 		}
+		
+		ctx.setAttribute("PDFPapersBaseDir", ctx.getInitParameter("PDFPapersBaseDir"));
 	}
 	
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {

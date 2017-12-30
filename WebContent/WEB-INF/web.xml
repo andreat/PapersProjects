@@ -4,4 +4,28 @@
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
+  <context-param>
+    <param-name>dbUser</param-name>
+    <param-value>ppuser</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbPassword</param-name>
+    <param-value>pppassword</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbDatabase</param-name>
+    <param-value>papersprojects</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbHost</param-name>
+    <param-value>localhost</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbPort</param-name>
+    <param-value>3306</param-value>
+  </context-param>
+  <context-param>
+    <param-name>PDFPapersBaseDir</param-name>
+    <param-value>/tmp</param-value>
+  </context-param>
 </web-app>

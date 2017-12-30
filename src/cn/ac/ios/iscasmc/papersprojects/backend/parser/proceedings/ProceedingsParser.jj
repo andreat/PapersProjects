@@ -70,9 +70,7 @@ TOKEN :
 |	< BE_YEAR : "year" >
 |	< BE_URL : "url" >
 |	< BE_ISBN : "isbn" >
-|	< BE_TIMESTAMP : "timestamp" >
-|	< BE_BIBURL : "biburl" >
-|	< BE_BIBSOURCE : "bibsource" >
+|	< BE_OTHER : (["a"-"z"])+ >
 |	< BE_COMMA : "," >
 |	< BE_EQUAL : "=" >
 }
@@ -161,15 +159,7 @@ private ConferenceBean actualParser() :
 				cb.setIsbn(stringValue);
 			}
 		|
-			< BE_TIMESTAMP >
-			< BE_EQUAL >
-			stringValue = parseStringValue()
-		|
-			< BE_BIBURL >
-			< BE_EQUAL >
-			stringValue = parseStringValue()
-		|
-			< BE_BIBSOURCE >
+			< BE_OTHER >
 			< BE_EQUAL >
 			stringValue = parseStringValue()
 		)

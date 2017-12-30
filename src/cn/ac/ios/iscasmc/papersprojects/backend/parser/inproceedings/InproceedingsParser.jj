@@ -70,9 +70,7 @@ TOKEN :
 |	< BE_CROSSREF : "crossref" >
 |	< BE_URL : "url" >
 |	< BE_DOI : "doi" >
-|	< BE_TIMESTAMP : "timestamp" >
-|	< BE_BIBURL : "biburl" >
-|	< BE_BIBSOURCE : "bibsource" >
+|	< BE_OTHER : (["a"-"z"])+ >
 |	< BE_COMMA : "," >
 |	< BE_EQUAL : "=" >
 }
@@ -163,15 +161,7 @@ private PaperBean actualParser() :
 				pb.setDoi(stringValue);
 			}
 		|
-			< BE_TIMESTAMP >
-			< BE_EQUAL >
-			stringValue = parseStringValue()
-		|
-			< BE_BIBURL >
-			< BE_EQUAL >
-			stringValue = parseStringValue()
-		|
-			< BE_BIBSOURCE >
+			< BE_OTHER >
 			< BE_EQUAL >
 			stringValue = parseStringValue()
 		)

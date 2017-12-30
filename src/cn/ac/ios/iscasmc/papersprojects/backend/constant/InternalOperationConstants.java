@@ -15,15 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-package cn.ac.ios.iscasmc.papersprojects.frontend.action;
+package cn.ac.ios.iscasmc.papersprojects.backend.constant;
 
-public final class PaperAction {
-	public static final String createInproceedings = "createInproceedings";
-	public static final String createArticle = "createArticle";
-	public static final String getPapersForAuthor = "getPapersForAuthor";
-	public static final String getPapersForYear = "getPapersForYear";
-	public static final String getPapersForProject = "getPapersForProject";
-	public static final String getPapers = "getPapers";
-	
-	private PaperAction() {}
+public final class InternalOperationConstants {
+	public static final String StatusOperation = "statusOperation";
+
+	private InternalOperationConstants() {}
 }

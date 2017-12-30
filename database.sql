@@ -1,4 +1,4 @@
-CREATE TABLE Conference (
+CREATE TABLE conference (
 	identifier VARCHAR(100) NOT NULL,
 	title TEXT NOT NULL,
 	year INT,
@@ -12,12 +12,12 @@ CREATE TABLE Conference (
 	PRIMARY KEY(identifier)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE Author (
+CREATE TABLE author (
 	name VARCHAR(100) NOT NULL,
 	PRIMARY KEY(name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE Paper (
+CREATE TABLE paper (
 	identifier VARCHAR(100) NOT NULL,
 	title TEXT NOT NULL,
 	booktitle TEXT DEFAULT NULL,
@@ -32,34 +32,35 @@ CREATE TABLE Paper (
 	filepath TEXT DEFAULT NULL,
 
 	PRIMARY KEY(identifier),
-	FOREIGN KEY(crossref) REFERENCES Conference(identifier) ON DELETE SET NULL
+	FOREIGN KEY(crossref) REFERENCES conference(identifier) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE PaperAuthor (
+CREATE TABLE paperAuthor (
 	paperIdentifier VARCHAR(100) NOT NULL,
 	authorName VARCHAR(100) NOT NULL,
 
 	PRIMARY KEY(paperIdentifier,authorName),
-	FOREIGN KEY(paperIdentifier) REFERENCES Paper(identifier) ON DELETE CASCADE,
-	FOREIGN KEY(authorName) REFERENCES Author(name) ON DELETE CASCADE
+	FOREIGN KEY(paperIdentifier) REFERENCES paper(identifier) ON DELETE CASCADE,
+	FOREIGN KEY(authorName) REFERENCES author(name) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE Project (
+CREATE TABLE project (
 	identifier VARCHAR(100) NOT NULL,
 	funder VARCHAR(200) NOT NULL,
 	title TEXT DEFAULT NULL,
+	acknowledge TEXT NOT NULL,
 	startDate DATE NOT NULL,
 	endDate DATE NOT NULL,
 	
 	PRIMARY KEY(identifier)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE ProjectPaper (
+CREATE TABLE projectPaper (
 	projectIdentifier VARCHAR(100) NOT NULL,
 	paperIdentifier VARCHAR(100) NOT NULL,
 
 	PRIMARY KEY(projectIdentifier,paperIdentifier),
-	FOREIGN KEY(paperIdentifier) REFERENCES Paper(identifier) ON DELETE CASCADE,
-	FOREIGN KEY(projectIdentifier) REFERENCES Project(identifier) ON DELETE CASCADE
+	FOREIGN KEY(paperIdentifier) REFERENCES paper(identifier) ON DELETE CASCADE,
+	FOREIGN KEY(projectIdentifier) REFERENCES project(identifier) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

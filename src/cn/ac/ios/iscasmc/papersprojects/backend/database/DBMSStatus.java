@@ -27,6 +27,21 @@ public enum DBMSStatus {
 	
 	DuplicatedEntry,
 	
+	IllegalArgument,
+	
+	ParserError,
+	
+	PDFNotUploaded,
+	PDFNotFound,
+
+	PaperMissingProjects,
+	PaperMissingIdentifier,
+
+	ProjectMissingIdentifier,
+	ProjectMissingFunder,
+	ProjectMissingAck,
+	ProjectMissingPapers,
+	
 	/**
 	 * Used to represent the request of usage of a DMBS class that is unknown
 	 *//**

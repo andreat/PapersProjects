@@ -23,12 +23,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.AuthorBean;
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.ConferenceBean;
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.JournalBean;
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.PaperBean;
+import cn.ac.ios.iscasmc.papersprojects.backend.bean.ProjectBean;
 
 /**
  *
@@ -80,77 +83,25 @@ public class DBMS {
 		} catch (SQLException se) {}		
 	}
 	
-	public DBMSStatus storeAuthor(AuthorBean ab) {
-		DBMSStatus status = establishConnection();
-		if (status != DBMSStatus.Success) {
-			return status;
-		}
-		
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			connection.setAutoCommit(false);
-			ps = connection.prepareStatement("select name from Author where name = ?;");
-			ps.setString(1, ab.getName());
-			rs = ps.executeQuery();
-			boolean isPresent = rs.next();
-			try {
-				if (rs != null) {
-					rs.close();
-					rs = null;
-				}
-			} catch (SQLException se) {}
-			try {
-				if (ps != null) {
-					ps.close();
-					ps = null;
-				}
-			} catch (SQLException se) {}
-			if (isPresent) {
-				status = DBMSStatus.DuplicatedEntry;
-			} else {
-				ps = connection.prepareStatement("insert into Author values(?)");
-				ps.setString(1, ab.getName());
-				ps.executeUpdate();
-				connection.commit();
-				status = DBMSStatus.Success;
-			}
-		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
-			status = DBMSStatus.SQLFailed;
-		} finally {
-			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
-		}
-		return status;
+	public Map<DBMSAction, DBMSStatus> storeAuthor(AuthorBean ab) {
+		List <AuthorBean> list = new ArrayList<AuthorBean>(1);
+		list.add(ab);
+		return storeAuthors(list);		
 	}
 	
-	public DBMSStatus storeConference(ConferenceBean cb) {
+	public Map<DBMSAction, DBMSStatus> storeConference(ConferenceBean cb) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
-			return status;
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
 		}
 		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			connection.setAutoCommit(false);
-			ps = connection.prepareStatement("select identifier from Conference where identifier = ?;");
+			ps = connection.prepareStatement("select identifier from conference where identifier = ?;");
 			ps.setString(1, cb.getIdentifier());
 			rs = ps.executeQuery();
 			boolean isPresent = rs.next();
@@ -167,9 +118,9 @@ public class DBMS {
 				}
 			} catch (SQLException se) {}
 			if (isPresent) {
-				return DBMSStatus.DuplicatedEntry;
+				statusMap.put(DBMSAction.ConferenceInsert, DBMSStatus.DuplicatedEntry);
 			} else {
-				ps = connection.prepareStatement("insert into Conference values(?,?,?,?,?,?,?,?,?)");
+				ps = connection.prepareStatement("insert into conference values(?,?,?,?,?,?,?,?,?)");
 				ps.setString(1, cb.getIdentifier());
 				ps.setString(2, cb.getTitle());
 				ps.setInt(3, cb.getYear());
@@ -181,13 +132,13 @@ public class DBMS {
 				ps.setString(9, cb.getIsbn());
 				ps.executeUpdate();
 				connection.commit();
-				status = DBMSStatus.Success;
+				statusMap.put(DBMSAction.ConferenceInsert, DBMSStatus.Success);
 			}
 		} catch (SQLException sqle) {
 			try {
 				connection.rollback();
 			} catch (SQLException se) {}
-			status = DBMSStatus.SQLFailed;
+			statusMap.put(DBMSAction.ConferenceInsert, DBMSStatus.SQLFailed);
 		} finally {
 			try {
 				connection.setAutoCommit(true);
@@ -205,20 +156,67 @@ public class DBMS {
 				} catch (SQLException se) {}
 			}
 		}
-		return status;
+		return statusMap;
 	}
 	
-	public DBMSStatus storePaper(PaperBean pb) {
+	public Map<DBMSAction, DBMSStatus> storeAuthors(List<AuthorBean> listAuthors) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
-			return status;
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
 		}
 		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			connection.setAutoCommit(false);
-			ps = connection.prepareStatement("select identifier from Paper where identifier = ?;");
+			ps = connection.prepareStatement("insert ignore into author values(?)");
+			for (AuthorBean ab : listAuthors) {
+				ps.setString(1, ab.getName());
+				ps.addBatch();
+			}
+			ps.executeBatch();
+			connection.commit();
+			statusMap.put(DBMSAction.AuthorInsert, DBMSStatus.Success);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.AuthorInsert, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+	
+	public Map<DBMSAction, DBMSStatus> storePaper(PaperBean pb) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("select identifier from paper where identifier = ?;");
 			ps.setString(1, pb.getIdentifier());
 			rs = ps.executeQuery();
 			boolean isPresent = rs.next();
@@ -235,9 +233,9 @@ public class DBMS {
 				}
 			} catch (SQLException se) {}
 			if (isPresent) {
-				status = DBMSStatus.DuplicatedEntry;
+				statusMap.put(DBMSAction.PaperInsert, DBMSStatus.DuplicatedEntry);
 			} else {
-				ps = connection.prepareStatement("insert into Paper values(?,?,?,?,?,?,?,?,?,?,?,?)");
+				ps = connection.prepareStatement("insert into paper values(?,?,?,?,?,?,?,?,?,?,?,?)");
 				ps.setString(1, pb.getIdentifier());
 				ps.setString(2, pb.getTitle());
 				ps.setString(3, pb.getBooktitle());
@@ -246,19 +244,24 @@ public class DBMS {
 				ps.setInt(6, pb.getVolume());
 				ps.setInt(7, pb.getNumber());
 				ps.setString(8, pb.getCrossref());
-				ps.setString(9, pb.getJournal().getIdentifier());
+				JournalBean jb = pb.getJournal();
+				if (jb == null) {
+					ps.setString(9, null);
+				} else {
+					ps.setString(9, jb.getIdentifier());
+				}
 				ps.setString(10, pb.getDoi());
 				ps.setString(11, pb.getUrl());
 				ps.setString(12, pb.getFilepath());
 				ps.executeUpdate();
 				connection.commit();
-				status = DBMSStatus.Success;
+				statusMap.put(DBMSAction.PaperInsert, DBMSStatus.Success);
 			}
 		} catch (SQLException sqle) {
 			try {
 				connection.rollback();
 			} catch (SQLException se) {}
-			status = DBMSStatus.SQLFailed;
+			statusMap.put(DBMSAction.PaperInsert, DBMSStatus.SQLFailed);
 		} finally {
 			try {
 				connection.setAutoCommit(true);
@@ -276,9 +279,323 @@ public class DBMS {
 				} catch (SQLException se) {}
 			}
 		}
-		return status;
+		statusMap.putAll(storeAuthors(pb.getAuthors()));
+		statusMap.putAll(storeAuthorsForPaper(pb));
+		return statusMap;
 	}
 	
+	public Map<DBMSAction, DBMSStatus> updatePaperPDF(PaperBean pb) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("update paper set filepath = ? where identifier = ?");
+			ps.setString(1, pb.getFilepath());
+			ps.setString(2, pb.getIdentifier());
+			int updates = ps.executeUpdate();
+			connection.commit();
+			if (updates > 0) {
+				statusMap.put(DBMSAction.PaperUpdate, DBMSStatus.Success);
+			} else {
+				statusMap.put(DBMSAction.PaperUpdate, DBMSStatus.NoSuchElement);
+			}
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.PaperInsert, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+	
+	public Map<DBMSAction, DBMSStatus> storeAuthorsForPaper(PaperBean pb) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("select identifier from paper where identifier = ?;");
+			ps.setString(1, pb.getIdentifier());
+			rs = ps.executeQuery();
+			boolean isPresent = rs.next();
+			try {
+				if (rs != null) {
+					rs.close();
+					rs = null;
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+					ps = null;
+				}
+			} catch (SQLException se) {}
+			if (isPresent) {
+				ps = connection.prepareStatement("insert ignore into paperAuthor values(?,?)");
+				for (AuthorBean ab : pb.getAuthors()) {
+					ps.setString(1, pb.getIdentifier());
+					ps.setString(2, ab.getName());
+					ps.addBatch();
+				}
+				ps.executeBatch();
+				connection.commit();
+				statusMap.put(DBMSAction.PaperAuthorLink, DBMSStatus.Success);
+			} else {
+				statusMap.put(DBMSAction.PaperAuthorLink, DBMSStatus.NoSuchElement);
+			}
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.PaperAuthorLink, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+	
+	public Map<DBMSAction, DBMSStatus> storeProject(ProjectBean pb) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("select identifier from project where identifier = ?;");
+			ps.setString(1, pb.getIdentifier());
+			rs = ps.executeQuery();
+			boolean isPresent = rs.next();
+			try {
+				if (rs != null) {
+					rs.close();
+					rs = null;
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+					ps = null;
+				}
+			} catch (SQLException se) {}
+			if (isPresent) {
+				statusMap.put(DBMSAction.ProjectInsert, DBMSStatus.DuplicatedEntry);
+			} else {
+				ps = connection.prepareStatement("insert into project values(?,?,?,?,?,?)");
+				ps.setString(1, pb.getIdentifier());
+				ps.setString(2, pb.getFunder());
+				ps.setString(3, pb.getTitle());
+				ps.setString(4, pb.getAcknowledge());
+				ps.setDate(5, pb.getStartDate());
+				ps.setDate(6, pb.getEndDate());
+				ps.executeUpdate();
+				connection.commit();
+				statusMap.put(DBMSAction.ProjectInsert, DBMSStatus.Success);
+			}
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.ProjectInsert, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+	
+	public Map<DBMSAction, DBMSStatus> storePapersForProject(String[] paperIDs, String projectID) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("select identifier from project where identifier = ?;");
+			ps.setString(1, projectID);
+			rs = ps.executeQuery();
+			boolean isPresent = rs.next();
+			try {
+				if (rs != null) {
+					rs.close();
+					rs = null;
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+					ps = null;
+				}
+			} catch (SQLException se) {}
+			if (isPresent) {
+				ps = connection.prepareStatement("insert ignore into projectPaper values(?,?)");
+				for (String paperID : paperIDs) {
+					ps.setString(1, projectID);
+					ps.setString(2, paperID);
+					ps.addBatch();
+				}
+				ps.executeBatch();
+				connection.commit();
+				statusMap.put(DBMSAction.ProjectPaperLink, DBMSStatus.Success);
+			} else {
+				statusMap.put(DBMSAction.ProjectPaperLink, DBMSStatus.NoSuchElement);
+			}
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.ProjectPaperLink, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+
+	public Map<DBMSAction, DBMSStatus> storeProjectsForPaper(String[] projectIDs, String paperID) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("select identifier from project where identifier = ?;");
+			ps.setString(1, paperID);
+			rs = ps.executeQuery();
+			boolean isPresent = rs.next();
+			try {
+				if (rs != null) {
+					rs.close();
+					rs = null;
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+					ps = null;
+				}
+			} catch (SQLException se) {}
+			if (isPresent) {
+				ps = connection.prepareStatement("insert ignore into projectPaper values(?,?)");
+				for (String projectID : projectIDs) {
+					ps.setString(1, projectID);
+					ps.setString(2, paperID);
+					ps.addBatch();
+				}
+				ps.executeBatch();
+				connection.commit();
+				statusMap.put(DBMSAction.PaperProjectLink, DBMSStatus.Success);
+			} else {
+				statusMap.put(DBMSAction.PaperProjectLink, DBMSStatus.NoSuchElement);
+			}
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.PaperProjectLink, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+
 	/**
 	 * 
 	 * @return <null> if some SQL error occurred
@@ -295,7 +612,7 @@ public class DBMS {
 		try {
 			connection.setAutoCommit(false);
 			st = connection.createStatement();
-			rs = st.executeQuery("select * from Paper;");
+			rs = st.executeQuery("select * from paper;");
 			papers = generatePapers(rs);
 		} catch (SQLException sqle) {
 			try {
@@ -319,15 +636,17 @@ public class DBMS {
 				} catch (SQLException se) {}
 			}
 		}
-		fillAuthors(papers);
+		if (papers != null) {
+			fillAuthors(papers);
+		}
 		return papers;
 	}
 	
 	/**
 	 * 
-	 * @return <null> if some SQL error occurred
+	 * @return <null> if some SQL error occurred or the paper is not found
 	 */
-	public List<PaperBean> getPapersFromAuthor(String author) {
+	public PaperBean getPaperByID(String paperID) {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
 			return null;
@@ -338,8 +657,61 @@ public class DBMS {
 		ResultSet rs = null;
 		try {
 			connection.setAutoCommit(false);
-			ps = connection.prepareStatement("select * from Paper inner join PaperAuthor on Paper.identifier = PaperAuthor.paperIdentifier where authorName = ?;");
-			ps.setString(1, author);
+			ps = connection.prepareStatement("select * from paper where identifier = ?;");
+			ps.setString(1, paperID);
+			rs = ps.executeQuery();
+			papers = generatePapers(rs);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			papers = null;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		if (papers != null && papers.size() == 1) {
+			fillAuthors(papers);
+			return papers.get(0);
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
+	public List<PaperBean> getPapersWrittenByAuthor(String authorID) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<PaperBean> papers;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement(
+					"select * from paper "
+					+ "inner join paperAuthor on paper.identifier = paperAuthor.paperIdentifier "
+					+ "where authorName = ?;"
+					);
+			ps.setString(1, authorID);
 			rs = ps.executeQuery();
 			papers = generatePapers(rs);
 		} catch (SQLException sqle) {
@@ -372,7 +744,7 @@ public class DBMS {
 	 * 
 	 * @return <null> if some SQL error occurred
 	 */
-	public List<PaperBean> getPapersFromProject(String project) {
+	public List<PaperBean> getPapersAcknowledgingProject(String projectID) {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
 			return null;
@@ -383,8 +755,12 @@ public class DBMS {
 		ResultSet rs = null;
 		try {
 			connection.setAutoCommit(false);
-			ps = connection.prepareStatement("select * from Paper inner join ProjectPaper on Paper.identifier = ProjectPaper.paperIdentifier where projectIdentifier = ?;");
-			ps.setString(1, project);
+			ps = connection.prepareStatement(
+					"select * from paper "
+					+ "inner join projectPaper on paper.identifier = projectPaper.paperIdentifier "
+					+ "where projectIdentifier = ?;"
+					);
+			ps.setString(1, projectID);
 			rs = ps.executeQuery();
 			papers = generatePapers(rs);
 		} catch (SQLException sqle) {
@@ -417,7 +793,7 @@ public class DBMS {
 	 * 
 	 * @return <null> if some SQL error occurred
 	 */
-	public List<PaperBean> getPapersFromYear(int year) {
+	public List<PaperBean> getPapersNotAcknowledgingProject(String projectID) {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
 			return null;
@@ -428,7 +804,58 @@ public class DBMS {
 		ResultSet rs = null;
 		try {
 			connection.setAutoCommit(false);
-			ps = connection.prepareStatement("select * from Paper where year = ?;");
+			ps = connection.prepareStatement(
+					"select * from paper "
+					+ "where identifier not in ("
+					+ "select distinct paperIdentifier from projectPaper "
+					+ "where projectIdentifier = ?"
+					+ ");"
+					);
+			ps.setString(1, projectID);
+			rs = ps.executeQuery();
+			papers = generatePapers(rs);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			papers = null;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		fillAuthors(papers);
+		return papers;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
+	public List<PaperBean> getPapersPublishedInYear(int year) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<PaperBean> papers;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("select * from paper where year = ?;");
 			ps.setInt(1, year);
 			rs = ps.executeQuery();
 			papers = generatePapers(rs);
@@ -462,6 +889,239 @@ public class DBMS {
 	 * 
 	 * @return <null> if some SQL error occurred
 	 */
+	public List<ProjectBean> getProjects() {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<ProjectBean> projects;
+		Statement st = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			st = connection.createStatement();
+			rs = st.executeQuery("select * from project;");
+			projects = generateProjects(rs);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			projects = null;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (st != null) {
+						st.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return projects;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred or the paper is not found
+	 */
+	public ProjectBean getProjectByID(String projectID) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<ProjectBean> projects;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("select * from project where identifier = ?;");
+			ps.setString(1, projectID);
+			rs = ps.executeQuery();
+			projects = generateProjects(rs);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			projects = null;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		if (projects != null && projects.size() == 1) {
+			return projects.get(0);
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
+	public List<ProjectBean> getProjectsInvolvingAuthor(String authorID) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<ProjectBean> projects;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement(
+					"select * from project "
+					+ "inner join projectPaper on project.identifier = projectPaper.projectIdentifier "
+					+ "inner join paperAuthor on projectPaper.paperIdentifier = paperAuthor.paperIdentifier "
+					+ "where authorName = ? "
+					+ "group by project.identifier;");
+			ps.setString(1, authorID);
+			rs = ps.executeQuery();
+			projects = generateProjects(rs);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			projects = null;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return projects;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
+	public List<ProjectBean> getProjectsAcknowledgedInYear(int year) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<ProjectBean> projects;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("select distinct * from project "
+					+ "inner join projectPaper on project.identifier = projectPaper.projectIdentifier "
+					+ "where year = ?;");
+			ps.setInt(1, year);
+			rs = ps.executeQuery();
+			projects = generateProjects(rs);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			projects = null;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return projects;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
+	public List<ProjectBean> getProjectsAcknowledgedByPaper(String paperID) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<ProjectBean> projects;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement(
+					"select * from project "
+					+ "inner join projectPaper on project.identifier = projectPaper.projectIdentifier "
+					+ "where paperIdentifier = ?;");
+			ps.setString(1, paperID);
+			rs = ps.executeQuery();
+			projects = generateProjects(rs);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			projects = null;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return projects;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
 	public List<AuthorBean> getAuthors() {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
@@ -474,7 +1134,7 @@ public class DBMS {
 		try {
 			connection.setAutoCommit(false);
 			st = connection.createStatement();
-			rs = st.executeQuery("select * from Author;");
+			rs = st.executeQuery("select * from author;");
 			authors = generateAuthors(rs);
 		} catch (SQLException sqle) {
 			try {
@@ -505,32 +1165,68 @@ public class DBMS {
 	 * 
 	 * @return <null> if some SQL error occurred
 	 */
+	public AuthorBean getAuthorByID(String authorID) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+		
+		List<AuthorBean> authors;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("select * from author where identifier = ?;");
+			ps.setString(1, authorID);
+			rs = ps.executeQuery();
+			authors = generateAuthors(rs);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			authors = null;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		if (authors != null && authors.size() == 1) {
+			return authors.get(0);
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
 	public List<ConferenceBean> getConferences() {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
 			return null;
 		}
 		
-		List<ConferenceBean> conferences = new ArrayList<>();
+		List<ConferenceBean> conferences;
 		Statement st = null;
 		ResultSet rs = null;
 		try {
 			connection.setAutoCommit(false);
 			st = connection.createStatement();
-			rs = st.executeQuery("select * from Conference;");
-			while (rs.next()) {
-				ConferenceBean cb = new ConferenceBean();
-				cb.setIdentifier(rs.getString("identifier"));
-				cb.setTitle(rs.getString("title"));
-				cb.setYear(rs.getInt("year"));
-				cb.setSeries(rs.getString("series"));
-				cb.setVolume(rs.getInt("volume"));
-				cb.setEditor(rs.getString("editor"));
-				cb.setPublisher(rs.getString("publisher"));
-				cb.setUrl(rs.getString("url"));
-				cb.setIsbn(rs.getString("isbn"));
-				conferences.add(cb);
-			}
+			rs = st.executeQuery("select * from conference;");
+			conferences = generateConferences(rs);
 		} catch (SQLException sqle) {
 			try {
 				connection.rollback();
@@ -605,6 +1301,24 @@ public class DBMS {
 		super.finalize();
 	}
 	
+	private List<ConferenceBean> generateConferences(ResultSet rs) throws SQLException {
+		List<ConferenceBean> conferences = new ArrayList<>();
+		while (rs.next()) {
+			ConferenceBean cb = new ConferenceBean();
+			cb.setIdentifier(rs.getString("identifier"));
+			cb.setTitle(rs.getString("title"));
+			cb.setYear(rs.getInt("year"));
+			cb.setSeries(rs.getString("series"));
+			cb.setVolume(rs.getInt("volume"));
+			cb.setEditor(rs.getString("editor"));
+			cb.setPublisher(rs.getString("publisher"));
+			cb.setUrl(rs.getString("url"));
+			cb.setIsbn(rs.getString("isbn"));
+			conferences.add(cb);
+		}
+		return conferences;
+	}
+	
 	private List<PaperBean> generatePapers(ResultSet rs) throws SQLException {
 		List<PaperBean> papers = new ArrayList<>();
 		while (rs.next()) {
@@ -631,11 +1345,25 @@ public class DBMS {
 		return papers;
 	}
 	
+	private List<ProjectBean> generateProjects(ResultSet rs) throws SQLException {
+		List<ProjectBean> projects = new ArrayList<>();
+		while (rs.next()) {
+			ProjectBean pb = new ProjectBean();
+			pb.setIdentifier(rs.getString("identifier"));
+			pb.setTitle(rs.getString("title"));
+			pb.setFunder(rs.getString("funder"));
+			pb.setStartDate(rs.getDate("startDate"));
+			pb.setEndDate(rs.getDate("endDate"));
+			projects.add(pb);
+		}
+		return projects;
+	}
+	
 	private List<AuthorBean> generateAuthors(ResultSet rs) throws SQLException {
 		List<AuthorBean> authors = new ArrayList<>();
 		while (rs.next()) {
 			AuthorBean ab = new AuthorBean();
-			ab.setName(rs.getString("Author"));
+			ab.setName(rs.getString("name"));
 			authors.add(ab);
 		}
 		return authors;
@@ -652,7 +1380,7 @@ public class DBMS {
 			ResultSet rs = null;
 			try {
 				connection.setAutoCommit(false);
-				ps = connection.prepareStatement("select * from PaperAuthor where paperIdentifier = ?;");
+				ps = connection.prepareStatement("select * from paperAuthor where paperIdentifier = ?;");
 				ps.setString(1, pb.getIdentifier());
 				rs = ps.executeQuery();
 				pb.setAuthors(generateAuthors(rs));

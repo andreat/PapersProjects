@@ -1,153 +1,282 @@
-<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.action.PaperAction"%>
-<%@page import="java.util.List"%>
-<%@page import="cn.ac.ios.iscasmc.papersprojects.backend.bean.PaperBean"%>
-<%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"%>
-<%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMSStatus"%>
-<jsp:include page="WEB-INF/jspf/header.jsp" />
-<%
-	DBMSStatus statusPaper = (DBMSStatus) request.getAttribute("paperStatus");
-	if (statusPaper != null) {
-		switch (statusPaper) {
-		case Success:
-%>		
-		<div class="notification_success">
-			Paper stored correctly.
-		</div>	
-<%
-			break;
-		case DuplicatedEntry:
-%>		
-		<div class="notification_error">
-			Paper already present in the database.
-		</div>	
-<%
-			break;
-		case SQLFailed:
-%>		
-		<div class="notification_success">
-			Error with the database during the insertion of the paper.
-		</div>	
-<%
-			break;
-		default:
-		}
-	}
-	DBMSStatus statusConference = (DBMSStatus) request.getAttribute("paperConference");
-	if (statusConference != null) {
-		switch (statusConference) {
-		case Success:
-%>		
-		<div class="notification_success">
-			Conference stored correctly.
-		</div>	
-<%
-			break;
-		case DuplicatedEntry:
-%>		
-		<div class="notification_error">
-			Conference already present in the database.
-		</div>	
-<%
-			break;
-		case SQLFailed:
-%>		
-		<div class="notification_success">
-			Error with the database during the insertion of the conference.
-		</div>	
-<%
-			break;
-		default:
-		}
-	}
-	String action = request.getParameter("action");
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" 
+%><%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"
+%><%@page contentType="text/html" pageEncoding="UTF-8"
+%><%@page import="java.util.List"
+%><%@page import="java.util.Map"
+%><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.bean.AuthorBean"
+%><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.bean.PaperBean"
+%><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.bean.ProjectBean"
+%><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.constant.InternalOperationConstants"
+%><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"
+%><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMSAction"
+%><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMSStatus"
+%><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
+%><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
+%><jsp:include page="WEB-INF/jspf/header.jsp" /><% 
+	Object statusOperation = request.getAttribute(InternalOperationConstants.StatusOperation);
+	String action = request.getParameter(PaperConstants.Action);
 	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
-	List<PaperBean> papers;
-	if (action == null) {
+	List<PaperBean> papers = null;
+	ProjectBean project = null;
+	AuthorBean author = null;
+	if (statusOperation != null || action == null) {
 		papers = dbms.getPapers();
 	} else {
 		switch (action) {
-		case PaperAction.getPapersForAuthor:
-			String author = request.getParameter("author");
-			papers = dbms.getPapersFromAuthor(author);
+		case PaperConstants.CreateInproceedings: {
+%>					<form action="${pageContext.request.contextPath}/PaperManager" method="post" enctype="multipart/form-data">
+						<input type="hidden" name="${PaperConstants.Action}" value="${PaperConstants.CreateInproceedings}"/>
+						<div class="content_block_table">
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
+									Paper (inproceedings) entry:
+								</div>
+								<div class="content_block_column2_28_right">
+									<textarea name="${PaperConstants.InproceedingsTextArea}" rows="10" cols="100"></textarea>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
+									Conference (proceedings) entry:
+								</div>
+								<div class="content_block_column2_28_right">
+									<textarea name="${PaperConstants.ProceedingsTextArea}" rows="10" cols="100"></textarea>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
+									Paper file:
+								</div>
+								<div class="content_block_column2_28_right">
+									<input name="${PaperConstants.PaperFile}" type="file"/>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left"></div>
+								<div class="content_block_column2_28_right">
+									<input type="submit"/>
+								</div>
+							</div>
+						</div>
+					</form>
+<jsp:include page="WEB-INF/jspf/footer.jsp" />
+<% 		
+			return;
+		}
+		case PaperConstants.CreateArticle: {
+%>					<form action="${pageContext.request.contextPath}/PaperManager" method="post" enctype="multipart/form-data">
+						<input type="hidden" name="${PaperConstants.Action}" value="${PaperConstants.CreateArticle}"/>
+						<div class="content_block_table">
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
+									Paper (article) entry:
+								</div>
+								<div class="content_block_column2_28_right">
+									<textarea name="${PaperConstants.ArticleTextArea}" rows="10" cols="100"></textarea>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
+									Paper file:
+								</div>
+								<div class="content_block_column2_28_right">
+									<input name="${PaperConstants.PaperFile}" type="file"/>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left"></div>
+								<div class="content_block_column2_28_right">
+									<input type="submit"/>
+								</div>
+							</div>
+						</div>
+					</form>
+<jsp:include page="WEB-INF/jspf/footer.jsp" />
+<%
+			return;
+		}
+		case PaperConstants.LinkProjectsToPaper: {
+			String paperID = request.getParameter(PaperConstants.PaperID);
+			if (paperID == null) {
+				pageContext.forward("papers.jsp");
+				return;		
+			}
+			List<ProjectBean> projects = dbms.getProjects();
+			if (projects == null) {
+				pageContext.forward("papers.jsp");
+				return;		
+			}
+			PaperBean pb = dbms.getPaperByID(paperID);
+			if (pb == null) {
+				pageContext.forward("papers.jsp");
+				return;		
+			}
+%>					<form action="${pageContext.request.contextPath}/PaperManager" method="post">
+						<input type="hidden" name="${PaperConstants.Action}" value="${PaperConstants.LinkProjectsToPaper}"/>
+						<input type="hidden" name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+						<div class="content_block_table">
+<% 
+			for (ProjectBean lpb : projects) {
+%>							<div class="content_block_row">
+								<div class="content_block_column1">
+									<input type="checkbox" name="${PaperConstants.PaperID}" value="<%= lpb.getIdentifier() %>"/>
+									<%= lpb.getIdentifier() %>: <%= lpb.getTitle() %> (<%= lpb.getFunder() %>)
+								</div>
+							</div>
+<%
+			} 
+%>							<div class="content_block_row">
+								<div class="content_block_column1">
+									<input type="submit"/>
+								</div>
+							</div>
+						</div>
+					</form>
+<jsp:include page="WEB-INF/jspf/footer.jsp" /><%
+			return;
+		}
+		case PaperConstants.UploadPDF: {
+			String paperID = request.getParameter(PaperConstants.PaperID);
+			if (paperID == null) {
+				pageContext.forward("papers.jsp");
+				return;		
+			}
+			PaperBean pb = dbms.getPaperByID(paperID);
+			if (pb == null) {
+				pageContext.forward("papers.jsp");
+				return;		
+			}
+%>					<form action="${pageContext.request.contextPath}/PaperManager" method="post" enctype="multipart/form-data">
+						<input type="hidden" name="${PaperConstants.Action}" value="${PaperConstants.UploadPDF}"/>
+						<input type="hidden" name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+						<div class="content_block_table">
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
+									Paper:
+								</div>
+								<div class="content_block_column2_28_right">
+									<%= pb.getTitle() %>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
+									Paper file:
+								</div>
+								<div class="content_block_column2_28_right">
+									<input name="${PaperConstants.PaperFile}" type="file"/>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left"></div>
+								<div class="content_block_column2_28_right">
+									<input type="submit"/>
+								</div>
+							</div>
+						</div>
+					</form>
+<jsp:include page="WEB-INF/jspf/footer.jsp" />
+<% 		
+					return;
+				}
+		case PaperConstants.GetPapersForAuthor:
+			String authorID = request.getParameter(PaperConstants.Author);
+			if (authorID == null) {
+				papers = dbms.getPapers();
+			} else {
+				author = dbms.getAuthorByID(authorID);
+				if (author != null) {
+					papers = dbms.getPapersWrittenByAuthor(authorID);
+				}
+			}
 			break;
-		case PaperAction.getPapersForYear:
-			int year = Integer.parseInt(request.getParameter("year"));
-			papers = dbms.getPapersFromYear(year);
+		case PaperConstants.GetPapersForYear:
+			try {
+				int year = Integer.parseInt(request.getParameter(PaperConstants.Year));
+				papers = dbms.getPapersPublishedInYear(year);
+			} catch (NumberFormatException nfe) {
+				papers = dbms.getPapers();
+			}
 			break;
-		case PaperAction.getPapersForProject:
-			String project = request.getParameter("project");
-			papers = dbms.getPapersFromProject(project);
+		case PaperConstants.GetPapersForProject:
+			String projectID = request.getParameter(PaperConstants.ProjectID);
+			if (projectID == null) {
+				papers = dbms.getPapers();
+			} else {
+				project = dbms.getProjectByID(projectID);
+				if (project != null) {
+					papers = dbms.getPapersAcknowledgingProject(projectID);
+				}
+			}
 			break;
 		default:
 			papers = dbms.getPapers();
 		}
 	}
 	if (papers == null) {
-		%>		
-		<div class="notification_success">
-			Error with the database during the retrieval of the papers.
-		</div>	
+%>					<div class="notification_success">
+						Error with the database during the retrieval of the papers.
+					</div>
 <%
 	} else {
-%>
-		<div class="global_command">
-			<div class="global_command_entry">
-				<c:url value="author.jsp" var="papers">
-					<c:param name="action" value="list_papers"/>
-					<c:param name="author" value="bbb"/>
-				</c:url>
-				<a href="${papers}">
-					List papers
-				</a>,
-				<a href="paper.jsp?action=<%= PaperAction.createInproceedings %>">
-					Add conference paper
-				</a>
-			</div>
-			<div class="global_command_entry">
-				<a href="paper.jsp?action=<%= PaperAction.createArticle %>">
-					Add journal paper
-				</a>
-			</div>
-		</div>
-		<table>
-			<tr>
-				<th>
-					Paper
-				</th>
-				<th>
-					Actions
-				</th>
-			</tr>
+%>					<div class="content_block_table">
 <%
-		for (PaperBean paper : papers) {
-%>
-			<tr>
-				<td>
-					
-				</td>
-				<td>
-					<c:url value="paper.jsp" var="papers">
-						<c:param name="action" value="list_papers"/>
-						<c:param name="author" value="${author.getName()}"/>
-					</c:url>
-					<a href="${papers}">
-						List papers
-					</a>,
-					<c:url value="paper.jsp" var="projects">
-						<c:param name="action" value="list_projects"/>
-						<c:param name="author" value="${author.getName()}"/>
-					</c:url>
-					<a href="${projecs}">
-						List projects
-					</a>
-				</td>
-			</tr>
+		if (project != null) {
+%>						<div class="content_block_row">
+							<div class="content_block_column1">
+								Project: <%= project.getIdentifier() %>: <%= project.getTitle() %> (<%= project.getFunder() %>)
+							</div>
+						</div>
+<% 		
+		}
+		if (author != null) {
+%>						<div class="content_block_row">
+							<div class="content_block_column1">
+								Author: <%= author.getName() %>
+							</div>
+						</div>
+<% 		
+		}
+%>						<div class="content_block_row">
+							<div class="content_block_column2_73_left">
+								Paper
+							</div>
+							<div class="content_block_column2_73_right">
+								Actions
+							</div>
+						</div>
+<%
+		for (PaperBean pb : papers) {
+%>						<div class="content_block_row">
+							<div class="content_block_column2_73_left">
+								<%= pb.getTitle() %>
+							</div>
+							<div class="content_block_column2_73_right">
+<%
+			if (pb.getFilepath() != null) {
+%>								<c:url value="/PaperManager" var="paperpdf">
+									<c:param name="${PaperConstants.Action}" value="${PaperConstants.DownloadPDF}"/>
+									<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+								</c:url><a href="${paperpdf}">Download PDF</a>,
+<%
+			} else {
+%>								<c:url value="/papers.jsp" var="paperupload">
+									<c:param name="${PaperConstants.Action}" value="${PaperConstants.UploadPDF}"/>
+									<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+								</c:url><a href="${paperupload}">Upload PDF</a>,
+<%
+			}
+%>								<c:url value="/projects.jsp" var="listProjects">
+									<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.GetProjectsForPaper}"/>
+									<c:param name="${ProjectConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+								</c:url><a href="${listProjects}">List projects</a>,
+								<c:url value="/papers.jsp" var="linkProjects">
+									<c:param name="${PaperConstants.Action}" value="${PaperConstants.LinkProjectsToPaper}"/>
+									<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+								</c:url><a href="${linkProjects}">Link projects to this paper</a>
+							</div>
+						</div>
 <%
 		}
 	}
-%>
-		</table>
+	%>				</div>
 <jsp:include page="WEB-INF/jspf/footer.jsp" />

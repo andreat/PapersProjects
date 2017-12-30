@@ -17,7 +17,7 @@
 package cn.ac.ios.iscasmc.papersprojects.backend.bean;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 
 /**
  *
@@ -27,9 +27,11 @@ public class ProjectBean implements Serializable {
 	private static final long serialVersionUID = 4910297251001464051L;
 	private String identifier;
 	private String funder;
+	private String title;
+	private String acknowledge;
 	
-	private Date start;
-	private Date end;
+	private Date startDate;
+	private Date endDate;
 
 	/**
 	 * @return the identifier
@@ -60,31 +62,59 @@ public class ProjectBean implements Serializable {
 	}
 
 	/**
-	 * @return the start
+	 * @return the title
 	 */
-	public Date getStart() {
-		return start;
+	public String getTitle() {
+		return title;
 	}
 
 	/**
-	 * @param start the start to set
+	 * @param title the title to set
 	 */
-	public void setStart(Date start) {
-		this.start = start;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	/**
-	 * @return the end
+	 * @return the ack
 	 */
-	public Date getEnd() {
-		return end;
+	public String getAcknowledge() {
+		return acknowledge;
 	}
 
 	/**
-	 * @param end the end to set
+	 * @param acknowledge the acknowledge to set
 	 */
-	public void setEnd(Date end) {
-		this.end = end;
+	public void setAcknowledge(String acknowledge) {
+		this.acknowledge = acknowledge;
+	}
+
+	/**
+	 * @return the start date
+	 */
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	/**
+	 * @param startDate the start to set
+	 */
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	/**
+	 * @return the end date
+	 */
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	/**
+	 * @param endDate the end to set
+	 */
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 	
 	
