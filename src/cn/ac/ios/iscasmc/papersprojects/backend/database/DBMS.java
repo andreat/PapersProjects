@@ -1122,6 +1122,55 @@ public class DBMS {
 	 * 
 	 * @return <null> if some SQL error occurred
 	 */
+	public List<ProjectBean> getProjectsNotAcknowledgedByPaper(String paperID) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<ProjectBean> projects;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement(
+					"select * from project "
+					+ "where identifier not in ( "
+					+ "select distinct projectIdentifier from projectPaper "
+					+ "where paperIdentifier = ? "
+					+ ");");
+			ps.setString(1, paperID);
+			rs = ps.executeQuery();
+			projects = generateProjects(rs);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			projects = null;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return projects;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
 	public List<AuthorBean> getAuthors() {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {

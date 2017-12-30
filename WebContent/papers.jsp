@@ -98,18 +98,18 @@
 		case PaperConstants.LinkProjectsToPaper: {
 			String paperID = request.getParameter(PaperConstants.PaperID);
 			if (paperID == null) {
-				pageContext.forward("papers.jsp");
-				return;		
-			}
-			List<ProjectBean> projects = dbms.getProjects();
-			if (projects == null) {
-				pageContext.forward("papers.jsp");
-				return;		
+				papers = dbms.getPapers();
+				break;		
 			}
 			PaperBean pb = dbms.getPaperByID(paperID);
 			if (pb == null) {
-				pageContext.forward("papers.jsp");
-				return;		
+				papers = dbms.getPapers();
+				break;		
+			}
+			List<ProjectBean> projects = dbms.getProjectsNotAcknowledgedByPaper(paperID);
+			if (projects == null) {
+				papers = dbms.getPapers();
+				break;		
 			}
 %>					<form action="${pageContext.request.contextPath}/PaperManager" method="post">
 						<input type="hidden" name="${PaperConstants.Action}" value="${PaperConstants.LinkProjectsToPaper}"/>
@@ -138,13 +138,13 @@
 		case PaperConstants.UploadPDF: {
 			String paperID = request.getParameter(PaperConstants.PaperID);
 			if (paperID == null) {
-				pageContext.forward("papers.jsp");
-				return;		
+				papers = dbms.getPapers();
+				break;		
 			}
 			PaperBean pb = dbms.getPaperByID(paperID);
 			if (pb == null) {
-				pageContext.forward("papers.jsp");
-				return;		
+				papers = dbms.getPapers();
+				break;		
 			}
 %>					<form action="${pageContext.request.contextPath}/PaperManager" method="post" enctype="multipart/form-data">
 						<input type="hidden" name="${PaperConstants.Action}" value="${PaperConstants.UploadPDF}"/>
@@ -213,7 +213,7 @@
 		}
 	}
 	if (papers == null) {
-%>					<div class="notification_success">
+%>					<div class="notification_error">
 						Error with the database during the retrieval of the papers.
 					</div>
 <%

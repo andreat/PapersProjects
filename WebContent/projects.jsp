@@ -156,18 +156,18 @@
 		case ProjectConstants.LinkPapersToProject: {
 			String projectID = request.getParameter(ProjectConstants.ProjectID);
 			if (projectID == null) {
-				pageContext.forward("projects.jsp");
-				return;		
+				projects = dbms.getProjects();
+				break;		
 			}
 			List<PaperBean> papers = dbms.getPapersNotAcknowledgingProject(projectID);
 			if (papers == null) {
-				pageContext.forward("projects.jsp");
-				return;		
+				projects = dbms.getProjects();
+				break;		
 			}
 			ProjectBean pb = dbms.getProjectByID(projectID);
 			if (pb == null) {
-				pageContext.forward("projects.jsp");
-				return;		
+				projects = dbms.getProjects();
+				break;		
 			}
 %>					<form action="${pageContext.request.contextPath}/ProjectManager" method="post">
 						<input type="hidden" name="${ProjectConstants.Action}" value="${ProjectConstants.LinkPapersToProject}"/>
