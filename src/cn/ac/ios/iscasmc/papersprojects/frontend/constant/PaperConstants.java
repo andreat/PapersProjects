@@ -19,7 +19,7 @@ package cn.ac.ios.iscasmc.papersprojects.frontend.constant;
 
 public final class PaperConstants {
 	public static final String Action= "action";
-	public static final String Author = "author";
+	public static final String AuthorID = "authorID";
 	public static final String Year = "year";
 	public static final String CreateInproceedings = "createInproceedings";
 	public static final String CreateArticle = "createArticle";
@@ -27,6 +27,7 @@ public final class PaperConstants {
 	public static final String GetPapersForYear = "getPapersForYear";
 	public static final String GetPapersForProject = "getPapersForProject";
 	public static final String GetPapers = "getPapers";
+	public static final String GetFullDetailsForPaper = "getFullDetailsForPaper";
 
 	public static final String LinkProjectsToPaper= "linkProjectsToPaper";
 
@@ -39,6 +40,7 @@ public final class PaperConstants {
 	public static final String ProceedingsTextArea = "ProceedingsTextArea";
 	public static final String ArticleTextArea = "ArticleTextArea";
 	public static final String PaperFile = "PaperFile";
+	public static final String RemoveLaTeXMarkers = "RemoveLaTeXMarkers";
 	
 	private PaperConstants() {}
 }

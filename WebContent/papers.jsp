@@ -4,6 +4,7 @@
 %><%@page import="java.util.List"
 %><%@page import="java.util.Map"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.bean.AuthorBean"
+%><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.bean.JournalBean"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.bean.PaperBean"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.bean.ProjectBean"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.constant.InternalOperationConstants"
@@ -17,10 +18,18 @@
 	String action = request.getParameter(PaperConstants.Action);
 	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
 	List<PaperBean> papers = null;
+	List<ProjectBean> projects = null;
 	ProjectBean project = null;
 	AuthorBean author = null;
+	boolean useFullDetails = false; 
 	if (statusOperation != null || action == null) {
 		papers = dbms.getPapers();
+		if (papers != null && papers.size() == 0) {
+%>					<div class="notification_warning">
+						No paper available. First create one.
+					</div>
+<%
+		}
 	} else {
 		switch (action) {
 		case PaperConstants.CreateInproceedings: {
@@ -41,6 +50,17 @@
 								</div>
 								<div class="content_block_column2_28_right">
 									<textarea name="${PaperConstants.ProceedingsTextArea}" rows="10" cols="100"></textarea>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
+									LaTeX markers:
+								</div>
+								<div class="content_block_column2_28_right">
+									<label>
+										<input type="checkbox" name="${PaperConstants.RemoveLaTeXMarkers}"/>
+										Convert markers to plain text (experimental)
+									</label>
 								</div>
 							</div>
 							<div class="content_block_row">
@@ -77,6 +97,17 @@
 							</div>
 							<div class="content_block_row">
 								<div class="content_block_column2_28_left">
+									LaTeX markers:
+								</div>
+								<div class="content_block_column2_28_right">
+									<label>
+										<input type="checkbox" name="${PaperConstants.RemoveLaTeXMarkers}"/>
+										Convert markers to plain text (experimental)
+									</label>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
 									Paper file:
 								</div>
 								<div class="content_block_column2_28_right">
@@ -101,13 +132,17 @@
 				papers = dbms.getPapers();
 				break;		
 			}
-			PaperBean pb = dbms.getPaperByID(paperID);
+			List<PaperBean> lpb = dbms.getPaperByID(paperID);
+			PaperBean pb = null;
+			if (lpb != null && lpb.size() == 1) {
+				pb = lpb.get(0);
+			}
 			if (pb == null) {
 				papers = dbms.getPapers();
 				break;		
 			}
-			List<ProjectBean> projects = dbms.getProjectsNotAcknowledgedByPaper(paperID);
-			if (projects == null) {
+			List<ProjectBean> lprojects = dbms.getProjectsNotAcknowledgedByPaper(paperID);
+			if (lprojects == null) {
 				papers = dbms.getPapers();
 				break;		
 			}
@@ -116,11 +151,13 @@
 						<input type="hidden" name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
 						<div class="content_block_table">
 <% 
-			for (ProjectBean lpb : projects) {
+			for (ProjectBean cpb : lprojects) {
 %>							<div class="content_block_row">
 								<div class="content_block_column1">
-									<input type="checkbox" name="${PaperConstants.PaperID}" value="<%= lpb.getIdentifier() %>"/>
-									<%= lpb.getIdentifier() %>: <%= lpb.getTitle() %> (<%= lpb.getFunder() %>)
+									<label>
+										<input type="checkbox" name="${PaperConstants.PaperID}" value="<%= cpb.getIdentifier() %>"/>
+										<%= cpb.getIdentifier() %>: <%= cpb.getTitle() %> (<%= cpb.getFunder() %>)
+									</label>
 								</div>
 							</div>
 <%
@@ -141,7 +178,11 @@
 				papers = dbms.getPapers();
 				break;		
 			}
-			PaperBean pb = dbms.getPaperByID(paperID);
+			List<PaperBean> lpb = dbms.getPaperByID(paperID);
+			PaperBean pb = null;
+			if (lpb != null && lpb.size() == 1) {
+				pb = lpb.get(0);
+			}
 			if (pb == null) {
 				papers = dbms.getPapers();
 				break;		
@@ -176,40 +217,112 @@
 					</form>
 <jsp:include page="WEB-INF/jspf/footer.jsp" />
 <% 		
-					return;
+			return;
+		}
+		case PaperConstants.GetFullDetailsForPaper : {
+			String paperID = request.getParameter(PaperConstants.PaperID);
+			if (paperID == null) {
+				papers = dbms.getPapers();
+				if (papers != null && papers.size() == 0) {
+%>					<div class="notification_warning">
+						No paper available. First create one.
+					</div>
+<%
 				}
-		case PaperConstants.GetPapersForAuthor:
-			String authorID = request.getParameter(PaperConstants.Author);
+				break;
+			}
+			papers = dbms.getPaperByID(paperID);
+			if (papers == null || papers.size() == 0) {
+				papers = dbms.getPapers();
+				if (papers != null && papers.size() == 0) {
+%>					<div class="notification_warning">
+						No paper available. First create one.
+					</div>
+<%
+				}
+				break;
+			}
+			projects = dbms.getProjectsAcknowledgedByPaper(paperID);
+			useFullDetails = true;
+			break;
+		}
+		case PaperConstants.GetPapersForAuthor: {
+			String authorID = request.getParameter(PaperConstants.AuthorID);
 			if (authorID == null) {
 				papers = dbms.getPapers();
+				if (papers != null && papers.size() == 0) {
+%>					<div class="notification_warning">
+						No paper available. First create one.
+					</div>
+<%
+				}
 			} else {
 				author = dbms.getAuthorByID(authorID);
 				if (author != null) {
 					papers = dbms.getPapersWrittenByAuthor(authorID);
 				}
+				if (author == null || (papers != null && papers.size() == 0)) {
+%>					<div class="notification_warning">
+						No paper available for the author <%= authorID %>. First create one.
+					</div>
+<%
+				}
 			}
 			break;
-		case PaperConstants.GetPapersForYear:
+		}
+		case PaperConstants.GetPapersForYear: {
 			try {
 				int year = Integer.parseInt(request.getParameter(PaperConstants.Year));
 				papers = dbms.getPapersPublishedInYear(year);
+				if (papers != null && papers.size() == 0) {
+%>					<div class="notification_warning">
+						No paper available for the year <%= year %>. First create one.
+					</div>
+<%
+				}
 			} catch (NumberFormatException nfe) {
 				papers = dbms.getPapers();
+				if (papers != null && papers.size() == 0) {
+%>					<div class="notification_warning">
+						No paper available. First create one.
+					</div>
+<%
+				}
 			}
 			break;
-		case PaperConstants.GetPapersForProject:
+		}
+		case PaperConstants.GetPapersForProject: {
 			String projectID = request.getParameter(PaperConstants.ProjectID);
 			if (projectID == null) {
 				papers = dbms.getPapers();
+				if (papers != null && papers.size() == 0) {
+%>					<div class="notification_warning">
+						No paper available. First create one.
+					</div>
+<%
+				}
 			} else {
 				project = dbms.getProjectByID(projectID);
 				if (project != null) {
 					papers = dbms.getPapersAcknowledgingProject(projectID);
+					if (papers != null && papers.size() == 0) {
+%>					<div class="notification_warning">
+						No paper acknowledging the project. First link one.
+					</div>
+<%
+					}
 				}
 			}
 			break;
+		}
 		default:
 			papers = dbms.getPapers();
+			if (papers != null && papers.size() == 0) {
+%>					<div class="notification_warning">
+						No paper available. First create one.
+					</div>
+<%
+			}
 		}
 	}
 	if (papers == null) {
@@ -218,24 +331,90 @@
 					</div>
 <%
 	} else {
+		if (papers.size() > 0) {
 %>					<div class="content_block_table">
 <%
-		if (project != null) {
+			if (project != null) {
 %>						<div class="content_block_row">
 							<div class="content_block_column1">
 								Project: <%= project.getIdentifier() %>: <%= project.getTitle() %> (<%= project.getFunder() %>)
 							</div>
 						</div>
 <% 		
-		}
-		if (author != null) {
+			}
+			if (author != null) {
 %>						<div class="content_block_row">
 							<div class="content_block_column1">
 								Author: <%= author.getName() %>
 							</div>
 						</div>
 <% 		
-		}
+			}
+			if (useFullDetails) {
+				PaperBean pb = papers.get(0);
+%>						<div class="content_block_row">
+							<div class="content_block_column2_19_left">
+								Authors:
+							</div>
+							<div class="content_block_column2_19_right">
+<%
+				List<AuthorBean> authors = pb.getAuthors();
+				int nAuthors = authors.size();
+				int curAuthor = 0;
+				for (AuthorBean ab : authors) {
+					curAuthor++;
+					StringBuilder sb = new StringBuilder(ab.getName());
+					if (curAuthor != nAuthors && !(curAuthor == 1 && nAuthors == 2)) {
+						sb.append(",");
+					}
+					if (curAuthor == nAuthors - 1) {
+						sb.append(" and");
+					}
+%>								<%= sb.toString() %>
+<%
+				}
+%>							</div>
+						</div>
+						<div class="content_block_row">
+							<div class="content_block_column2_19_left">
+								Title:
+							</div>
+							<div class="content_block_column2_19_right">
+								<%= pb.getTitle() %>
+							</div>
+						</div>
+<%
+				if (pb.getBooktitle() != null) {
+%>						<div class="content_block_row">
+							<div class="content_block_column2_19_left">
+								Book title:
+							</div>
+							<div class="content_block_column2_19_right">
+								<%= pb.getBooktitle() %>
+							</div>
+						</div>
+<% 
+				}
+				JournalBean jb = pb.getJournal();
+				if (jb != null) {
+					StringBuilder sb = new StringBuilder(jb.getIdentifier());
+					if (pb.getVolume() != null) {
+						sb.append(" ").append(pb.getVolume());
+					}
+					if (pb.getNumber() != null) {
+						sb.append(" (").append(pb.getNumber()).append(")");
+					}
+%>						<div class="content_block_row">
+							<div class="content_block_column2_19_left">
+								Journal:
+							</div>
+							<div class="content_block_column2_19_right">
+								<%= sb.toString() %>
+							</div>
+						</div>
+<% 
+				}
+			} else {
 %>						<div class="content_block_row">
 							<div class="content_block_column2_73_left">
 								Paper
@@ -245,26 +424,29 @@
 							</div>
 						</div>
 <%
-		for (PaperBean pb : papers) {
+				for (PaperBean pb : papers) {
 %>						<div class="content_block_row">
 							<div class="content_block_column2_73_left">
-								<%= pb.getTitle() %>
+								<c:url value="/papers.jsp" var="paperfull">
+									<c:param name="${PaperConstants.Action}" value="${PaperConstants.GetFullDetailsForPaper}"/>
+									<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+								</c:url><a href="${paperfull}"><%= pb.getTitle() %></a>
 							</div>
 							<div class="content_block_column2_73_right">
 <%
-			if (pb.getFilepath() != null) {
+					if (pb.getFilepath() != null) {
 %>								<c:url value="/PaperManager" var="paperpdf">
 									<c:param name="${PaperConstants.Action}" value="${PaperConstants.DownloadPDF}"/>
 									<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
 								</c:url><a href="${paperpdf}">Download PDF</a>,
 <%
-			} else {
+					} else {
 %>								<c:url value="/papers.jsp" var="paperupload">
 									<c:param name="${PaperConstants.Action}" value="${PaperConstants.UploadPDF}"/>
 									<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
 								</c:url><a href="${paperupload}">Upload PDF</a>,
 <%
-			}
+					}
 %>								<c:url value="/projects.jsp" var="listProjects">
 									<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.GetProjectsForPaper}"/>
 									<c:param name="${ProjectConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
@@ -276,7 +458,11 @@
 							</div>
 						</div>
 <%
+				}
+			}
+%>					</div>
+<%
 		}
 	}
-	%>				</div>
+%>				
 <jsp:include page="WEB-INF/jspf/footer.jsp" />

@@ -5,7 +5,22 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
+%><%@page import="java.util.List"
 %><jsp:include page="WEB-INF/jspf/header.jsp" /><%
+	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+	List<AuthorBean> authors =  dbms.getAuthors();
+	if (authors == null) {
+%>					<div class="notification_error">
+						Error with the database during the retrieval of the authors.
+					</div>
+<%
+	} else {
+		if (authors.size() == 0) {
+%>					<div class="notification_warning">
+						No author available. First create a paper.
+					</div>
+<%
+		} else {
 %>					<div class="content_block_table">
 						<div class="content_block_row">
 							<div class="content_block_column2_28_left">
@@ -16,8 +31,7 @@
 							</div>
 						</div>
 <%
-	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
-	for (AuthorBean ab : dbms.getAuthors()) {
+			for (AuthorBean ab : authors) {
 %>						<div class="content_block_row">
 							<div class="content_block_column2_28_left">
 								<%= ab.getName() %>
@@ -25,15 +39,18 @@
 							<div class="content_block_column2_28_right">
 								<c:url value="/papers.jsp" var="papers">
 									<c:param name="${PaperConstants.Action}" value="${PaperConstants.GetPapersForAuthor}"/>
-									<c:param name="${PaperConstants.Author}" value="<%= ab.getName() %>"/>
+									<c:param name="${PaperConstants.AuthorID}" value="<%= ab.getName() %>"/>
 								</c:url><a href="${papers}">List papers</a>,
 								<c:url value="/projects.jsp" var="projects">
 									<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.GetProjectsForAuthor}"/>
-									<c:param name="${ProjectConstants.Author}" value="<%= ab.getName() %>"/>
+									<c:param name="${ProjectConstants.AuthorID}" value="<%= ab.getName() %>"/>
 								</c:url><a href="${projects}">List projects</a>
 							</div>
 						</div>
 <%
-	}
+			}
 %>					</div>
-<jsp:include page="WEB-INF/jspf/footer.jsp" />
+<%
+		}
+	}
+%><jsp:include page="WEB-INF/jspf/footer.jsp" />

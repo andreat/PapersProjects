@@ -32,8 +32,8 @@ public class ConferenceBean implements Serializable {
 	
 	private String title = null;
 	private String series = null;
-	private int year = -1;
-	private int volume = -1;
+	private String year = null;
+	private String volume = null;
 	
 	private String editor = null;
 	private String publisher = null;
@@ -59,16 +59,16 @@ public class ConferenceBean implements Serializable {
 	public void setSeries(String series) {
 		this.series = series;
 	}
-	public int getVolume() {
+	public String getVolume() {
 		return volume;
 	}
-	public void setVolume(int volume) {
+	public void setVolume(String volume) {
 		this.volume = volume;
 	}
-	public int getYear() {
+	public String getYear() {
 		return year;
 	}
-	public void setYear(int year) {
+	public void setYear(String year) {
 		this.year = year;
 	}
 	public String getEditor() {

@@ -1,9 +1,14 @@
+CREATE TABLE author (
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY(name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE conference (
 	identifier VARCHAR(100) NOT NULL,
 	title TEXT NOT NULL,
 	year INT,
 	series TEXT DEFAULT NULL,
-	volume INT DEFAULT -1,
+	volume VARCHAR(20) DEFAULT NULL,
 	editor TEXT DEFAULT NULL,
 	publisher TEXT DEFAULT NULL,
 	url TEXT DEFAULT NULL,
@@ -12,19 +17,14 @@ CREATE TABLE conference (
 	PRIMARY KEY(identifier)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE author (
-	name VARCHAR(100) NOT NULL,
-	PRIMARY KEY(name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE paper (
 	identifier VARCHAR(100) NOT NULL,
 	title TEXT NOT NULL,
 	booktitle TEXT DEFAULT NULL,
-	year INT,
+	year VARCHAR(10),
 	pages VARCHAR(20) DEFAULT NULL,
-	volume INT DEFAULT -1,
-	number INT DEFAULT -1,
+	volume VARCHAR(20) DEFAULT NULL,
+	number VARCHAR(20) DEFAULT NULL,
 	crossref VARCHAR(100) DEFAULT NULL,
 	journal TEXT DEFAULT NULL,
 	doi TEXT DEFAULT NULL,
@@ -38,8 +38,10 @@ CREATE TABLE paper (
 CREATE TABLE paperAuthor (
 	paperIdentifier VARCHAR(100) NOT NULL,
 	authorName VARCHAR(100) NOT NULL,
+	authorOrder INT,
 
 	PRIMARY KEY(paperIdentifier,authorName),
+	UNIQUE (paperIdentifier, authorOrder),
 	FOREIGN KEY(paperIdentifier) REFERENCES paper(identifier) ON DELETE CASCADE,
 	FOREIGN KEY(authorName) REFERENCES author(name) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

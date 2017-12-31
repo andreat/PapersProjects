@@ -123,9 +123,9 @@ public class DBMS {
 				ps = connection.prepareStatement("insert into conference values(?,?,?,?,?,?,?,?,?)");
 				ps.setString(1, cb.getIdentifier());
 				ps.setString(2, cb.getTitle());
-				ps.setInt(3, cb.getYear());
+				ps.setString(3, cb.getYear());
 				ps.setString(4, cb.getSeries());
-				ps.setInt(5, cb.getVolume());
+				ps.setString(5, cb.getVolume());
 				ps.setString(6, cb.getEditor());
 				ps.setString(7, cb.getPublisher());
 				ps.setString(8, cb.getUrl());
@@ -239,10 +239,10 @@ public class DBMS {
 				ps.setString(1, pb.getIdentifier());
 				ps.setString(2, pb.getTitle());
 				ps.setString(3, pb.getBooktitle());
-				ps.setInt(4, pb.getYear());
+				ps.setString(4, pb.getYear());
 				ps.setString(5, pb.getPages());
-				ps.setInt(6, pb.getVolume());
-				ps.setInt(7, pb.getNumber());
+				ps.setString(6, pb.getVolume());
+				ps.setString(7, pb.getNumber());
 				ps.setString(8, pb.getCrossref());
 				JournalBean jb = pb.getJournal();
 				if (jb == null) {
@@ -360,10 +360,12 @@ public class DBMS {
 				}
 			} catch (SQLException se) {}
 			if (isPresent) {
-				ps = connection.prepareStatement("insert ignore into paperAuthor values(?,?)");
+				ps = connection.prepareStatement("insert ignore into paperAuthor values(?,?,?)");
+				int order = 1;
 				for (AuthorBean ab : pb.getAuthors()) {
 					ps.setString(1, pb.getIdentifier());
 					ps.setString(2, ab.getName());
+					ps.setInt(3, order++);
 					ps.addBatch();
 				}
 				ps.executeBatch();
@@ -646,7 +648,7 @@ public class DBMS {
 	 * 
 	 * @return <null> if some SQL error occurred or the paper is not found
 	 */
-	public PaperBean getPaperByID(String paperID) {
+	public List<PaperBean> getPaperByID(String paperID) {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
 			return null;
@@ -685,7 +687,7 @@ public class DBMS {
 		}
 		if (papers != null && papers.size() == 1) {
 			fillAuthors(papers);
-			return papers.get(0);
+			return papers;
 		} else {
 			return null;
 		}
@@ -1356,9 +1358,9 @@ public class DBMS {
 			ConferenceBean cb = new ConferenceBean();
 			cb.setIdentifier(rs.getString("identifier"));
 			cb.setTitle(rs.getString("title"));
-			cb.setYear(rs.getInt("year"));
+			cb.setYear(rs.getString("year"));
 			cb.setSeries(rs.getString("series"));
-			cb.setVolume(rs.getInt("volume"));
+			cb.setVolume(rs.getString("volume"));
 			cb.setEditor(rs.getString("editor"));
 			cb.setPublisher(rs.getString("publisher"));
 			cb.setUrl(rs.getString("url"));
@@ -1375,10 +1377,10 @@ public class DBMS {
 			pb.setIdentifier(rs.getString("identifier"));
 			pb.setTitle(rs.getString("title"));
 			pb.setBooktitle(rs.getString("booktitle"));
-			pb.setYear(rs.getInt("year"));
+			pb.setYear(rs.getString("year"));
 			pb.setPages(rs.getString("pages"));
-			pb.setVolume(rs.getInt("volume"));
-			pb.setNumber(rs.getInt("number"));
+			pb.setVolume(rs.getString("volume"));
+			pb.setNumber(rs.getString("number"));
 			pb.setCrossref(rs.getString("crossref"));
 			String journal = rs.getString("journal");
 			if (journal != null) {
@@ -1429,7 +1431,7 @@ public class DBMS {
 			ResultSet rs = null;
 			try {
 				connection.setAutoCommit(false);
-				ps = connection.prepareStatement("select * from paperAuthor where paperIdentifier = ?;");
+				ps = connection.prepareStatement("select authorName as name from paperAuthor where paperIdentifier = ? order by authorOrder;");
 				ps.setString(1, pb.getIdentifier());
 				rs = ps.executeQuery();
 				pb.setAuthors(generateAuthors(rs));

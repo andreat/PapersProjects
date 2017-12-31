@@ -16,12 +16,24 @@
  *******************************************************************************/
 package cn.ac.ios.iscasmc.papersprojects.backend.parser;
 
+import java.io.ByteArrayInputStream;
+
+import cn.ac.ios.iscasmc.papersprojects.backend.parser.marker.MarkersParser;
+
 /**
  * @author Andrea Turrini
  *
  */
 public final class UtilParser {
-	public static final String toTrimmedSingleLine(String string) {
+		
+	public static final String toTrimmedSingleLine(String original, boolean removeMarkers) {
+		String string;
+		if (removeMarkers) {
+			MarkersParser mp = new MarkersParser(new ByteArrayInputStream(original.getBytes()));
+			string = mp.parseMarkers();
+		} else {
+			string = original;
+		}
 		boolean first = true;
 		StringBuilder sb = new StringBuilder(string.length());
 		for (String s : string.split("(\n|\r)")) {

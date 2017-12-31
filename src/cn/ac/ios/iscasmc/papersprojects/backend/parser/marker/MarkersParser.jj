@@ -1,0 +1,225 @@
+/*******************************************************************************
+ * Copyright (C) 2017 Andrea Turrini
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
+options
+{
+  JDK_VERSION = "1.7";
+  LOOKAHEAD = 1;
+  STATIC = false;
+}
+
+PARSER_BEGIN(MarkersParser)
+package cn.ac.ios.iscasmc.papersprojects.backend.parser.marker;
+
+import java.lang.StringBuilder;
+
+public final class MarkersParser {
+	public String parseMarkers() {
+		try {
+			return actualParser();
+		} catch (ParseException pe) {
+			return null;
+		}
+	}
+}
+
+PARSER_END(MarkersParser)
+
+TOKEN :
+{
+	< A_ACUTE_UC : "\\'" ( "{A}" | "A" ) >
+|	< A_ACUTE_LC : "\\'" ( "{a}" | "a" ) >
+|	< A_GRAVE_UC : "\\`" ( "{A}" | "A" ) >
+|	< A_GRAVE_LC : "\\`" ( "{a}" | "a" ) >
+|	< E_ACUTE_UC : "\\'" ( "{E}" | "E" ) >
+|	< E_ACUTE_LC : "\\'" ( "{e}" | "e" ) >
+|	< E_GRAVE_UC : "\\`" ( "{E}" | "E" ) >
+|	< E_GRAVE_LC : "\\`" ( "{e}" | "e" ) >
+|	< I_ACUTE_UC : "\\'" ( "{I}" | "I" ) >
+|	< I_ACUTE_LC : "\\'" ( "{\\i}" | "{i}" | "\\i" | "i" ) >
+|	< I_GRAVE_UC : "\\`" ( "{I}" | "I" ) >
+|	< I_GRAVE_LC : "\\`" ( "{\\i}" | "{i}" | "\\i" | "i" ) >
+|	< O_ACUTE_UC : "\\'" ( "{O}" | "O" ) >
+|	< O_ACUTE_LC : "\\'" ( "{o}" | "o" ) >
+|	< O_GRAVE_UC : "\\`" ( "{O}" | "O" ) >
+|	< O_GRAVE_LC : "\\`" ( "{o}" | "o" ) >
+|	< U_ACUTE_UC : "\\'" ( "{U}" | "U" ) >
+|	< U_ACUTE_LC : "\\'" ( "{u}" | "u" ) >
+|	< U_GRAVE_UC : "\\`" ( "{U}" | "U" ) >
+|	< U_GRAVE_LC : "\\`" ( "{u}" | "u" ) >
+|	< U_UML_UC : "\\\"" ( "{U}" | "U" ) >
+|	< U_UML_LC : "\\\"" ( "{u}" | "u" ) >
+|	< ALPHA_LC : "\\alpha" >
+|	< BETA_LC : "\\beta" >
+|	< GAMMA_LC : "\\gamma" >
+|	< DELTA_LC : "\\delta" >
+|	< EPSILON_LC : "\\epsilon" >
+|	< VAREPSILON_LC : "\\varepsilon" >
+|	< ZETA_LC : "\\zeta" >
+|	< ETA_LC : "\\eta" >
+|	< THETA_LC : "\\theta" >
+|	< VARTHETA_LC : "\\vartheta" >
+|	< IOTA_LC : "\\iota" >
+|	< KAPPA_LC : "\\kappa" >
+|	< LAMBDA_LC : "\\lambda" >
+|	< MU_LC : "\\mu" >
+|	< NU_LC : "\\nu" >
+|	< XI_LC : "\\xi" >
+|	< PI_LC : "\\pi" >
+|	< VARPI_LC : "\\varpi" >
+|	< RHO_LC : "\\rho" >
+|	< VARRHO_LC : "\\varrho" >
+|	< SIGMA_LC : "\\sigma" >
+|	< VARSIGMA_LC : "\\varsigma" >
+|	< TAU_LC : "\\tau" >
+|	< UPSILON_LC : "\\upsilon" >
+|	< PHI_LC : "\\phi" >
+|	< VARPHI_LC : "\\varphi" >
+|	< CHI_LC : "\\chi" >
+|	< PSI_LC : "\\psi" >
+|	< OMEGA_LC : "\\omega" >
+|	< GAMMA_UC : "\\Gamma" >
+|	< VARGAMMA_UC : "\\varGamma" >
+|	< DELTA_UC : "\\Delta" >
+|	< VARDELTA_UC : "\\varDelta" >
+|	< THETA_UC : "\\Theta" >
+|	< VARTHETA_UC : "\\varTheta" >
+|	< LAMBDA_UC : "\\Lambda" >
+|	< VARLAMBDA_UC : "\\varLambda" >
+|	< XI_UC : "\\Xi" >
+|	< VARXI_UC : "\\varXi" >
+|	< PI_UC : "\\Pi" >
+|	< VARPI_UC : "\\varPi" >
+|	< SIGMA_UC : "\\Sigma" >
+|	< VARSIGMA_UC : "\\varSigma" >
+|	< UPSILON_UC : "\\Upsilon" >
+|	< VARUPSILON_UC : "\\varUpsilon" >
+|	< PHI_UC : "\\Phi" >
+|	< VARPHI_UC : "\\varPhi" >
+|	< PSI_UC : "\\Psi" >
+|	< VARPSI_UC : "\\varPsi" >
+|	< OMEGA_UC : "\\Omega" >
+|	< VAROMEGA_UC : "\\varOmega" >
+|	< ESCAPED_BRACKET_OPEN : "\\{" > 
+|	< ESCAPED_BRACKET_CLOSE : "\\}" > 
+|	< BRACKET_OPEN : "{" > 
+|	< BRACKET_CLOSE : "}" >
+|	< ESCAPED_DOLLAR : "\\$" > 
+|	< DOLLAR : "$" > 
+|	< MATH_FONT : "\\math" ( "rm" | "it" | "bf" | "sf" | "tt" | "cal" | "bb" | "frak" ) > 
+|	< MATH_TEXT : "\\text" > 
+|	< TEXT_FONT : "\\text" ( "it" | "sl" | "bf" | "tt" | "sc" ) > 
+|	< EMPH : "\\emph" > 
+|	< OTHER : ~[] >
+}
+
+private String actualParser() :
+{
+	Token t;
+	StringBuilder sb = new StringBuilder();
+}
+{
+	(
+		< A_ACUTE_UC > { sb.append("Á"); }
+	|	< A_ACUTE_LC > { sb.append("á"); }
+	|	< A_GRAVE_UC > { sb.append("À"); }
+	|	< A_GRAVE_LC > { sb.append("à"); }
+	|	< E_ACUTE_UC > { sb.append("É"); }
+	|	< E_ACUTE_LC > { sb.append("é"); }
+	|	< E_GRAVE_UC > { sb.append("È"); }
+	|	< E_GRAVE_LC > { sb.append("è"); }
+	|	< I_ACUTE_UC > { sb.append("Í"); }
+	|	< I_ACUTE_LC > { sb.append("ı́"); }
+	|	< I_GRAVE_UC > { sb.append("Ì"); }
+	|	< I_GRAVE_LC > { sb.append("ı̀"); }
+	|	< O_ACUTE_UC > { sb.append("Ó"); }
+	|	< O_ACUTE_LC > { sb.append("ó"); }
+	|	< O_GRAVE_UC > { sb.append("Ò"); }
+	|	< O_GRAVE_LC > { sb.append("ò"); }
+	|	< U_ACUTE_UC > { sb.append("Ú"); }
+	|	< U_ACUTE_LC > { sb.append("ú"); }
+	|	< U_GRAVE_UC > { sb.append("Ù"); }
+	|	< U_GRAVE_LC > { sb.append("ù"); }
+	|	< U_UML_UC > { sb.append("Ü"); }
+	|	< U_UML_LC > { sb.append("ü"); }
+	|	< ALPHA_LC > { sb.append("α"); }
+	|	< BETA_LC > { sb.append("β"); }
+	|	< GAMMA_LC > { sb.append("γ"); }
+	|	< DELTA_LC > { sb.append("δ"); }
+	|	< EPSILON_LC > { sb.append("ε"); }
+	|	< VAREPSILON_LC > { sb.append("ε"); }
+	|	< ZETA_LC > { sb.append("ζ"); }
+	|	< ETA_LC > { sb.append("η"); }
+	|	< THETA_LC > { sb.append("θ"); }
+	|	< VARTHETA_LC > { sb.append("θ"); }
+	|	< IOTA_LC > { sb.append("ι"); }
+	|	< KAPPA_LC > { sb.append("κ"); }
+	|	< LAMBDA_LC > { sb.append("λ"); }
+	|	< MU_LC > { sb.append("μ"); }
+	|	< NU_LC > { sb.append("ν"); }
+	|	< XI_LC > { sb.append("ξ"); }
+	|	< PI_LC > { sb.append("π"); }
+	|	< VARPI_LC > { sb.append("π"); }
+	|	< RHO_LC > { sb.append("ρ"); }
+	|	< VARRHO_LC > { sb.append("ρ"); }
+	|	< SIGMA_LC > { sb.append("σ"); }
+	|	< VARSIGMA_LC > { sb.append("ς"); }
+	|	< TAU_LC > { sb.append("τ"); }
+	|	< UPSILON_LC > { sb.append("υ"); }
+	|	< PHI_LC > { sb.append("φ"); }
+	|	< VARPHI_LC > { sb.append("φ"); }
+	|	< CHI_LC > { sb.append("χ"); }
+	|	< PSI_LC > { sb.append("ψ"); }
+	|	< OMEGA_LC > { sb.append("ω"); }
+	|	< GAMMA_UC > { sb.append("Γ"); }
+	|	< VARGAMMA_UC > { sb.append("Γ"); }
+	|	< DELTA_UC > { sb.append("∆"); }
+	|	< VARDELTA_UC > { sb.append("∆"); }
+	|	< THETA_UC > { sb.append("Θ"); }
+	|	< VARTHETA_UC > { sb.append("Θ"); }
+	|	< LAMBDA_UC > { sb.append("Λ"); }
+	|	< VARLAMBDA_UC > { sb.append("Λ"); }
+	|	< XI_UC > { sb.append("Ξ"); }
+	|	< VARXI_UC > { sb.append("Ξ"); }
+	|	< PI_UC > { sb.append("Π"); }
+	|	< VARPI_UC > { sb.append("Π"); }
+	|	< SIGMA_UC > { sb.append("Σ"); }
+	|	< VARSIGMA_UC > { sb.append("Σ"); }
+	|	< UPSILON_UC > { sb.append("Υ"); }
+	|	< VARUPSILON_UC > { sb.append("Υ"); }
+	|	< PHI_UC > { sb.append("Φ"); }
+	|	< VARPHI_UC > { sb.append("Φ"); }
+	|	< PSI_UC > { sb.append("Ψ"); }
+	|	< VARPSI_UC > { sb.append("Ψ"); }
+	|	< OMEGA_UC > { sb.append("Ω"); }
+	|	< VAROMEGA_UC > { sb.append("Ω"); }
+	|	< ESCAPED_BRACKET_OPEN > { sb.append("{"); }
+	|	< ESCAPED_BRACKET_CLOSE > { sb.append("}"); }
+	|	< BRACKET_OPEN >
+	|	< BRACKET_CLOSE >
+	|	< ESCAPED_DOLLAR > { sb.append("$"); }
+	|	< DOLLAR >
+	|	< MATH_FONT >
+	|	< MATH_TEXT >
+	|	< TEXT_FONT >
+	|	< EMPH >
+	|	t = < OTHER > { sb.append(t.toString()); }
+	)+
+	<EOF>
+	{
+		return sb.toString();
+	}
+}

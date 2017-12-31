@@ -27,19 +27,19 @@ import java.util.List;
 public class PaperBean implements Serializable {
 	private static final long serialVersionUID = -5392863658737807694L;
 
-	private String identifier;
+	private String identifier = null;
 	
-	private String title;
-	private List<AuthorBean> authors;
-	private String booktitle;
-	private int year;
-	private String pages;
-	private int volume;
-	private int number;
-	private String crossref;
-	private String doi;
-	private String url;
-	private String filepath;
+	private String title = null;
+	private List<AuthorBean> authors = null;
+	private String booktitle = null;
+	private String year = null;
+	private String pages = null;
+	private String volume = null;
+	private String number = null;
+	private String crossref = null;
+	private String doi = null;
+	private String url = null;
+	private String filepath = null;
 	 
 	private ConferenceBean conference;
 	private JournalBean journal;
@@ -88,27 +88,27 @@ public class PaperBean implements Serializable {
 		this.booktitle = booktitle;
 	}
 
-	public int getYear() {
+	public String getYear() {
 		return year;
 	}
 
-	public void setYear(int year) {
+	public void setYear(String year) {
 		this.year = year;
 	}
 
-	public int getVolume() {
+	public String getVolume() {
 		return volume;
 	}
 
-	public void setVolume(int volume) {
+	public void setVolume(String volume) {
 		this.volume = volume;
 	}
 
-	public int getNumber() {
+	public String getNumber() {
 		return number;
 	}
 
-	public void setNumber(int number) {
+	public void setNumber(String number) {
 		this.number = number;
 	}
 

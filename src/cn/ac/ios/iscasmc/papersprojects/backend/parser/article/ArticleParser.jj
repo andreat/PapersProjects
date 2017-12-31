@@ -28,12 +28,15 @@ import cn.ac.ios.iscasmc.papersprojects.backend.bean.PaperBean;
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.JournalBean;
 
 public final class ArticleParser {
-	public PaperBean parseArticle() {
-	  try { 
-	  	return actualParser();
-	  } catch (ParseException pe) {
-	    return null;
-	  }
+	private boolean removeMarkers;
+
+	public PaperBean parseArticle(boolean removeMarkers) {
+		this.removeMarkers = removeMarkers;
+		try {
+			return actualParser();
+		} catch (ParseException pe) {
+			return null;
+		}
 	}
 }
 
@@ -81,7 +84,7 @@ TOKEN :
 {
 	< E_BRACKET_OPEN : "{" > { nestingLevel++; } 
 |	< E_BRACKET_CLOSE : "}" >
-|	< E_IDENTIFIER : ( ~["{","}"])+ >
+|	< E_TEXT : ( ~["{","}"])+ >
 }
 
 TOKEN :
@@ -94,7 +97,6 @@ private PaperBean actualParser() :
 	Token t;
 	PaperBean pb = new PaperBean();
 	String stringValue;
-	int intValue;
 }
 {
 	< ARTICLE >
@@ -132,16 +134,16 @@ private PaperBean actualParser() :
 		|
 			< BE_VOLUME >
 			< BE_EQUAL >
-			intValue = parseIntValue()
+			stringValue = parseStringValue()
 			{
-				pb.setVolume(intValue);
+				pb.setVolume(stringValue);
 			}
 		|
 			< BE_NUMBER >
 			< BE_EQUAL >
-			intValue = parseIntValue()
+			stringValue = parseStringValue()
 			{
-				pb.setNumber(intValue);
+				pb.setNumber(stringValue);
 			}
 		|
 			< BE_PAGES >
@@ -153,9 +155,9 @@ private PaperBean actualParser() :
 		|
 			< BE_YEAR >
 			< BE_EQUAL >
-			intValue = parseIntValue()
+			stringValue = parseStringValue()
 			{
-				pb.setYear(intValue);
+				pb.setYear(stringValue);
 			}
 		|
 			< BE_URL >
@@ -192,9 +194,12 @@ private String parseStringValue() :
 {
 	< BE_BRACKET_OPEN >
 	(
-		t = < E_IDENTIFIER > { sb.append(t.toString()); }
+		t = < E_TEXT > { sb.append(t.toString()); }
 	|
-		t = < E_BRACKET_OPEN > { sb.append(t.toString()); }
+		t = < E_BRACKET_OPEN >
+		{
+			sb.append(t.toString());
+		}
 	|
 		LOOKAHEAD( { (token_source.nestingLevel > 0) && (getToken(1).kind == E_BRACKET_CLOSE) })
 		t = < E_BRACKET_CLOSE >
@@ -206,21 +211,6 @@ private String parseStringValue() :
 	t = < E_BRACKET_CLOSE >
 	{
 		token_source.SwitchTo(BIBENTRY_ENV);
-		return UtilParser.toTrimmedSingleLine(sb.toString());
-	}
-}
-
-private int parseIntValue() :
-{
-	String value;
-}
-{
-	value = parseStringValue()
-	{
-		try {
-			return Integer.parseInt(value);
-		} catch (NumberFormatException nfe) {
-			throw new ParseException();
-		}
+		return UtilParser.toTrimmedSingleLine(sb.toString(), removeMarkers);
 	}
 }

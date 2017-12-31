@@ -18,7 +18,7 @@
 	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
 	List<ProjectBean> projects;
 	PaperBean paper = null;
-	String author = null;
+	String authorID = null;
 	int year = -1;
 	
 	if (statusOperation != null || action == null) {
@@ -169,20 +169,23 @@
 				projects = dbms.getProjects();
 				break;		
 			}
+			if (papers.size() > 0) {
 %>					<form action="${pageContext.request.contextPath}/ProjectManager" method="post">
 						<input type="hidden" name="${ProjectConstants.Action}" value="${ProjectConstants.LinkPapersToProject}"/>
 						<input type="hidden" name="${ProjectConstants.ProjectID}" value="<%= pb.getIdentifier() %>"/>
 						<div class="content_block_table">
 <% 
-			for (PaperBean lpb : papers) {
+				for (PaperBean lpb : papers) {
 %>							<div class="content_block_row">
 								<div class="content_block_column1">
-									<input type="checkbox" name="${ProjectConstants.PaperID}" value="<%= lpb.getIdentifier() %>"/>
-									<%= lpb.getTitle() %>
+									<label>
+										<input type="checkbox" name="${ProjectConstants.PaperID}" value="<%= lpb.getIdentifier() %>"/>
+										<%= lpb.getTitle() %>
+									</label>
 								</div>
 							</div>
 <%
-			} 
+				} 
 %>							<div class="content_block_row">
 								<div class="content_block_column1">
 									<input type="submit"/>
@@ -190,70 +193,123 @@
 							</div>
 						</div>
 					</form>
-<jsp:include page="WEB-INF/jspf/footer.jsp" /><%
+<%
+			} else {
+%>					<div class="notification_warning">
+						No paper available. First create one.
+					</div>
+<%
+			}
+%><jsp:include page="WEB-INF/jspf/footer.jsp" /><%
 			return;
 		}
 		case ProjectConstants.GetProjectsForAuthor:
-			author = request.getParameter(ProjectConstants.Author);
-			if (author == null) {
+			authorID = request.getParameter(ProjectConstants.AuthorID);
+			if (authorID == null) {
 				projects = dbms.getProjects();
+				if (projects != null && projects.size() == 0) {
+%>					<div class="notification_warning">
+						No project available. First create one.
+					</div>
+<%
+				}
 			} else {
-				projects = dbms.getProjectsInvolvingAuthor(author);
+				projects = dbms.getProjectsInvolvingAuthor(authorID);
+				if (projects != null && projects.size() == 0) {
+%>					<div class="notification_warning">
+						No project acknowledged by a paper written by the author. First link one.
+					</div>
+<%
+				}
 			}
 			break;
 		case ProjectConstants.GetProjectsForYear:
 			try {
 				year = Integer.parseInt(request.getParameter(ProjectConstants.Year));
 				projects = dbms.getProjectsAcknowledgedInYear(year);
+				if (projects != null && projects.size() == 0) {
+%>					<div class="notification_warning">
+						No project acknowledged in year <%= year %>. First link one.
+					</div>
+<%
+				}
 			} catch (NumberFormatException nfe) {
 				projects = dbms.getProjects();
+				if (projects != null && projects.size() == 0) {
+%>					<div class="notification_warning">
+						No project available. First create one.
+					</div>
+<%
+				}
 			}
 			break;
 		case ProjectConstants.GetProjectsForPaper:
 			String paperID = request.getParameter(ProjectConstants.PaperID);
 			if (paperID == null) {
 				projects = dbms.getProjects();
+				if (projects != null && projects.size() == 0) {
+%>					<div class="notification_warning">
+						No project available. First create one.
+					</div>
+<%
+				}
 			} else {
 				projects = dbms.getProjectsAcknowledgedByPaper(paperID);
-				paper = dbms.getPaperByID(paperID);
+				if (projects != null && projects.size() == 0) {
+%>					<div class="notification_warning">
+						No project acknowledged by the paper. First link one.
+					</div>
+<%
+				}
+				List<PaperBean> lpb = dbms.getPaperByID(paperID);
+				if (lpb != null && lpb.size() == 1) {
+					paper = lpb.get(0);
+				}
 			}
 			break;
 		default:
 			projects = dbms.getProjects();
+			if (projects != null && projects.size() == 0) {
+%>					<div class="notification_warning">
+						No project available. First create one.
+					</div>
+<%
+			}
 		}
 	}
 	if (projects == null) {
-%>					<div class="notification_success">
+%>					<div class="notification_error">
 						Error with the database during the retrieval of the projects.
 					</div>
 <%
 	} else {
+		if (projects.size() > 0) {
 %>					<div class="content_block_table">
 <%
-		if (paper != null) {
+			if (paper != null) {
 %>						<div class="content_block_row">
 							<div class="content_block_column1">
 								Paper: <%= paper.getTitle() %>
 							</div>
 						</div>
 <% 		
-		}
-		if (author != null) {
+			}
+			if (authorID != null) {
 %>						<div class="content_block_row">
 							<div class="content_block_column1">
-								Author: <%= author %>
+								Author: <%= authorID %>
 							</div>
 						</div>
 <% 		
-		}
-		if (year > 0) {
+			}
+			if (year > 0) {
 %>						<div class="content_block_row">
 							<div class="content_block_column1">
 								Year: <%= year %>
 							</div>
 						</div>
 <% 		
-		}
+			}
 %>						<div class="content_block_row">
 							<div class="content_block_column2_37_left">
 								Project
@@ -263,7 +319,7 @@
 							</div>
 						</div>
 <%
-		for (ProjectBean pb : projects) {
+			for (ProjectBean pb : projects) {
 %>						<div class="content_block_row">
 							<div class="content_block_column2_37_left">
 								<%= pb.getIdentifier() %>: <%= pb.getTitle() %> (<%= pb.getFunder() %>)
@@ -279,8 +335,11 @@
 								</c:url><a href="${linkPapers}">Link papers to this project</a>
 							</div>
 						</div>
+<% 
+			}
+%>					</div>
+
 <%
 		}
 	}
-%>					</div>
-<jsp:include page="WEB-INF/jspf/footer.jsp" />
+%><jsp:include page="WEB-INF/jspf/footer.jsp" />

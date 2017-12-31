@@ -27,12 +27,15 @@ import cn.ac.ios.iscasmc.papersprojects.backend.parser.UtilParser;
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.ConferenceBean;
 
 public final class ProceedingsParser {
-	public ConferenceBean parseProceedings() {
-	  try { 
-	  	return actualParser();
-	  } catch (ParseException pe) {
-	    return null;
-	  }
+	private boolean removeMarkers;
+
+	public ConferenceBean parseProceedings(boolean removeMarkers) {
+		this.removeMarkers = removeMarkers;
+		try {
+			return actualParser();
+		} catch (ParseException pe) {
+			return null;
+		}
 	}
 }
 
@@ -79,7 +82,7 @@ TOKEN :
 {
 	< E_BRACKET_OPEN : "{" > { nestingLevel++; } 
 |	< E_BRACKET_CLOSE : "}" > 
-|	< E_IDENTIFIER : ( ~["{","}"])+ >
+|	< E_TEXT : ( ~["{","}"])+ >
 }
 
 TOKEN :
@@ -92,7 +95,6 @@ private ConferenceBean actualParser() :
 	Token t;
 	ConferenceBean cb = new ConferenceBean();
 	String stringValue;
-	int intValue;
 }
 {
 	< PROCEEDINGS >
@@ -126,16 +128,16 @@ private ConferenceBean actualParser() :
 		|
 			< BE_YEAR >
 			< BE_EQUAL >
-			intValue = parseIntValue()
+			stringValue = parseStringValue()
 			{
-				cb.setYear(intValue);
+				cb.setYear(stringValue);
 			}
 		|
 			< BE_VOLUME >
 			< BE_EQUAL >
-			intValue = parseIntValue()
+			stringValue = parseStringValue()
 			{
-				cb.setVolume(intValue);
+				cb.setVolume(stringValue);
 			}
 		|
 			< BE_PUBLISHER >
@@ -179,9 +181,12 @@ private String parseStringValue() :
 {
 	< BE_BRACKET_OPEN >
 	(
-		t = < E_IDENTIFIER > { sb.append(t.toString()); }
+		t = < E_TEXT > { sb.append(t.toString()); }
 	|
-		t = < E_BRACKET_OPEN > { sb.append(t.toString()); }
+		t = < E_BRACKET_OPEN >
+		{
+			sb.append(t.toString());
+		}
 	|
 		LOOKAHEAD( { (token_source.nestingLevel > 0) && (getToken(1).kind == E_BRACKET_CLOSE) })
 		t = < E_BRACKET_CLOSE >
@@ -193,21 +198,6 @@ private String parseStringValue() :
 	t = < E_BRACKET_CLOSE >
 	{
 		token_source.SwitchTo(BIBENTRY_ENV);
-		return UtilParser.toTrimmedSingleLine(sb.toString());
-	}
-}
-
-private int parseIntValue() :
-{
-	String value;
-}
-{
-	value = parseStringValue()
-	{
-		try {
-			return Integer.parseInt(value);
-		} catch (NumberFormatException nfe) {
-			throw new ParseException();
-		}
+		return UtilParser.toTrimmedSingleLine(sb.toString(), removeMarkers);
 	}
 }

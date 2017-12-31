@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -69,10 +70,14 @@ public class PaperServlet extends HttpServlet {
 			PaperBean pb = null;
 			switch (action) {
 			case PaperConstants.CreateInproceedings : {
+				boolean removeMarkers = false;
+				if (request.getParameter(PaperConstants.RemoveLaTeXMarkers) != null) {
+					removeMarkers = true;
+				}
 				String conferenceBibtex = request.getParameter(PaperConstants.ProceedingsTextArea);
 				if (conferenceBibtex != null && conferenceBibtex.length() > 10) {
 					ProceedingsParser pp = new ProceedingsParser(new ByteArrayInputStream(conferenceBibtex.getBytes()));
-					ConferenceBean cb = pp.parseProceedings();
+					ConferenceBean cb = pp.parseProceedings(removeMarkers);
 					if (cb == null) {
 						status.put(DBMSAction.ConferenceInsert, DBMSStatus.ParserError);
 					} else {
@@ -83,7 +88,7 @@ public class PaperServlet extends HttpServlet {
 				if (statusConference == DBMSStatus.Success || statusConference == DBMSStatus.DuplicatedEntry) {
 					String paperBibtex = request.getParameter(PaperConstants.InproceedingsTextArea);
 					InproceedingsParser ip = new InproceedingsParser(new ByteArrayInputStream(paperBibtex.getBytes()));
-					pb = ip.parseInproceedings();
+					pb = ip.parseInproceedings(removeMarkers);
 					if (pb == null) {
 						status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
 					} else {
@@ -94,9 +99,13 @@ public class PaperServlet extends HttpServlet {
 				break;
 			}
 			case PaperConstants.CreateArticle : {
+				boolean removeMarkers = false;
+				if (request.getParameter(PaperConstants.RemoveLaTeXMarkers) != null) {
+					removeMarkers = true;
+				}
 				String paperBibtex = request.getParameter(PaperConstants.ArticleTextArea);
 				ArticleParser ap = new ArticleParser(new ByteArrayInputStream(paperBibtex.getBytes()));
-				pb = ap.parseArticle();
+				pb = ap.parseArticle(removeMarkers);
 				if (pb == null) {
 					status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
 				} else {
@@ -108,7 +117,10 @@ public class PaperServlet extends HttpServlet {
 			case PaperConstants.UploadPDF: {
 				String paperID = request.getParameter(PaperConstants.PaperID);
 				if (paperID != null) {
-					pb = dbms.getPaperByID(paperID);
+					List<PaperBean> lpb = dbms.getPaperByID(paperID);
+					if (lpb != null && lpb.size() == 1) {
+						pb = lpb.get(0);
+					}
 				}
 				if (pb == null) {
 					status.put(DBMSAction.PaperUpdate, DBMSStatus.NoSuchElement);
@@ -121,7 +133,10 @@ public class PaperServlet extends HttpServlet {
 			case PaperConstants.DownloadPDF: {
 				String paperID = request.getParameter(PaperConstants.PaperID);
 				if (paperID != null) {
-					pb = dbms.getPaperByID(paperID);
+					List<PaperBean> lpb = dbms.getPaperByID(paperID);
+					if (lpb != null && lpb.size() == 1) {
+						pb = lpb.get(0);
+					}
 				}
 				if (pb == null) {
 					status.put(DBMSAction.PaperPDFRetrieval, DBMSStatus.NoSuchElement);

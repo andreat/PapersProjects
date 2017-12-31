@@ -19,7 +19,6 @@ package cn.ac.ios.iscasmc.papersprojects.frontend.constant;
 
 public final class ProjectConstants {
 	public static final String Action= "action";
-	public static final String Author = "author";
 	public static final String Year = "year";
 	public static final String CreateProject = "createProject";
 	public static final String GetProjectsForAuthor = "getProjectsForAuthor";
@@ -27,8 +26,9 @@ public final class ProjectConstants {
 	public static final String GetProjectsForPaper = "getProjectsForPaper";
 	public static final String GetProjects = "getProjects";
 
-	public static final String ProjectID = "projectID";
+	public static final String AuthorID = "authorID";
 	public static final String PaperID = "paperID";
+	public static final String ProjectID = "projectID";
 	
 	public static final String ProjectIdentifierTextField = "ProjectIdentifierTextField";
 	public static final String ProjectTitleTextField = "ProjectTitleTextField";
@@ -43,5 +43,5 @@ public final class ProjectConstants {
 	
 	public static final String LinkPapersToProject = "linkPapersToProject";
 	
-	private ProjectConstants() {}
+	private ProjectConstants() {};
 }
