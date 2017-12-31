@@ -39,7 +39,6 @@ public class ConferenceBean implements Serializable {
 	private String publisher = null;
 	private String url = null;
 	private String isbn = null;
-	private String file = null;
 	
 	public String getIdentifier() {
 		return identifier;
@@ -94,11 +93,5 @@ public class ConferenceBean implements Serializable {
 	}
 	public void setIsbn(String isbn) {
 		this.isbn = isbn;
-	}
-	public String getFile() {
-		return file;
-	}
-	public void setFile(String file) {
-		this.file = file;
 	}
 }

@@ -6,7 +6,7 @@ CREATE TABLE author (
 CREATE TABLE conference (
 	identifier VARCHAR(100) NOT NULL,
 	title TEXT NOT NULL,
-	year INT,
+	year VARCHAR(10) NOT NULL,
 	series TEXT DEFAULT NULL,
 	volume VARCHAR(20) DEFAULT NULL,
 	editor TEXT DEFAULT NULL,

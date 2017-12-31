@@ -612,31 +612,22 @@ public class DBMS {
 		Statement st = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			st = connection.createStatement();
 			rs = st.executeQuery("select * from paper;");
 			papers = generatePapers(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			papers = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (st != null) {
-						st.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (st != null) {
+					st.close();
+				}
+			} catch (SQLException se) {}
 		}
 		if (papers != null) {
 			fillAuthors(papers);
@@ -658,32 +649,23 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement("select * from paper where identifier = ?;");
 			ps.setString(1, paperID);
 			rs = ps.executeQuery();
 			papers = generatePapers(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			papers = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		if (papers != null && papers.size() == 1) {
 			fillAuthors(papers);
@@ -707,7 +689,6 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement(
 					"select * from paper "
 					+ "inner join paperAuthor on paper.identifier = paperAuthor.paperIdentifier "
@@ -717,26 +698,18 @@ public class DBMS {
 			rs = ps.executeQuery();
 			papers = generatePapers(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			papers = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		fillAuthors(papers);
 		return papers;
@@ -756,7 +729,6 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement(
 					"select * from paper "
 					+ "inner join projectPaper on paper.identifier = projectPaper.paperIdentifier "
@@ -766,26 +738,18 @@ public class DBMS {
 			rs = ps.executeQuery();
 			papers = generatePapers(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			papers = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		fillAuthors(papers);
 		return papers;
@@ -805,7 +769,6 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement(
 					"select * from paper "
 					+ "where identifier not in ("
@@ -817,26 +780,18 @@ public class DBMS {
 			rs = ps.executeQuery();
 			papers = generatePapers(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			papers = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		fillAuthors(papers);
 		return papers;
@@ -856,32 +811,23 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement("select * from paper where year = ?;");
 			ps.setInt(1, year);
 			rs = ps.executeQuery();
 			papers = generatePapers(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			papers = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		fillAuthors(papers);
 		return papers;
@@ -901,31 +847,22 @@ public class DBMS {
 		Statement st = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			st = connection.createStatement();
 			rs = st.executeQuery("select * from project;");
 			projects = generateProjects(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			projects = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (st != null) {
-						st.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (st != null) {
+					st.close();
+				}
+			} catch (SQLException se) {}
 		}
 		return projects;
 	}
@@ -944,32 +881,23 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement("select * from project where identifier = ?;");
 			ps.setString(1, projectID);
 			rs = ps.executeQuery();
 			projects = generateProjects(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			projects = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		if (projects != null && projects.size() == 1) {
 			return projects.get(0);
@@ -992,7 +920,6 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement(
 					"select * from project "
 					+ "inner join projectPaper on project.identifier = projectPaper.projectIdentifier "
@@ -1003,26 +930,18 @@ public class DBMS {
 			rs = ps.executeQuery();
 			projects = generateProjects(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			projects = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		return projects;
 	}
@@ -1041,7 +960,6 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement("select distinct * from project "
 					+ "inner join projectPaper on project.identifier = projectPaper.projectIdentifier "
 					+ "where year = ?;");
@@ -1049,26 +967,18 @@ public class DBMS {
 			rs = ps.executeQuery();
 			projects = generateProjects(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			projects = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		return projects;
 	}
@@ -1087,7 +997,6 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement(
 					"select * from project "
 					+ "inner join projectPaper on project.identifier = projectPaper.projectIdentifier "
@@ -1096,26 +1005,18 @@ public class DBMS {
 			rs = ps.executeQuery();
 			projects = generateProjects(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			projects = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		return projects;
 	}
@@ -1134,7 +1035,6 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement(
 					"select * from project "
 					+ "where identifier not in ( "
@@ -1145,26 +1045,18 @@ public class DBMS {
 			rs = ps.executeQuery();
 			projects = generateProjects(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			projects = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		return projects;
 	}
@@ -1183,31 +1075,22 @@ public class DBMS {
 		Statement st = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			st = connection.createStatement();
 			rs = st.executeQuery("select * from author;");
 			authors = generateAuthors(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			authors = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (st != null) {
-						st.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (st != null) {
+					st.close();
+				}
+			} catch (SQLException se) {}
 		}
 		return authors;
 	}
@@ -1226,32 +1109,23 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			ps = connection.prepareStatement("select * from author where identifier = ?;");
 			ps.setString(1, authorID);
 			rs = ps.executeQuery();
 			authors = generateAuthors(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			authors = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (ps != null) {
-						ps.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		if (authors != null && authors.size() == 1) {
 			return authors.get(0);
@@ -1274,31 +1148,57 @@ public class DBMS {
 		Statement st = null;
 		ResultSet rs = null;
 		try {
-			connection.setAutoCommit(false);
 			st = connection.createStatement();
 			rs = st.executeQuery("select * from conference;");
 			conferences = generateConferences(rs);
 		} catch (SQLException sqle) {
-			try {
-				connection.rollback();
-			} catch (SQLException se) {}
 			conferences = null;
 		} finally {
 			try {
-				connection.setAutoCommit(true);
-			} catch (SQLException sqle) {
-			} finally {
-				try {
-					if (rs != null) {
-						rs.close();
-					}
-				} catch (SQLException se) {}
-				try {
-					if (st != null) {
-						st.close();
-					}
-				} catch (SQLException se) {}
-			}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (st != null) {
+					st.close();
+				}
+			} catch (SQLException se) {}
+		}
+		return conferences;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
+	public List<ConferenceBean> getConferenceByID(String conferenceID) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+		
+		List<ConferenceBean> conferences;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = connection.prepareStatement("select * from conference where identifier = ?;");
+			ps.setString(1, conferenceID);
+			rs = ps.executeQuery();
+			conferences = generateConferences(rs);
+		} catch (SQLException sqle) {
+			conferences = null;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
 		}
 		return conferences;
 	}
@@ -1403,6 +1303,7 @@ public class DBMS {
 			pb.setIdentifier(rs.getString("identifier"));
 			pb.setTitle(rs.getString("title"));
 			pb.setFunder(rs.getString("funder"));
+			pb.setAcknowledge(rs.getString("acknowledge"));
 			pb.setStartDate(rs.getDate("startDate"));
 			pb.setEndDate(rs.getDate("endDate"));
 			projects.add(pb);
@@ -1430,33 +1331,23 @@ public class DBMS {
 			PreparedStatement ps = null;
 			ResultSet rs = null;
 			try {
-				connection.setAutoCommit(false);
 				ps = connection.prepareStatement("select authorName as name from paperAuthor where paperIdentifier = ? order by authorOrder;");
 				ps.setString(1, pb.getIdentifier());
 				rs = ps.executeQuery();
 				pb.setAuthors(generateAuthors(rs));
 			} catch (SQLException sqle) {
-				try {
-					connection.rollback();
-				} catch (SQLException se) {}
 			} finally {
 				try {
-					connection.setAutoCommit(true);
-				} catch (SQLException sqle) {
-				} finally {
-					try {
-						if (rs != null) {
-							rs.close();
-						}
-					} catch (SQLException se) {}
-					try {
-						if (ps != null) {
-							ps.close();
-						}
-					} catch (SQLException se) {}
-				}
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
 			}
 		}
 	}
-	
 }

@@ -23,6 +23,12 @@
 	
 	if (statusOperation != null || action == null) {
 		projects = dbms.getProjects();
+		if (projects != null && projects.size() == 0) {
+%>					<div class="notification_warning">
+						No project available. First create one.
+					</div>
+<%
+		}
 	} else {
 		switch (action) {
 		case ProjectConstants.CreateProject: {
@@ -311,10 +317,10 @@
 <% 		
 			}
 %>						<div class="content_block_row">
-							<div class="content_block_column2_37_left">
+							<div class="content_block_column2_37_left content_block_cell_header">
 								Project
 							</div>
-							<div class="content_block_column2_37_right">
+							<div class="content_block_column2_37_right content_block_cell_header">
 								Actions
 							</div>
 						</div>

@@ -64,13 +64,15 @@
 				break;
 			case PaperInsert:
 			case PaperPDFRetrieval:
-			case PaperProjectLink:
 			case PaperUpdate:
 				component = "Paper";
 				break;
 			case ProjectInsert:
-			case ProjectPaperLink:
 				component = "Project";
+				break;
+			case PaperProjectLink:
+			case ProjectPaperLink:
+				component = "Papers acknowledging the project";
 				break;
 			}
 			

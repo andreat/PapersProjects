@@ -23,10 +23,10 @@
 		} else {
 %>					<div class="content_block_table">
 						<div class="content_block_row">
-							<div class="content_block_column2_28_left">
+							<div class="content_block_column2_28_left content_block_cell_header">
 								Author
 							</div>
-							<div class="content_block_column2_28_right">
+							<div class="content_block_column2_28_right content_block_cell_header">
 								Actions
 							</div>
 						</div>
