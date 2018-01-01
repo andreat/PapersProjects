@@ -30,6 +30,7 @@ public final class PaperConstants {
 	public static final String GetFullDetailsForPaper = "getFullDetailsForPaper";
 
 	public static final String LinkProjectsToPaper= "linkProjectsToPaper";
+	public static final String DelinkProjectsFromPaper= "delinkProjectsFromPaper";
 
 	public static final String UploadPDF = "uploadPDF";
 	public static final String DownloadPDF = "downloadPDF";

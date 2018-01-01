@@ -71,8 +71,16 @@
 				component = "Project";
 				break;
 			case PaperProjectLink:
+				component = "Projects acknowledged by the paper";
+				break;
+			case PaperProjectDelink:
+				component = "Removal of acknowledges for the paper";
+				break;
 			case ProjectPaperLink:
 				component = "Papers acknowledging the project";
+				break;
+			case ProjectPaperDelink:
+				component = "Removal of acknowledges for the project";
 				break;
 			}
 			

@@ -42,6 +42,7 @@ public final class ProjectConstants {
 	public static final String ProjectEndDateDay = "ProjectEndDateDay";
 	
 	public static final String LinkPapersToProject = "linkPapersToProject";
+	public static final String DelinkPapersFromProject = "delinkPapersFromProject";
 	
 	private ProjectConstants() {};
 }

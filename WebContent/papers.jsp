@@ -76,7 +76,7 @@
 							<div class="content_block_row">
 								<div class="content_block_column2_28_left"></div>
 								<div class="content_block_column2_28_right">
-									<input type="submit"/>
+									<input type="submit" value="Create conference paper"/>
 								</div>
 							</div>
 						</div>
@@ -119,7 +119,7 @@
 							<div class="content_block_row">
 								<div class="content_block_column2_28_left"></div>
 								<div class="content_block_column2_28_right">
-									<input type="submit"/>
+									<input type="submit" value="Create article"/>
 								</div>
 							</div>
 						</div>
@@ -157,7 +157,7 @@
 %>							<div class="content_block_row">
 								<div class="content_block_column1">
 									<label>
-										<input type="checkbox" name="${PaperConstants.PaperID}" value="<%= cpb.getIdentifier() %>"/>
+										<input type="checkbox" name="${PaperConstants.ProjectID}" value="<%= cpb.getIdentifier() %>"/>
 										<%= cpb.getIdentifier() %>: <%= cpb.getTitle() %> (<%= cpb.getFunder() %>)
 									</label>
 								</div>
@@ -166,7 +166,7 @@
 			} 
 %>							<div class="content_block_row">
 								<div class="content_block_column1">
-									<input type="submit"/>
+									<input type="submit" value="Acknowledge selected projects"/>
 								</div>
 							</div>
 						</div>
@@ -212,7 +212,7 @@
 							<div class="content_block_row">
 								<div class="content_block_column2_28_left"></div>
 								<div class="content_block_column2_28_right">
-									<input type="submit"/>
+									<input type="submit" value="Upload PDF"/>
 								</div>
 							</div>
 						</div>
@@ -348,316 +348,300 @@
 					</div>
 <%
 	} else {
-		if (papers.size() > 0) {
-%>					<div class="content_block_table">
-<%
-			if (project != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column1">
-								Project: <%= project.getIdentifier() %>: <%= project.getTitle() %> (<%= project.getFunder() %>)
+		if (useFullDetails) {
+			PaperBean pb = papers.get(0);
+%>					<form action="${pageContext.request.contextPath}/PaperManager" method="post">
+						<input type="hidden" name="${PaperConstants.Action}" value="${PaperConstants.DelinkProjectsFromPaper}"/>
+						<input type="hidden" name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+						<div class="content_block_table">
+							<div class="content_block_row">
+								<div class="content_block_column1 content_block_cell_header">
+									Paper details
+								</div>
 							</div>
-						</div>
-<% 		
-			}
-			if (author != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column1">
-								Author: <%= author.getName() %>
-							</div>
-						</div>
-<% 		
-			}
-			if (useFullDetails) {
-%>						<div class="content_block_row">
-							<div class="content_block_column1 content_block_cell_header">
-								Paper details
-							</div>
-						</div>
-<% 		
-				PaperBean pb = papers.get(0);
-				if (pb.getIdentifier() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Identifier:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= pb.getIdentifier() %>
-							</div>
-						</div>
-<% 
-				}
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Authors:
-							</div>
-							<div class="content_block_column2_19_right">
-<%
-				List<AuthorBean> authors = pb.getAuthors();
-				int nAuthors = authors.size();
-				int curAuthor = 0;
-				for (AuthorBean ab : authors) {
-					curAuthor++;
-					StringBuilder sb = new StringBuilder(ab.getName());
-					if (curAuthor != nAuthors && !(curAuthor == 1 && nAuthors == 2)) {
-						sb.append(",");
-					}
-					if (curAuthor == nAuthors - 1) {
-						sb.append(" and");
-					}
-%>								<%= sb.toString() %>
-<%
-				}
-%>							</div>
-						</div>
-						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Title:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= pb.getTitle() %>
-							</div>
-						</div>
-<%
-				if (pb.getBooktitle() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Book title:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= pb.getBooktitle() %>
-							</div>
-						</div>
-<% 
-				}
-				if (pb.getYear() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Year:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= pb.getYear() %>
-							</div>
-						</div>
-<% 
-				}
-				JournalBean jb = pb.getJournal();
-				if (jb != null) {
-					StringBuilder sb = new StringBuilder(jb.getIdentifier());
-					if (pb.getVolume() != null) {
-						sb.append(" ").append(pb.getVolume());
-					}
-					if (pb.getNumber() != null) {
-						sb.append(" (").append(pb.getNumber()).append(")");
-					}
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Journal:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= sb.toString() %>
-							</div>
-						</div>
-<% 
-				}
-				if (pb.getCrossref() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Crossref:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= pb.getCrossref() %>
-							</div>
-						</div>
-<% 
-				}
-				if (pb.getPages() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Pages:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= pb.getPages() %>
-							</div>
-						</div>
-<% 
-				}
-				if (pb.getDoi() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								DOI:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= pb.getDoi() %>
-							</div>
-						</div>
-<% 
-				}
-				if (pb.getUrl() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								URL:
-							</div>
-							<div class="content_block_column2_19_right">
-								<a href="<%= pb.getUrl() %>" target="_blank"><%= pb.getUrl() %></a>
-							</div>
-						</div>
-<% 
-				}
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Actions:
-							</div>
-							<div class="content_block_column2_19_right">
-<%
-				if (pb.getFilepath() != null) {
-%>								<c:url value="/PaperManager" var="paperpdf">
-									<c:param name="${PaperConstants.Action}" value="${PaperConstants.DownloadPDF}"/>
-									<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
-								</c:url><a href="${paperpdf}">Download PDF</a>,
-<%
-				} else {
-%>								<c:url value="/papers.jsp" var="paperupload">
-									<c:param name="${PaperConstants.Action}" value="${PaperConstants.UploadPDF}"/>
-									<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
-								</c:url><a href="${paperupload}">Upload PDF</a>,
-<%
-				}
-%>								<c:url value="/projects.jsp" var="listProjects">
-									<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.GetProjectsForPaper}"/>
-									<c:param name="${ProjectConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
-								</c:url><a href="${listProjects}">List projects acknowledged by this paper</a>,
-								<c:url value="/papers.jsp" var="linkProjects">
-									<c:param name="${PaperConstants.Action}" value="${PaperConstants.LinkProjectsToPaper}"/>
-									<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
-								</c:url><a href="${linkProjects}">Link projects to this paper</a>
-							</div>
-						</div>
-<% 
-				if (conference != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column1 content_block_cell_header">
-								Conference details
-							</div>
-						</div>
-						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Identifier:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= conference.getIdentifier() %>
-							</div>
-						</div>
-						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Title:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= conference.getTitle() %>
-							</div>
-						</div>
-						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Year:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= conference.getYear() %>
-							</div>
-						</div>
-<% 
-					if (conference.getSeries() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Series:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= conference.getSeries() %>
-							</div>
-						</div>
-<% 
-					}
-					if (conference.getVolume() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Volume:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= conference.getVolume() %>
-							</div>
-						</div>
-<% 
-					}
-					if (conference.getEditor() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Editor(s):
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= conference.getEditor() %>
-							</div>
-						</div>
-<% 
-					}
-					if (conference.getPublisher() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								Publisher:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= conference.getPublisher() %>
-							</div>
-						</div>
-<% 
-					}
-					if (conference.getUrl() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								URL:
-							</div>
-							<div class="content_block_column2_19_right">
-								<a href="<%= conference.getUrl() %>" target="_blank"><%= conference.getUrl() %></a>
-							</div>
-						</div>
-<% 
-					}
-					if (conference.getIsbn() != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column2_19_left">
-								ISBN:
-							</div>
-							<div class="content_block_column2_19_right">
-								<%= conference.getIsbn() %>
-							</div>
-						</div>
-<% 
-					}
-				}
-				if (projects != null) {
-%>						<div class="content_block_row">
-							<div class="content_block_column1 content_block_cell_header">
-								Project details
-							</div>
-						</div>
-<%
-					if (projects.size() == 0) {
-%>						<div class="content_block_row">
-							<div class="content_block_column1">
-								<c:url value="/papers.jsp" var="linkProjects">
-									<c:param name="${PaperConstants.Action}" value="${PaperConstants.LinkProjectsToPaper}"/>
-									<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
-								</c:url>No project linked to this paper. <a href="${linkProjects}">Link projects to this paper</a>
-							</div>
-						</div>
-<% 
-					} else {
-						for (ProjectBean pjb : projects) {
-%>							<div class="content_block_row">
+							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
-									<%= pjb.getIdentifier() %>
+									Identifier:
 								</div>
 								<div class="content_block_column2_19_right">
+									<%= pb.getIdentifier() %>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Authors:
+								</div>
+								<div class="content_block_column2_19_right">
+<%
+			List<AuthorBean> authors = pb.getAuthors();
+			int nAuthors = authors.size();
+			int curAuthor = 0;
+			for (AuthorBean ab : authors) {
+				curAuthor++;
+				StringBuilder sb = new StringBuilder(ab.getName());
+				if (curAuthor != nAuthors && !(curAuthor == 1 && nAuthors == 2)) {
+					sb.append(",");
+				}
+				if (curAuthor == nAuthors - 1) {
+					sb.append(" and");
+				}
+%>								<%= sb.toString() %>
+<%
+			}
+%>								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Title:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= pb.getTitle() %>
+								</div>
+							</div>
+<%
+			if (pb.getBooktitle() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Book title:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= pb.getBooktitle() %>
+								</div>
+							</div>
+<% 
+			}
+			if (pb.getYear() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Year:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= pb.getYear() %>
+								</div>
+							</div>
+<% 
+			}
+			JournalBean jb = pb.getJournal();
+			if (jb != null) {
+				StringBuilder sb = new StringBuilder(jb.getIdentifier());
+				if (pb.getVolume() != null) {
+					sb.append(" ").append(pb.getVolume());
+				}
+				if (pb.getNumber() != null) {
+					sb.append(" (").append(pb.getNumber()).append(")");
+				}
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Journal:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= sb.toString() %>
+								</div>
+							</div>
+<% 
+			}
+			if (pb.getCrossref() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Crossref:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= pb.getCrossref() %>
+								</div>
+							</div>
+<% 
+			}
+			if (pb.getPages() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Pages:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= pb.getPages() %>
+								</div>
+							</div>
+<% 
+			}
+			if (pb.getDoi() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									DOI:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= pb.getDoi() %>
+								</div>
+							</div>
+<% 
+			}
+			if (pb.getUrl() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									URL:
+								</div>
+								<div class="content_block_column2_19_right">
+									<a href="<%= pb.getUrl() %>" target="_blank"><%= pb.getUrl() %></a>
+								</div>
+							</div>
+<% 
+			}
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Actions:
+								</div>
+								<div class="content_block_column2_19_right">
+<%
+			if (pb.getFilepath() != null) {
+%>									<c:url value="/PaperManager" var="paperpdf">
+										<c:param name="${PaperConstants.Action}" value="${PaperConstants.DownloadPDF}"/>
+										<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+									</c:url><a href="${paperpdf}">Download PDF</a>,
+<%
+			} else {
+%>									<c:url value="/papers.jsp" var="paperupload">
+										<c:param name="${PaperConstants.Action}" value="${PaperConstants.UploadPDF}"/>
+										<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+									</c:url><a href="${paperupload}">Upload PDF</a>,
+<%
+			}
+%>									<c:url value="/projects.jsp" var="listProjects">
+										<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.GetProjectsForPaper}"/>
+										<c:param name="${ProjectConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+									</c:url><a href="${listProjects}">List projects acknowledged by this paper</a>,
+									<c:url value="/papers.jsp" var="linkProjects">
+										<c:param name="${PaperConstants.Action}" value="${PaperConstants.LinkProjectsToPaper}"/>
+										<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+									</c:url><a href="${linkProjects}">Link projects to this paper</a>
+								</div>
+							</div>
+<% 
+			if (conference != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column1 content_block_cell_header">
+									Conference details
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Identifier:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= conference.getIdentifier() %>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Title:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= conference.getTitle() %>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Year:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= conference.getYear() %>
+								</div>
+							</div>
+<% 
+				if (conference.getSeries() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Series:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= conference.getSeries() %>
+								</div>
+							</div>
+<% 
+				}
+				if (conference.getVolume() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Volume:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= conference.getVolume() %>
+								</div>
+							</div>
+<% 
+				}
+				if (conference.getEditor() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Editor(s):
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= conference.getEditor() %>
+								</div>
+							</div>
+<% 
+				}
+				if (conference.getPublisher() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Publisher:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= conference.getPublisher() %>
+								</div>
+							</div>
+<% 
+				}
+				if (conference.getUrl() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									URL:
+								</div>
+								<div class="content_block_column2_19_right">
+									<a href="<%= conference.getUrl() %>" target="_blank"><%= conference.getUrl() %></a>
+								</div>
+							</div>
+<% 
+				}
+				if (conference.getIsbn() != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									ISBN:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= conference.getIsbn() %>
+								</div>
+							</div>
+<% 
+				}
+			}
+			if (projects != null) {
+%>							<div class="content_block_row">
+								<div class="content_block_column1 content_block_cell_header">
+									Project details
+								</div>
+							</div>
+<%
+				if (projects.size() == 0) {
+%>							<div class="content_block_row">
+								<div class="content_block_column1">
+									<c:url value="/papers.jsp" var="linkProjects">
+										<c:param name="${PaperConstants.Action}" value="${PaperConstants.LinkProjectsToPaper}"/>
+										<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+									</c:url>No project linked to this paper. <a href="${linkProjects}">Link projects to this paper</a>
+								</div>
+							</div>
+<% 
+				} else {
+					for (ProjectBean pjb : projects) {
+%>							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
+									<label>
+										<input type="checkbox" name="${PaperConstants.ProjectID}" value="<%= pjb.getIdentifier() %>"/>
+										<%= pjb.getIdentifier() %>
+									</label>
+								</div>
+								<div class="content_block_column2_28_right">
 									<div class="content_block_table">
 <%
-							if (pjb.getTitle() != null) {
+						if (pjb.getTitle() != null) {
 %>										<div class="content_block_row">
 											<div class="content_block_column2_28_left">
 												Title:
@@ -667,7 +651,7 @@
 											</div>
 										</div>
 <% 
-							}
+						}
 %>										<div class="content_block_row">
 											<div class="content_block_column2_28_left">
 												Funder:
@@ -704,11 +688,38 @@
 								</div>
 							</div>
 <% 
-							
-						}
 					}
+%>							<div class="content_block_row">
+								<div class="content_block_column1">
+									<input type="submit" value="De-acknowledge selected projects"/>
+								</div>
+							</div>
+<%
 				}
-			} else {
+			}
+%>						</div>
+					</form>
+<%
+		} else {
+			if (papers.size() > 0) {
+%>					<div class="content_block_table">
+<%
+			if (project != null) {
+%>						<div class="content_block_row">
+							<div class="content_block_column1">
+								Project: <%= project.getIdentifier() %>: <%= project.getTitle() %> (<%= project.getFunder() %>)
+							</div>
+						</div>
+<% 		
+			}
+			if (author != null) {
+%>						<div class="content_block_row">
+							<div class="content_block_column1">
+								Author: <%= author.getName() %>
+							</div>
+						</div>
+<% 		
+			}
 %>						<div class="content_block_row">
 							<div class="content_block_column2_64_left content_block_cell_header">
 								Paper
@@ -719,7 +730,7 @@
 						</div>
 <%
 				for (PaperBean pb : papers) {
-%>						<div class="content_block_row with_borders">
+%>						<div class="content_block_row">
 							<div class="content_block_column2_64_left">
 								<c:url value="/papers.jsp" var="paperfull">
 									<c:param name="${PaperConstants.Action}" value="${PaperConstants.GetFullDetailsForPaper}"/>
@@ -758,5 +769,4 @@
 <%
 		}
 	}
-%>				
-<jsp:include page="WEB-INF/jspf/footer.jsp" />
+%><jsp:include page="WEB-INF/jspf/footer.jsp" />

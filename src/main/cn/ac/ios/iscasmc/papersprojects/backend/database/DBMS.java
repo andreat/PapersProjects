@@ -532,6 +532,52 @@ public class DBMS {
 		return statusMap;
 	}
 
+	public Map<DBMSAction, DBMSStatus> removePapersFromProject(String[] paperIDs, String projectID) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("delete from projectPaper where projectIdentifier = ? and paperIdentifier = ?;");
+			for (String paperID : paperIDs) {
+				ps.setString(1, projectID);
+				ps.setString(2, paperID);
+				ps.addBatch();
+			}
+			ps.executeBatch();
+			connection.commit();
+			statusMap.put(DBMSAction.ProjectPaperDelink, DBMSStatus.Success);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.ProjectPaperDelink, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+
 	public Map<DBMSAction, DBMSStatus> storeProjectsForPaper(String[] projectIDs, String paperID) {
 		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
 		DBMSStatus status = establishConnection();
@@ -544,7 +590,7 @@ public class DBMS {
 		ResultSet rs = null;
 		try {
 			connection.setAutoCommit(false);
-			ps = connection.prepareStatement("select identifier from project where identifier = ?;");
+			ps = connection.prepareStatement("select identifier from paper where identifier = ?;");
 			ps.setString(1, paperID);
 			rs = ps.executeQuery();
 			boolean isPresent = rs.next();
@@ -578,6 +624,52 @@ public class DBMS {
 				connection.rollback();
 			} catch (SQLException se) {}
 			statusMap.put(DBMSAction.PaperProjectLink, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+
+	public Map<DBMSAction, DBMSStatus> removeProjectsFromPaper(String[] projectIDs, String paperID) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("delete from projectPaper where projectIdentifier = ? and paperIdentifier = ?;");
+			for (String projectID : projectIDs) {
+				ps.setString(1, projectID);
+				ps.setString(2, paperID);
+				ps.addBatch();
+			}
+			ps.executeBatch();
+			connection.commit();
+			statusMap.put(DBMSAction.PaperProjectDelink, DBMSStatus.Success);
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.PaperProjectDelink, DBMSStatus.SQLFailed);
 		} finally {
 			try {
 				connection.setAutoCommit(true);
@@ -1109,7 +1201,7 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = connection.prepareStatement("select * from author where identifier = ?;");
+			ps = connection.prepareStatement("select * from author where name = ?;");
 			ps.setString(1, authorID);
 			rs = ps.executeQuery();
 			authors = generateAuthors(rs);

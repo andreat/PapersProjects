@@ -153,12 +153,26 @@ public class PaperServlet extends HttpServlet {
 					status.put(DBMSAction.PaperProjectLink, DBMSStatus.PaperMissingIdentifier);
 					break;
 				}
-				String[] projectIDs = request.getParameterValues(ProjectConstants.ProjectID);
+				String[] projectIDs = request.getParameterValues(PaperConstants.ProjectID);
 				if (projectIDs == null || projectIDs.length == 0) {
 					status.put(DBMSAction.PaperProjectLink, DBMSStatus.PaperMissingProjects);
 					break;
 				}
 				status.putAll(dbms.storeProjectsForPaper(projectIDs, paperID));
+				break;
+			}
+			case PaperConstants.DelinkProjectsFromPaper: {
+				String paperID = request.getParameter(PaperConstants.PaperID);
+				if (paperID == null) {
+					status.put(DBMSAction.PaperProjectLink, DBMSStatus.PaperMissingIdentifier);
+					break;
+				}
+				String[] projectIDs = request.getParameterValues(ProjectConstants.ProjectID);
+				if (projectIDs == null || projectIDs.length == 0) {
+					status.put(DBMSAction.PaperProjectDelink, DBMSStatus.PaperMissingProjects);
+					break;
+				}
+				status.putAll(dbms.removeProjectsFromPaper(projectIDs, paperID));
 				break;
 			}
 			default:
