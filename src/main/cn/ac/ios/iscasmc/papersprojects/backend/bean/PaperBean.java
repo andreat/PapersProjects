@@ -40,6 +40,7 @@ public class PaperBean implements Serializable {
 	private String doi = null;
 	private String url = null;
 	private String filepath = null;
+	private String ranking = null;
 	 
 	private ConferenceBean conference;
 	private JournalBean journal;
@@ -154,6 +155,14 @@ public class PaperBean implements Serializable {
 
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
+	}
+	
+	public String getRanking() {
+		return ranking;
+	}
+	
+	public void setRanking(String ranking) {
+		this.ranking = ranking;
 	}
 
 	public void setConference(ConferenceBean conference) {

@@ -5,6 +5,10 @@
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
   <context-param>
+    <param-name>dbConnectorClass</param-name>
+    <param-value>com.mysql.jdbc.Driver</param-value>
+  </context-param>
+  <context-param>
     <param-name>dbUser</param-name>
     <param-value>ppuser</param-value>
   </context-param>

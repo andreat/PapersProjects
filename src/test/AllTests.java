@@ -131,7 +131,7 @@ public class AllTests {
 		ProceedingsParser pp = new ProceedingsParser(stream);
 		ConferenceBean cb = pp.parseProceedings(false);
 		
-		DBMS dbms = new DBMS("localhost", "3306", "papersprojects", "ppuser", "pppassword");
+		DBMS dbms = new DBMS("com.mysql.jdbc.Driver", "localhost", "3306", "papersprojects", "ppuser", "pppassword");
 		Map<DBMSAction, DBMSStatus> statusMap = dbms.storeConference(cb);
 		assertEquals(DBMSStatus.Success, statusMap.get(DBMSAction.ConferenceInsert));
 	}
@@ -142,7 +142,7 @@ public class AllTests {
 		InproceedingsParser ip = new InproceedingsParser(stream);
 		PaperBean pb = ip.parseInproceedings(false);
 		
-		DBMS dbms = new DBMS("localhost", "3306", "papersprojects", "ppuser", "pppassword");
+		DBMS dbms = new DBMS("com.mysql.jdbc.Driver", "localhost", "3306", "papersprojects", "ppuser", "pppassword");
 		Map<DBMSAction, DBMSStatus> statusMap = dbms.storePaper(pb);
 		assertEquals(DBMSStatus.Success, statusMap.get(DBMSAction.PaperInsert));
 	}
@@ -153,7 +153,7 @@ public class AllTests {
 		ArticleParser ap = new ArticleParser(stream);
 		PaperBean pb = ap.parseArticle(false);
 		
-		DBMS dbms = new DBMS("localhost", "3306", "papersprojects", "ppuser", "pppassword");
+		DBMS dbms = new DBMS("com.mysql.jdbc.Driver", "localhost", "3306", "papersprojects", "ppuser", "pppassword");
 		Map<DBMSAction, DBMSStatus> statusMap = dbms.storePaper(pb);
 		assertEquals(DBMSStatus.Success, statusMap.get(DBMSAction.PaperInsert));
 	}
@@ -168,7 +168,7 @@ public class AllTests {
 		pb.setStartDate(Date.valueOf("2017-12-29"));
 		pb.setEndDate(Date.valueOf("2018-12-29"));
 		
-		DBMS dbms = new DBMS("localhost", "3306", "papersprojects", "ppuser", "pppassword");
+		DBMS dbms = new DBMS("com.mysql.jdbc.Driver", "localhost", "3306", "papersprojects", "ppuser", "pppassword");
 		Map<DBMSAction, DBMSStatus> statusMap = dbms.storeProject(pb);
 		assertEquals(DBMSStatus.Success, statusMap.get(DBMSAction.ProjectInsert));
 	}

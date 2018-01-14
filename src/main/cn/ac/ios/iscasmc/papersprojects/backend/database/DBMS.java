@@ -49,20 +49,21 @@ public class DBMS {
 	
 	/**
 	 * The constructor just loads the mysql connector driver
+	 * @param connectorClass the connector class to be loaded to connect to the database
 	 * @param host the host name/ip address where mysql is running
 	 * @param port the corresponding port
 	 * @param database the database to use
 	 * @param username the username for the authentication
 	 * @param password the corresponding password
-	 * @throws DBException in case of problems with loading the mysql jdbc connector
+	 * @throws DBException in case of problems with loading the jdbc connector
 	 */
-	public DBMS(String host, String port, String database, String username, String password) {
+	public DBMS(String connectorClass, String host, String port, String database, String username, String password) {
 		this.url = "jdbc:mysql://" + host + ":" + port + "/" + database;
 		this.username = username;
 		this.password = password;
 		connection = null;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName(connectorClass);
 		} catch (ClassNotFoundException cnfe) {
 			this.initialized = false;
 			return;
@@ -235,7 +236,7 @@ public class DBMS {
 			if (isPresent) {
 				statusMap.put(DBMSAction.PaperInsert, DBMSStatus.DuplicatedEntry);
 			} else {
-				ps = connection.prepareStatement("insert into paper values(?,?,?,?,?,?,?,?,?,?,?,?)");
+				ps = connection.prepareStatement("insert into paper values(?,?,?,?,?,?,?,?,?,?,?,?,?)");
 				ps.setString(1, pb.getIdentifier());
 				ps.setString(2, pb.getTitle());
 				ps.setString(3, pb.getBooktitle());
@@ -253,6 +254,7 @@ public class DBMS {
 				ps.setString(10, pb.getDoi());
 				ps.setString(11, pb.getUrl());
 				ps.setString(12, pb.getFilepath());
+				ps.setString(13, pb.getRanking());
 				ps.executeUpdate();
 				connection.commit();
 				statusMap.put(DBMSAction.PaperInsert, DBMSStatus.Success);
@@ -281,6 +283,105 @@ public class DBMS {
 		}
 		statusMap.putAll(storeAuthors(pb.getAuthors()));
 		statusMap.putAll(storeAuthorsForPaper(pb));
+		return statusMap;
+	}
+	
+	public Map<DBMSAction, DBMSStatus> removePaper(String paperID) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("delete from paper where identifier = ?");
+			ps.setString(1, paperID);
+			int updates = ps.executeUpdate();
+			connection.commit();
+			if (updates > 0) {
+				statusMap.put(DBMSAction.PaperDelete, DBMSStatus.Success);
+			} else {
+				statusMap.put(DBMSAction.PaperDelete, DBMSStatus.NoSuchElement);
+			}
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.PaperDelete, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+	
+	public Map<DBMSAction, DBMSStatus> updatePaper(PaperBean pb) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement psr = null;
+		PreparedStatement psf = null;
+		try {
+			connection.setAutoCommit(false);
+			psr = connection.prepareStatement("update paper set ranking = ? where identifier = ?");
+			psr.setString(1, pb.getRanking());
+			psr.setString(2, pb.getIdentifier());
+			int updates = psr.executeUpdate();
+			if (pb.getFilepath() != null) {
+				psf = connection.prepareStatement("update paper set filepath = ? where identifier = ?");
+				psf.setString(1, pb.getFilepath());
+				psf.setString(2, pb.getIdentifier());
+			}
+			updates += psf.executeUpdate();
+			connection.commit();
+			if (updates > 0) {
+				statusMap.put(DBMSAction.PaperUpdate, DBMSStatus.Success);
+			} else {
+				statusMap.put(DBMSAction.PaperUpdate, DBMSStatus.NoSuchElement);
+			}
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.PaperUpdate, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (psr != null) {
+						psr.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (psf != null) {
+						psf.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
 		return statusMap;
 	}
 	
@@ -446,6 +547,119 @@ public class DBMS {
 				connection.rollback();
 			} catch (SQLException se) {}
 			statusMap.put(DBMSAction.ProjectInsert, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+	
+	public Map<DBMSAction, DBMSStatus> updateProject(ProjectBean pb) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("select identifier from project where identifier = ?;");
+			ps.setString(1, pb.getIdentifier());
+			rs = ps.executeQuery();
+			boolean isPresent = rs.next();
+			try {
+				if (rs != null) {
+					rs.close();
+					rs = null;
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+					ps = null;
+				}
+			} catch (SQLException se) {}
+			if (!isPresent) {
+				statusMap.put(DBMSAction.ProjectUpdate, DBMSStatus.ProjectMissingIdentifier);
+			} else {
+				ps = connection.prepareStatement("update project set funder = ?, title = ?, acknowledge = ?, startDate = ?, endDate = ? where identifier = ?;");
+				ps.setString(6, pb.getIdentifier());
+				ps.setString(1, pb.getFunder());
+				ps.setString(2, pb.getTitle());
+				ps.setString(3, pb.getAcknowledge());
+				ps.setDate(4, pb.getStartDate());
+				ps.setDate(5, pb.getEndDate());
+				ps.executeUpdate();
+				connection.commit();
+				statusMap.put(DBMSAction.ProjectUpdate, DBMSStatus.Success);
+			}
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.ProjectUpdate, DBMSStatus.SQLFailed);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException sqle) {
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException se) {}
+			}
+		}
+		return statusMap;
+	}
+	
+	public Map<DBMSAction, DBMSStatus> removeProject(String projectID) {
+		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			statusMap.put(DBMSAction.ConnectDatabase, status);
+			return statusMap;
+		}
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement("delete from project where identifier = ?");
+			ps.setString(1, projectID);
+			int updates = ps.executeUpdate();
+			connection.commit();
+			if (updates > 0) {
+				statusMap.put(DBMSAction.ProjectDelete, DBMSStatus.Success);
+			} else {
+				statusMap.put(DBMSAction.ProjectDelete, DBMSStatus.NoSuchElement);
+			}
+		} catch (SQLException sqle) {
+			try {
+				connection.rollback();
+			} catch (SQLException se) {}
+			statusMap.put(DBMSAction.ProjectDelete, DBMSStatus.SQLFailed);
 		} finally {
 			try {
 				connection.setAutoCommit(true);
@@ -929,6 +1143,42 @@ public class DBMS {
 	 * 
 	 * @return <null> if some SQL error occurred
 	 */
+	public List<PaperBean> getPapersByRank(String rank) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<PaperBean> papers;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = connection.prepareStatement("select * from paper where ranking = ?;");
+			ps.setString(1, rank);
+			rs = ps.executeQuery();
+			papers = generatePapers(rs);
+		} catch (SQLException sqle) {
+			papers = null;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
+		}
+		fillAuthors(papers);
+		return papers;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
 	public List<ProjectBean> getProjects() {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
@@ -1295,6 +1545,38 @@ public class DBMS {
 		return conferences;
 	}
 	
+	public int getFirstYear() {
+		int year = -1;
+		
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return year;
+		}
+		
+		Statement st = null;
+		ResultSet rs = null;
+		try {
+			st = connection.createStatement();
+			rs = st.executeQuery("select min(year) as minYear from paper;");
+			if (rs.next()) {
+				year = rs.getInt("minYear");
+			}
+		} catch (SQLException sqle) {
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (st != null) {
+					st.close();
+				}
+			} catch (SQLException se) {}
+		}
+		return year;
+	}
+	
 	private DBMSStatus establishConnection() {
 		boolean isValid = true;
 		if (connection != null){
@@ -1383,6 +1665,7 @@ public class DBMS {
 			pb.setDoi(rs.getString("doi"));
 			pb.setUrl(rs.getString("url"));
 			pb.setFilepath(rs.getString("filepath"));
+			pb.setRanking(rs.getString("ranking"));
 			papers.add(pb);
 		}
 		return papers;

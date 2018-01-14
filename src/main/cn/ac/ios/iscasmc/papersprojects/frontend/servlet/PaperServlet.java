@@ -92,6 +92,7 @@ public class PaperServlet extends HttpServlet {
 					if (pb == null) {
 						status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
 					} else {
+						pb.setRanking(request.getParameter(PaperConstants.RankingOption));
 						manageUpload(request, pb, status);
 						status.putAll(dbms.storePaper(pb));
 					}
@@ -109,12 +110,22 @@ public class PaperServlet extends HttpServlet {
 				if (pb == null) {
 					status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
 				} else {
+					pb.setRanking(request.getParameter(PaperConstants.RankingOption));
 					manageUpload(request, pb, status);
 					status.putAll(dbms.storePaper(pb));
 				}
 				break;
 			}
-			case PaperConstants.UploadPDF: {
+			case PaperConstants.DeletePaper: {
+				String paperID = request.getParameter(PaperConstants.PaperID);
+				if (paperID == null) {
+					status.put(DBMSAction.PaperDelete, DBMSStatus.PaperMissingIdentifier);
+				} else {
+					status.putAll(dbms.removePaper(paperID));
+				}
+				break;
+			}
+			case PaperConstants.ModifyPaper: {
 				String paperID = request.getParameter(PaperConstants.PaperID);
 				if (paperID != null) {
 					List<PaperBean> lpb = dbms.getPaperByID(paperID);
@@ -125,8 +136,14 @@ public class PaperServlet extends HttpServlet {
 				if (pb == null) {
 					status.put(DBMSAction.PaperUpdate, DBMSStatus.NoSuchElement);
 				} else {
-					manageUpload(request, pb, status);
-					status.putAll(dbms.updatePaperPDF(pb));
+					String ranking = request.getParameter(PaperConstants.RankingOption);
+					if (ranking != null) {
+						pb.setRanking(ranking);
+						manageUpload(request, pb, status);
+						status.putAll(dbms.updatePaper(pb));
+					} else {
+						status.put(DBMSAction.PaperUpdate, DBMSStatus.IllegalArgument);
+					}
 				}
 				break;
 			}

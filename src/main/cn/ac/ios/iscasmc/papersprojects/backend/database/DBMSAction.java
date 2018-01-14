@@ -25,13 +25,16 @@ public enum DBMSAction {
 	AuthorInsert,
 	
 	ProjectInsert,
+	ProjectUpdate,
+	ProjectDelete,
 	ProjectPaperLink,
 	ProjectPaperDelink,
 
 	PaperInsert,
+	PaperUpdate,
+	PaperDelete,
 	PaperProjectLink,
 	PaperProjectDelink,
 	PaperAuthorLink,
-	PaperUpdate,
 	PaperPDFRetrieval,
 }

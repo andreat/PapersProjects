@@ -30,13 +30,14 @@ public class AppContextListener implements ServletContextListener {
     	ServletContext ctx = servletContextEvent.getServletContext();
     	
     	//initialize DB Connection
+    	String connectorClass = ctx.getInitParameter("dbConnectorClass"); 
     	String user = ctx.getInitParameter("dbUser");
     	String pwd = ctx.getInitParameter("dbPassword");
     	String host = ctx.getInitParameter("dbHost");
     	String port = ctx.getInitParameter("dbPort");
     	String database = ctx.getInitParameter("dbDatabase");
     	
-		DBMS connectionManager = new DBMS(host, port, database, user, pwd);
+		DBMS connectionManager = new DBMS(connectorClass, host, port, database, user, pwd);
 		if (connectionManager.isInitialized()) {
 			ctx.setAttribute("DBMS", connectionManager);
 		} else {
@@ -48,6 +49,8 @@ public class AppContextListener implements ServletContextListener {
 	
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
     	DBMS dbms = (DBMS) servletContextEvent.getServletContext().getAttribute("DBMS");
-		dbms.closeConnection();
+    	if (dbms != null) {
+    		dbms.closeConnection();
+    	}
     }
 }

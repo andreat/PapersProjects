@@ -101,6 +101,58 @@ public class ProjectServlet extends HttpServlet {
 				status.putAll(dbms.storeProject(pb));
 				break;
 			}
+			case ProjectConstants.ModifyProject : {
+				String projectIdentifier = request.getParameter(ProjectConstants.ProjectID);
+				if (projectIdentifier == null) {
+					status.put(DBMSAction.ProjectUpdate, DBMSStatus.ProjectMissingIdentifier);
+					break;
+				}
+				String projectTitle = request.getParameter(ProjectConstants.ProjectTitleTextField);
+				String projectFunder = request.getParameter(ProjectConstants.ProjectFunderTextField);
+				if (projectFunder == null) {
+					status.put(DBMSAction.ProjectUpdate, DBMSStatus.ProjectMissingFunder);
+					break;
+				}
+				String projectAck = request.getParameter(ProjectConstants.ProjectAckTextField);
+				if (projectAck == null) {
+					status.put(DBMSAction.ProjectUpdate, DBMSStatus.ProjectMissingAck);
+					break;
+				}
+				Date startDate;
+				Date endDate;
+				try {
+					startDate = Date.valueOf(
+							request.getParameter(ProjectConstants.ProjectStartDateYear) 
+							+ "-" 
+							+ request.getParameter(ProjectConstants.ProjectStartDateMonth) 
+							+ "-" 
+							+ request.getParameter(ProjectConstants.ProjectStartDateDay)
+							);
+					endDate = Date.valueOf(
+							request.getParameter(ProjectConstants.ProjectEndDateYear) 
+							+ "-" 
+							+ request.getParameter(ProjectConstants.ProjectEndDateMonth) 
+							+ "-" 
+							+ request.getParameter(ProjectConstants.ProjectEndDateDay)
+							);
+				} catch (IllegalArgumentException iae) {
+					status.put(DBMSAction.ProjectUpdate, DBMSStatus.IllegalArgument);
+					break;
+				}
+				pb.setIdentifier(projectIdentifier);
+				pb.setTitle(projectTitle);
+				pb.setFunder(projectFunder);
+				pb.setAcknowledge(projectAck);
+				pb.setStartDate(startDate);
+				pb.setEndDate(endDate);
+				status.putAll(dbms.updateProject(pb));
+				break;
+			}
+			case ProjectConstants.DeleteProject : {
+				String projectIdentifier = request.getParameter(ProjectConstants.ProjectID);
+				status.putAll(dbms.removeProject(projectIdentifier));
+				break;
+			}
 			case ProjectConstants.LinkPapersToProject: {
 				String projectID = request.getParameter(ProjectConstants.ProjectID);
 				if (projectID == null) {

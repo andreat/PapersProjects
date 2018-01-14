@@ -64,11 +64,19 @@
 				break;
 			case PaperInsert:
 			case PaperPDFRetrieval:
+			case PaperPDFUpload:
 			case PaperUpdate:
 				component = "Paper";
 				break;
+			case PaperDelete:
+				component = "Removal of the paper";
+				break;
 			case ProjectInsert:
+			case ProjectUpdate:
 				component = "Project";
+				break;
+			case ProjectDelete:
+				component = "Removal of the project";
 				break;
 			case PaperProjectLink:
 				component = "Projects acknowledged by the paper";

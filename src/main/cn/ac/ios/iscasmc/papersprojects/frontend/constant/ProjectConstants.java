@@ -21,10 +21,14 @@ public final class ProjectConstants {
 	public static final String Action= "action";
 	public static final String Year = "year";
 	public static final String CreateProject = "createProject";
+	public static final String ModifyProject = "modifyProject";
+	public static final String DeleteProject = "deleteProject";
+	public static final String DeleteProjectConfirm = "deleteProjectConfirm";
 	public static final String GetProjectsForAuthor = "getProjectsForAuthor";
 	public static final String GetProjectsForYear = "getProjectsForYear";
 	public static final String GetProjectsForPaper = "getProjectsForPaper";
 	public static final String GetProjects = "getProjects";
+	public static final String GetFullDetailsForProject = "getFullDetailsForProject";
 
 	public static final String AuthorID = "authorID";
 	public static final String PaperID = "paperID";
