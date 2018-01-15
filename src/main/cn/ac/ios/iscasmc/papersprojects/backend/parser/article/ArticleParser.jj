@@ -59,7 +59,7 @@ TOKEN :
 	< ARTICLE : "@article" >
 |	< BRACKET_OPEN : "{" >
 |	< COMMA : "," > : BIBENTRY_ENV
-|	< IDENTIFIER : ([ "A"-"Z","a"-"z",":","/","0"-"9" ])+ >
+|	< IDENTIFIER : ([ "A"-"Z","a"-"z",":","/","0"-"9","-" ])+ >
 }
 
 < BIBENTRY_ENV > TOKEN :

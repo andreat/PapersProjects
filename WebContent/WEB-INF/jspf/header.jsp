@@ -64,7 +64,6 @@
 				break;
 			case PaperInsert:
 			case PaperPDFRetrieval:
-			case PaperPDFUpload:
 			case PaperUpdate:
 				component = "Paper";
 				break;

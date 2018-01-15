@@ -37,37 +37,37 @@ import cn.ac.ios.iscasmc.papersprojects.backend.parser.proceedings.ProceedingsPa
 
 public class AllTests {
 	
-	private final String proceedings = "@proceedings{DBLP:conf/concur/2017,\n" + 
-			"  editor    = {Roland Meyer and\n" + 
-			"               Uwe Nestmann},\n" + 
-			"  title     = {28th International Conference on Concurrency Theory, {CONCUR} 2017,\n" + 
-			"               September 5-8, 2017, Berlin, Germany},\n" + 
-			"  series    = {LIPIcs},\n" + 
-			"  volume    = {85},\n" + 
-			"  publisher = {Schloss Dagstuhl - Leibniz-Zentrum fuer Informatik},\n" + 
-			"  year      = {2017},\n" + 
-			"  url       = {http://www.dagstuhl.de/dagpub/978-3-95977-048-4},\n" + 
-			"  isbn      = {978-3-95977-048-4},\n" + 
-			"  timestamp = {Wed, 27 Sep 2017 13:49:17 +0200},\n" + 
-			"  biburl    = {http://dblp.org/rec/bib/conf/concur/2017},\n" + 
+	private final String proceedings = "@proceedings{DBLP:journals/corr/BertrandB14,\n" + 
+			"  editor    = {Nathalie Bertrand and\n" + 
+			"               Luca Bortolussi},\n" + 
+			"  title     = {Proceedings Twelfth International Workshop on Quantitative Aspects\n" + 
+			"               of Programming Languages and Systems, {QAPL} 2014, Grenoble, France,\n" + 
+			"               12-13 April 2014},\n" + 
+			"  series    = {{EPTCS}},\n" + 
+			"  volume    = {154},\n" + 
+			"  year      = {2014},\n" + 
+			"  url       = {https://doi.org/10.4204/EPTCS.154},\n" + 
+			"  doi       = {10.4204/EPTCS.154},\n" + 
+			"  timestamp = {Wed, 03 May 2017 14:47:56 +0200},\n" + 
+			"  biburl    = {http://dblp.org/rec/bib/journals/corr/BertrandB14},\n" + 
 			"  bibsource = {dblp computer science bibliography, http://dblp.org}\n" + 
 			"}";
 
-	private final String inproceedings = "@inproceedings{DBLP:conf/concur/FengHTY17,\n" + 
-			"  author    = {Yuan Feng and\n" + 
+	private final String inproceedings = "@inproceedings{DBLP:journals/corr/abs-1111-4385,\n" + 
+			"  author    = {David Spieler and\n" + 
 			"               Ernst Moritz Hahn and\n" + 
-			"               Andrea Turrini and\n" + 
-			"               Shenggang Ying},\n" + 
-			"  title     = {Model Checking Omega-regular Properties for Quantum Markov Chains},\n" + 
-			"  booktitle = {28th International Conference on Concurrency Theory, {CONCUR} 2017,\n" + 
-			"               September 5-8, 2017, Berlin, Germany},\n" + 
-			"  pages     = {35:1--35:16},\n" + 
-			"  year      = {2017},\n" + 
-			"  crossref  = {DBLP:conf/concur/2017},\n" + 
-			"  url       = {https://doi.org/10.4230/LIPIcs.CONCUR.2017.35},\n" + 
-			"  doi       = {10.4230/LIPIcs.CONCUR.2017.35},\n" + 
-			"  timestamp = {Thu, 28 Sep 2017 13:37:47 +0200},\n" + 
-			"  biburl    = {http://dblp.org/rec/bib/conf/concur/FengHTY17},\n" + 
+			"               Lijun Zhang},\n" + 
+			"  title     = {Model Checking {CSL} for Markov Population Models},\n" + 
+			"  booktitle = {Proceedings Twelfth International Workshop on Quantitative Aspects\n" + 
+			"               of Programming Languages and Systems, {QAPL} 2014, Grenoble, France,\n" + 
+			"               12-13 April 2014.},\n" + 
+			"  pages     = {93--107},\n" + 
+			"  year      = {2014},\n" + 
+			"  crossref  = {DBLP:journals/corr/BertrandB14},\n" + 
+			"  url       = {https://doi.org/10.4204/EPTCS.154.7},\n" + 
+			"  doi       = {10.4204/EPTCS.154.7},\n" + 
+			"  timestamp = {Wed, 03 May 2017 14:47:56 +0200},\n" + 
+			"  biburl    = {http://dblp.org/rec/bib/journals/corr/abs-1111-4385},\n" + 
 			"  bibsource = {dblp computer science bibliography, http://dblp.org}\n" + 
 			"}";
 

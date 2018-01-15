@@ -352,8 +352,8 @@ public class DBMS {
 				psf = connection.prepareStatement("update paper set filepath = ? where identifier = ?");
 				psf.setString(1, pb.getFilepath());
 				psf.setString(2, pb.getIdentifier());
+				updates += psf.executeUpdate();
 			}
-			updates += psf.executeUpdate();
 			connection.commit();
 			if (updates > 0) {
 				statusMap.put(DBMSAction.PaperUpdate, DBMSStatus.Success);

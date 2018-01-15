@@ -1338,7 +1338,7 @@
 			if (papers.size() > 0) {
 %>					<div class="content_block_table">
 <%
-			if (project != null) {
+				if (project != null) {
 %>						<div class="content_block_row">
 							<div class="content_block_column1">
 								<c:url value="/projects.jsp" var="projectfull">
@@ -1348,15 +1348,15 @@
 							</div>
 						</div>
 <% 		
-			}
-			if (author != null) {
+				}
+				if (author != null) {
 %>						<div class="content_block_row">
 							<div class="content_block_column1">
 								Author: <%= author.getName() %>
 							</div>
 						</div>
 <% 		
-			}
+				}
 %>						<div class="content_block_row">
 							<div class="content_block_column2_64_left content_block_cell_header">
 								Paper
@@ -1402,9 +1402,9 @@
 						</div>
 <%
 				}
-			}
 %>					</div>
 <%			
+			}
 		}
 	}
 %><jsp:include page="WEB-INF/jspf/footer.jsp" />

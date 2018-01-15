@@ -62,6 +62,8 @@ TOKEN :
 |	< U_GRAVE_LC : "\\`" ( "{u}" | "u" ) >
 |	< U_UML_UC : "\\\"" ( "{U}" | "U" ) >
 |	< U_UML_LC : "\\\"" ( "{u}" | "u" ) >
+|	< E_UML_UC : "\\\"" ( "{E}" | "E" ) >
+|	< E_UML_LC : "\\\"" ( "{e}" | "e" ) >
 |	< ALPHA_LC : "\\alpha" >
 |	< BETA_LC : "\\beta" >
 |	< GAMMA_LC : "\\gamma" >
@@ -155,6 +157,8 @@ private String actualParser() :
 	|	< U_GRAVE_LC > { sb.append("ù"); }
 	|	< U_UML_UC > { sb.append("Ü"); }
 	|	< U_UML_LC > { sb.append("ü"); }
+	|	< E_UML_UC > { sb.append("Ë"); }
+	|	< E_UML_LC > { sb.append("ë"); }
 	|	< ALPHA_LC > { sb.append("α"); }
 	|	< BETA_LC > { sb.append("β"); }
 	|	< GAMMA_LC > { sb.append("γ"); }
