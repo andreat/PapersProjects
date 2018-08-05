@@ -193,15 +193,15 @@
 										<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.Action_GetProjectsForPaper}"/>
 										<c:param name="${ProjectConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url><a href="${listProjects}">List acknowledged projects</a>,
-									<c:url value="/papers.jsp" var="linkProjects">
+									<c:url value="/Paper" var="linkProjects">
 										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_LinkProjectsToPaper_Form}"/>
 										<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url><a href="${linkProjects}">Link projects</a>,
-									<c:url value="/papers.jsp" var="modifypaper">
+									<c:url value="/Papers" var="modifypaper">
 										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_ModifyPaper_Form}"/>
 										<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url><a href="${modifypaper}">Update paper</a>,
-									<c:url value="/papers.jsp" var="deletepaper">
+									<c:url value="/Papers" var="deletepaper">
 										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DeletePaperConfirm_Form}"/>
 										<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url><a href="${deletepaper}">Delete paper</a>
@@ -335,7 +335,7 @@
 				if (projects.size() == 0) {
 %>							<div class="content_block_row">
 								<div class="content_block_column1">
-									<c:url value="/papers.jsp" var="linkProjects">
+									<c:url value="/Papers" var="linkProjects">
 										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Field_LinkProjectsToPaper_Form}"/>
 										<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url>No project linked to this paper. <a href="${linkProjects}">Link projects to this paper</a>
