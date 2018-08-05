@@ -12,36 +12,40 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
 %><jsp:include page="WEB-INF/jspf/header.jsp" /><% 
 	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
-	List<PaperBean> papers = null;
-	List<ProjectBean> projects = null;
-	ConferenceBean conference = null;
 	String paperID = request.getParameter(PaperConstants.Field_PaperID);
 	if (paperID == null) {
 %>					<div class="notification_error">
-						No paper available for the given identifier.
+						No paper identifier provided.
 					</div>
 <%				
 	} else {
-		papers = dbms.getPaperByID(paperID);
-		if (papers == null || papers.size() == 0) {
+		List<PaperBean> papers = dbms.getPaperByID(paperID);
+		if (papers == null) {
+%>					<div class="notification_error">
+						Error with the database during the retrieval of the papers.
+					</div>
+<%
+		} else {
+			if (papers.size() == 0) {
 %>					<div class="notification_error">
 						No paper available for the given identifier.
 					</div>
 <%				
-		} else {
-			PaperBean pb = papers.get(0);
-			if (pb.getCrossref() != null) {
-				List<ConferenceBean> conferences = dbms.getConferenceByID(pb.getCrossref());
-				if (conferences != null && conferences.size() == 1) {
-					conference = conferences.get(0);
-				} else {
+			} else {
+				PaperBean pb = papers.get(0);
+				ConferenceBean conference = null;
+				if (pb.getCrossref() != null) {
+					List<ConferenceBean> conferences = dbms.getConferenceByID(pb.getCrossref());
+					if (conferences != null && conferences.size() == 1) {
+						conference = conferences.get(0);
+					} else {
 %>					<div class="notification_error">
 						Unexpected error in fetching the conference for the paper.
 					</div>
 <%
+					}
 				}
-			}
-			projects = dbms.getProjectsAcknowledgedByPaper(paperID);
+				List<ProjectBean> projects = dbms.getProjectsAcknowledgedByPaper(paperID);
 %>					<form action="${pageContext.request.contextPath}/Papers" method="post">
 						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DelinkProjectsFromPaper_Process}"/>
 						<input type="hidden" name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
@@ -73,21 +77,21 @@
 								</div>
 								<div class="content_block_column2_19_right">
 <%
-			List<AuthorBean> authors = pb.getAuthors();
-			int nAuthors = authors.size();
-			int curAuthor = 0;
-			for (AuthorBean ab : authors) {
-				curAuthor++;
-				StringBuilder sb = new StringBuilder(ab.getName());
-				if (curAuthor != nAuthors && !(curAuthor == 1 && nAuthors == 2)) {
-					sb.append(",");
-				}
-				if (curAuthor == nAuthors - 1) {
-					sb.append(" and");
-				}
+				List<AuthorBean> authors = pb.getAuthors();
+				int nAuthors = authors.size();
+				int curAuthor = 0;
+				for (AuthorBean ab : authors) {
+					curAuthor++;
+					StringBuilder sb = new StringBuilder(ab.getName());
+					if (curAuthor != nAuthors && !(curAuthor == 1 && nAuthors == 2)) {
+						sb.append(",");
+					}
+					if (curAuthor == nAuthors - 1) {
+						sb.append(" and");
+					}
 %>								<%= sb.toString() %>
 <%
-			}
+				}
 %>								</div>
 							</div>
 							<div class="content_block_row">
@@ -99,7 +103,7 @@
 								</div>
 							</div>
 <%
-			if (pb.getBooktitle() != null) {
+				if (pb.getBooktitle() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Book title:
@@ -109,8 +113,8 @@
 								</div>
 							</div>
 <% 
-			}
-			if (pb.getYear() != null) {
+				}
+				if (pb.getYear() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Year:
@@ -120,16 +124,16 @@
 								</div>
 							</div>
 <% 
-			}
-			JournalBean jb = pb.getJournal();
-			if (jb != null) {
-				StringBuilder sb = new StringBuilder(jb.getIdentifier());
-				if (pb.getVolume() != null) {
-					sb.append(" ").append(pb.getVolume());
 				}
-				if (pb.getNumber() != null) {
-					sb.append(" (").append(pb.getNumber()).append(")");
-				}
+				JournalBean jb = pb.getJournal();
+				if (jb != null) {
+					StringBuilder sb = new StringBuilder(jb.getIdentifier());
+					if (pb.getVolume() != null) {
+						sb.append(" ").append(pb.getVolume());
+					}
+					if (pb.getNumber() != null) {
+						sb.append(" (").append(pb.getNumber()).append(")");
+					}
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Journal:
@@ -139,8 +143,8 @@
 								</div>
 							</div>
 <% 
-			}
-			if (pb.getCrossref() != null) {
+				}
+				if (pb.getCrossref() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Crossref:
@@ -150,8 +154,8 @@
 								</div>
 							</div>
 <% 
-			}
-			if (pb.getPages() != null) {
+				}
+				if (pb.getPages() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Pages:
@@ -161,8 +165,8 @@
 								</div>
 							</div>
 <% 
-			}
-			if (pb.getDoi() != null) {
+				}
+				if (pb.getDoi() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									DOI:
@@ -172,8 +176,8 @@
 								</div>
 							</div>
 <% 
-			}
-			if (pb.getUrl() != null) {
+				}
+				if (pb.getUrl() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									URL:
@@ -183,14 +187,14 @@
 								</div>
 							</div>
 <% 
-			}
+				}
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Actions:
 								</div>
 								<div class="content_block_column2_19_right">
 									<c:url value="/projects.jsp" var="listProjects">
-										<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.Action_GetProjectsForPaper}"/>
+										<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.GetProjectsForPaper}"/>
 										<c:param name="${ProjectConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url><a href="${listProjects}">List acknowledged projects</a>,
 									<c:url value="/Paper" var="linkProjects">
@@ -208,7 +212,7 @@
 								</div>
 							</div>
 <% 
-			if (conference != null) {
+				if (conference != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column1 content_block_cell_header">
 									Conference details
@@ -239,7 +243,7 @@
 								</div>
 							</div>
 <% 
-				if (conference.getSeries() != null) {
+					if (conference.getSeries() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Series:
@@ -249,8 +253,8 @@
 								</div>
 							</div>
 <% 
-				}
-				if (conference.getVolume() != null) {
+					}
+					if (conference.getVolume() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Volume:
@@ -260,8 +264,8 @@
 								</div>
 							</div>
 <% 
-				}
-				if (conference.getEditor() != null) {
+					}
+					if (conference.getEditor() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Editor(s):
@@ -271,8 +275,8 @@
 								</div>
 							</div>
 <% 
-				}
-				if (conference.getPublisher() != null) {
+					}
+					if (conference.getPublisher() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Publisher:
@@ -282,8 +286,8 @@
 								</div>
 							</div>
 <% 
-				}
-				if (conference.getUrl() != null) {
+					}
+					if (conference.getUrl() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									URL:
@@ -293,8 +297,8 @@
 								</div>
 							</div>
 <% 
-				}
-				if (conference.getIsbn() != null) {
+					}
+					if (conference.getIsbn() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									ISBN:
@@ -304,9 +308,9 @@
 								</div>
 							</div>
 <% 
+					}
 				}
-			}
-			if (pb.getFilepath() != null) {
+				if (pb.getFilepath() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Paper:
@@ -319,31 +323,31 @@
 								</div>
 							</div>
 <%
-			}
-			if (projects == null) {
+				}
+				if (projects == null) {
 %>					<div class="notification_error">
 						Error with the database during the retrieval of the projects.
 					</div>
 <%
-			} else {
+				} else {
 %>							<div class="content_block_row">
 								<div class="content_block_column1 content_block_cell_header">
 									Project details
 								</div>
 							</div>
 <%
-				if (projects.size() == 0) {
+					if (projects.size() == 0) {
 %>							<div class="content_block_row">
 								<div class="content_block_column1">
 									<c:url value="/Papers" var="linkProjects">
-										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Field_LinkProjectsToPaper_Form}"/>
+										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_LinkProjectsToPaper_Form}"/>
 										<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url>No project linked to this paper. <a href="${linkProjects}">Link projects to this paper</a>
 								</div>
 							</div>
 <% 
-				} else {
-					for (ProjectBean pjb : projects) {
+					} else {
+						for (ProjectBean pjb : projects) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_28_left">
 									<label>
@@ -354,7 +358,7 @@
 								<div class="content_block_column2_28_right">
 									<div class="content_block_table">
 <%
-						if (pjb.getTitle() != null) {
+							if (pjb.getTitle() != null) {
 %>										<div class="content_block_row">
 											<div class="content_block_column2_28_left">
 												Title:
@@ -364,7 +368,7 @@
 											</div>
 										</div>
 <% 
-						}
+							}
 %>										<div class="content_block_row">
 											<div class="content_block_column2_28_left">
 												Funder:
@@ -401,18 +405,19 @@
 								</div>
 							</div>
 <% 
-					}
+						}
 %>							<div class="content_block_row">
 								<div class="content_block_column1">
 									<input type="submit" value="De-acknowledge selected projects"/>
 								</div>
 							</div>
 <%
+					}
 				}
-			}
 %>						</div>
 					</form>
 <%
+			}
 		}
 	}
 %><jsp:include page="WEB-INF/jspf/footer.jsp" />

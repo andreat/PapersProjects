@@ -55,7 +55,7 @@ public class Papers extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = request.getParameter(PaperConstants.Field_Action);
 		if (action == null) {
-			showForm("index", request, response);
+			showForm(PaperConstants.Action_GetAllPapers, request, response);
 		} else {
 			switch (action) {
 			case PaperConstants.Action_CreateArticle_Form:
@@ -93,7 +93,7 @@ public class Papers extends HttpServlet {
 				manageDelinkProjectsFromPaperProcess(request, response);
 				break;
 			default:
-				showForm("index", request, response);
+				showForm(PaperConstants.Action_GetAllPapers, request, response);
 			}
 		}
 	}

@@ -19,15 +19,20 @@
 <%
 	} else {
 		ProjectBean project = dbms.getProjectByID(projectID);
-		List<PaperBean> papers = null;
 		if (project == null) {
 %>					<div class="notification_error">
-						Undefined project.
+						Error with the database during the retrieval of the project.
 					</div>
 <%
 		} else {
-			papers = dbms.getPapersAcknowledgingProject(projectID);
-			if (papers == null || papers.size() == 0) {
+			List<PaperBean> papers = dbms.getPapersAcknowledgingProject(projectID);
+			if (papers == null) {
+%>					<div class="notification_error">
+						Error with the database during the retrieval of the papers.
+					</div>
+<%
+			} else {
+				if (papers.size() == 0) {
 %>					<div class="notification_warning">
 				<c:url value="/projects.jsp" var="linkPapers">
 					<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.LinkPapersToProject}"/>
@@ -35,7 +40,7 @@
 				</c:url>No paper acknowledging the project. First <a href="${linkPapers}">link one</a>.
 			</div>
 <%
-			} else {
+				} else {
 %><jsp:include page="WEB-INF/jspf/paperSelection.jsp" /> 
 					<div class="content_block_table">
 						<div class="content_block_row">
@@ -47,19 +52,19 @@
 							</div>
 						</div>
 <%
-				for (PaperBean pb : papers) {
+					for (PaperBean pb : papers) {
 %>						<div class="content_block_row">
 							<div class="content_block_column2_64_left">
 								<c:url value="/Papers" var="paperfull">
 									<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetFullDetailsForPaper}"/>
 									<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 								</c:url><a href="${paperfull}"><%= pb.getTitle() %></a> (<%= pb.getYear() %>, <%= PaperConstants.getRank(pb.getRanking()) %><% 
-					if (pb.getFilepath() != null) {
+						if (pb.getFilepath() != null) {
 						%><c:url value="/Papers" var="paperpdf">
 							<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DownloadPDF}"/>
 							<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 						</c:url>, <a href="${paperpdf}">PDF</a><%
-					}
+						}
 								%>)
 							</div>
 							<div class="content_block_column2_64_right">
@@ -82,9 +87,10 @@
 							</div>
 						</div>
 <%
-				}
+					}
 %>					</div>
 <%			
+				}
 			}
 		}
 	}

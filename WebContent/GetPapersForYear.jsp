@@ -18,26 +18,25 @@
 <%
 	} else {
 		List<PaperBean> papers = null;
+		boolean thrownException = false;
 		try {
 			int year = Integer.parseInt(year_str);
 			papers = dbms.getPapersPublishedInYear(year);
-			if (papers != null && papers.size() == 0) {
-%>					<div class="notification_warning">
-						No paper available for year <strong><%= year %></strong>.
-					</div>
-<%
-			}
 		} catch (NumberFormatException nfe) {
+			thrownException = true;
+		}
+		if (papers == null) {
+			if (thrownException) {
 %>					<div class="notification_warning">
 						Illegal year <strong><%= year_str %></strong>.
 					</div>
 <%
-		}
-		if (papers == null || papers.size() == 0) {
-%>					<div class="notification_warning">
-						No paper available for the specified year <%= year_str %>.
+			} else {
+%>					<div class="notification_error">
+						Error with the database during the retrieval of the papers.
 					</div>
 <%
+			}
 		} else {
 %><jsp:include page="WEB-INF/jspf/paperSelection.jsp" /> 
 					<div class="content_block_table">
