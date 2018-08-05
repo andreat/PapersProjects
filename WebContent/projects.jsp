@@ -568,8 +568,8 @@
 							</div>
 							<div class="content_block_column2_37_right">
 								<c:url value="/papers.jsp" var="listPapers">
-									<c:param name="${PaperConstants.Action}" value="${PaperConstants.GetPapersForProject}"/>
-									<c:param name="${PaperConstants.ProjectID}" value="<%= pb.getIdentifier() %>"/>
+									<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetPapersForProject}"/>
+									<c:param name="${PaperConstants.Field_ProjectID}" value="<%= pb.getIdentifier() %>"/>
 								</c:url><a href="${listPapers}">List acknowledging papers</a>,
 								<c:url value="/projects.jsp" var="linkPapers">
 									<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.LinkPapersToProject}"/>

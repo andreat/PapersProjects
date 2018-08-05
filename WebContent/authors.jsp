@@ -38,8 +38,8 @@
 							</div>
 							<div class="content_block_column2_28_right">
 								<c:url value="/papers.jsp" var="papers">
-									<c:param name="${PaperConstants.Action}" value="${PaperConstants.GetPapersForAuthor}"/>
-									<c:param name="${PaperConstants.AuthorID}" value="<%= ab.getName() %>"/>
+									<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetPapersForAuthor}"/>
+									<c:param name="${PaperConstants.Field_AuthorID}" value="<%= ab.getName() %>"/>
 								</c:url><a href="${papers}">List papers</a>,
 								<c:url value="/projects.jsp" var="projects">
 									<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.GetProjectsForAuthor}"/>
