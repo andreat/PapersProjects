@@ -42,7 +42,7 @@
 				}
 			}
 			projects = dbms.getProjectsAcknowledgedByPaper(paperID);
-%>					<form action="${pageContext.request.contextPath}/PaperManager" method="post">
+%>					<form action="${pageContext.request.contextPath}/Papers" method="post">
 						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DelinkProjectsFromPaper_Process}"/>
 						<input type="hidden" name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 						<div class="content_block_table">
@@ -202,7 +202,7 @@
 										<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url><a href="${modifypaper}">Update paper</a>,
 									<c:url value="/Papers" var="deletepaper">
-										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DeletePaperConfirm_Form}"/>
+										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DeletePaper_Form}"/>
 										<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url><a href="${deletepaper}">Delete paper</a>
 								</div>
@@ -312,7 +312,7 @@
 									Paper:
 								</div>
 								<div class="content_block_column2_19_right">
-									<c:url value="/PaperManager" var="paperpdf">
+									<c:url value="/Papers" var="paperpdf">
 										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DownloadPDF}"/>
 										<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url><a href="${paperpdf}">PDF</a>

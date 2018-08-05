@@ -10,31 +10,37 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
 %><jsp:include page="WEB-INF/jspf/header.jsp" /><% 
 	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
-	String authorID = request.getParameter(PaperConstants.Field_AuthorID);
-	if (authorID == null) {
+	String year_str = request.getParameter(PaperConstants.Field_Year);
+	if (year_str == null) {
 %>					<div class="notification_error">
-						Undefined author.
+						Undefined year.
 					</div>
 <%
 	} else {
-		AuthorBean author = dbms.getAuthorByID(authorID);
 		List<PaperBean> papers = null;
-		if (author != null) {
-			papers = dbms.getPapersWrittenByAuthor(authorID);
-		}
-		if (author == null || papers == null || papers.size() == 0) {
+		try {
+			int year = Integer.parseInt(year_str);
+			papers = dbms.getPapersPublishedInYear(year);
+			if (papers != null && papers.size() == 0) {
 %>					<div class="notification_warning">
-						No paper available for the author <%= authorID %>. First create one.
+						No paper available for year <strong><%= year %></strong>. First create one.
+					</div>
+<%
+			}
+		} catch (NumberFormatException nfe) {
+%>					<div class="notification_warning">
+						Illegal year <strong><%= year_str %></strong>.
+					</div>
+<%
+		}
+		if (papers == null || papers.size() == 0) {
+%>					<div class="notification_warning">
+						No paper available for the specified year <%= year_str %>.
 					</div>
 <%
 		} else {
 %><jsp:include page="WEB-INF/jspf/paperSelection.jsp" /> 
 					<div class="content_block_table">
-						<div class="content_block_row">
-							<div class="content_block_column1">
-								Author: <%= author.getName() %>
-							</div>
-						</div>
 						<div class="content_block_row">
 							<div class="content_block_column2_64_left content_block_cell_header">
 								Paper

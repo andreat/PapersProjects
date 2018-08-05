@@ -9,7 +9,7 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><jsp:include page="WEB-INF/jspf/header.jsp" /><%
-	String paperID = request.getParameter(PaperConstants.PaperID);
+	String paperID = request.getParameter(PaperConstants.Field_PaperID);
 	if (paperID == null) {
 %>					<div class="notification_error">
 						No paper available for the given identifier.
@@ -25,7 +25,7 @@
 <%				
 		} else {
 			PaperBean pb = lpb.get(0);
-%>					<form action="${pageContext.request.contextPath}/Paper" method="post">
+%>					<form action="${pageContext.request.contextPath}/Papers" method="post">
 						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DeletePaper_Process}"/>
 						<input type="hidden" name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 						<div class="content_block_table">
@@ -273,9 +273,9 @@
 									Paper:
 								</div>
 								<div class="content_block_column2_19_right">
-									<c:url value="/PaperManager" var="paperpdf">
-										<c:param name="${PaperConstants.Action}" value="${PaperConstants.DownloadPDF}"/>
-										<c:param name="${PaperConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+									<c:url value="/Papers" var="paperpdf">
+										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DownloadPDF}"/>
+										<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url><a href="${paperpdf}">PDF</a>
 								</div>
 							</div>

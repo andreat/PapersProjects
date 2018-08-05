@@ -25,7 +25,7 @@
 <%				
 		} else {
 			PaperBean pb = lpb.get(0);
-%>					<form action="${pageContext.request.contextPath}/PaperManager" method="post" enctype="multipart/form-data">
+%>					<form action="${pageContext.request.contextPath}/Papers" method="post" enctype="multipart/form-data">
 						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_ModifyPaper_Process}"/>
 						<input type="hidden" name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 						<div class="content_block_table">
