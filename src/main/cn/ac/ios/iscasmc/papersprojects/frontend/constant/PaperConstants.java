@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2017 Andrea Turrini
+ * Copyright (C) 2017-2018 Andrea Turrini
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,35 +18,39 @@
 package cn.ac.ios.iscasmc.papersprojects.frontend.constant;
 
 public final class PaperConstants {
-	public static final String Action= "action";
-	public static final String AuthorID = "authorID";
-	public static final String PaperID = "paperID";
-	public static final String ProjectID = "projectID";
-	public static final String Year = "year";
+	public static final String Action_CreateArticle_Form = "CreateArticleForm";
+	public static final String Action_CreateArticle_Process = "CreateArticleProcess";
+	public static final String Action_CreateInproceedings_Form = "CreateInproceedingsForm";
+	public static final String Action_CreateInproceedings_Process = "CreateInproceedingsProcess";
+	public static final String Action_DeletePaper_Form = "DeletePaperForm";
+	public static final String Action_DeletePaper_Process = "DeletePaperProcess";
+	public static final String Action_ModifyPaper_Form = "ModifyPaperForm";
+	public static final String Action_ModifyPaper_Process = "ModifyPaperProcess";
 
-	public static final String CreateInproceedings = "createInproceedings";
-	public static final String CreateArticle = "createArticle";
-	public static final String GetPapersForAuthor = "getPapersForAuthor";
-	public static final String GetPapersForYear = "getPapersForYear";
-	public static final String GetPapersForRank = "getPapersForRank";
-	public static final String GetPapersForProject = "getPapersForProject";
-	public static final String GetPapers = "getPapers";
-	public static final String GetFullDetailsForPaper = "getFullDetailsForPaper";
-	public static final String ModifyPaper = "modifyPaper";
-	public static final String DeletePaper = "deletePaper";
-	public static final String DeletePaperConfirm = "deletePaperConfirm";
+	public static final String Action_DownloadPDF = "DownloadPDF";
 
-	public static final String LinkProjectsToPaper= "linkProjectsToPaper";
-	public static final String DelinkProjectsFromPaper= "delinkProjectsFromPaper";
-
-	public static final String DownloadPDF = "downloadPDF";
-
-	public static final String InproceedingsTextArea = "InproceedingsTextArea";
-	public static final String ProceedingsTextArea = "ProceedingsTextArea";
-	public static final String ArticleTextArea = "ArticleTextArea";
-	public static final String RankingOption = "RankingOption";
-	public static final String PaperFile = "PaperFile";
-	public static final String RemoveLaTeXMarkers = "RemoveLaTeXMarkers";
+	public static final String Action_GetPapersForAuthor = "GetPapersForAuthor";
+	public static final String Action_GetPapersForYear = "GetPapersForYear";
+	public static final String Action_GetPapersForRank = "GetPapersForRank";
+	public static final String Action_GetPapersForProject = "GetPapersForProject";
+	public static final String Action_GetAllPapers = "GetAllPapers";
+	public static final String Action_GetFullDetailsForPaper = "GetFullDetailsForPaper";
+	
+	public static final String Action_LinkProjectsToPaper_Form = "LinkProjectsToPaperForm";
+	public static final String Action_LinkProjectsToPaper_Process = "LinkProjectsToPaperProcess";
+	public static final String Action_DelinkProjectsFromPaper_Process = "DelinkProjectsFromPaperProcess";
+	
+	public static final String Field_Bibtex_Inproceedings = "InproceedingsContent";
+	public static final String Field_Bibtex_Proceedings = "ProceedingsContent";
+	public static final String Field_Bibtex_Article = "ArticleContent";
+	public static final String Field_Ranking = "Ranking";
+	public static final String Field_PaperFile = "PaperFile";
+	public static final String Field_RemoveLaTeXMarkers = "RemoveLaTeXMarkers";
+	public static final String Field_Action= "Action";
+	public static final String Field_AuthorID = "AuthorID";
+	public static final String Field_PaperID = "PaperID";
+	public static final String Field_ProjectID = "ProjectID";
+	public static final String Field_Year = "Year";
 	
 	public static final String RankingA = "RankingA";
 	public static final String RankingB = "RankingB";

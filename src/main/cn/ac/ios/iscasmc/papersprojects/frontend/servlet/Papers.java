@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) ${year} Andrea Turrini
+ * Copyright (C) 2017-2018 Andrea Turrini
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,158 +48,222 @@ import cn.ac.ios.iscasmc.papersprojects.backend.parser.proceedings.ProceedingsPa
 import cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants;
 import cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants;
 
-/**
- * Servlet implementation class PaperManager
- */
-@WebServlet("/PaperManager")
-@MultipartConfig
-public class PaperServlet extends HttpServlet {
-	private static final long serialVersionUID = 1523148436647068850L;
+@WebServlet("/Papers")
+public class Papers extends HttpServlet {
+	private static final long serialVersionUID = 7609707217755694013L;
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
-
-		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
-
-		String action = request.getParameter(PaperConstants.Action);
-		if (action != null) {
-			PaperBean pb = null;
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String action = request.getParameter(PaperConstants.Field_Action);
+		if (action == null) {
+			showForm("index", request, response);
+		} else {
 			switch (action) {
-			case PaperConstants.CreateInproceedings : {
-				boolean removeMarkers = false;
-				if (request.getParameter(PaperConstants.RemoveLaTeXMarkers) != null) {
-					removeMarkers = true;
-				}
-				String conferenceBibtex = request.getParameter(PaperConstants.ProceedingsTextArea);
-				if (conferenceBibtex != null && conferenceBibtex.length() > 10) {
-					ProceedingsParser pp = new ProceedingsParser(new ByteArrayInputStream(conferenceBibtex.getBytes()));
-					ConferenceBean cb = pp.parseProceedings(removeMarkers);
-					if (cb == null) {
-						status.put(DBMSAction.ConferenceInsert, DBMSStatus.ParserError);
-					} else {
-						status.putAll(dbms.storeConference(cb));
-					}
-				}
-				DBMSStatus statusConference = status.get(DBMSAction.ConferenceInsert);
-				if (statusConference == DBMSStatus.Success || statusConference == DBMSStatus.DuplicatedEntry) {
-					String paperBibtex = request.getParameter(PaperConstants.InproceedingsTextArea);
-					InproceedingsParser ip = new InproceedingsParser(new ByteArrayInputStream(paperBibtex.getBytes()));
-					pb = ip.parseInproceedings(removeMarkers);
-					if (pb == null) {
-						status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
-					} else {
-						pb.setRanking(request.getParameter(PaperConstants.RankingOption));
-						manageUpload(request, pb, status);
-						status.putAll(dbms.storePaper(pb));
-					}
-				}
+			case PaperConstants.Action_CreateArticle_Form:
+			case PaperConstants.Action_CreateInproceedings_Form:
+			case PaperConstants.Action_DeletePaper_Form:
+			case PaperConstants.Action_ModifyPaper_Form:
+			case PaperConstants.Action_LinkProjectsToPaper_Form:
+			case PaperConstants.Action_GetPapersForAuthor:
+			case PaperConstants.Action_GetPapersForProject:
+			case PaperConstants.Action_GetPapersForRank:
+			case PaperConstants.Action_GetPapersForYear:
+			case PaperConstants.Action_GetAllPapers:
+			case PaperConstants.Action_GetFullDetailsForPaper:
+				showForm(action, request, response);
 				break;
-			}
-			case PaperConstants.CreateArticle : {
-				boolean removeMarkers = false;
-				if (request.getParameter(PaperConstants.RemoveLaTeXMarkers) != null) {
-					removeMarkers = true;
-				}
-				String paperBibtex = request.getParameter(PaperConstants.ArticleTextArea);
-				ArticleParser ap = new ArticleParser(new ByteArrayInputStream(paperBibtex.getBytes()));
-				pb = ap.parseArticle(removeMarkers);
-				if (pb == null) {
-					status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
-				} else {
-					pb.setRanking(request.getParameter(PaperConstants.RankingOption));
-					manageUpload(request, pb, status);
-					status.putAll(dbms.storePaper(pb));
-				}
+			case PaperConstants.Action_CreateArticle_Process:
+				manageCreateArticleProcess(request, response);
 				break;
-			}
-			case PaperConstants.DeletePaper: {
-				String paperID = request.getParameter(PaperConstants.PaperID);
-				if (paperID == null) {
-					status.put(DBMSAction.PaperDelete, DBMSStatus.PaperMissingIdentifier);
-				} else {
-					status.putAll(dbms.removePaper(paperID));
-				}
+			case PaperConstants.Action_CreateInproceedings_Process:
+				manageCreateInproceedingsProcess(request, response);
 				break;
-			}
-			case PaperConstants.ModifyPaper: {
-				String paperID = request.getParameter(PaperConstants.PaperID);
-				if (paperID != null) {
-					List<PaperBean> lpb = dbms.getPaperByID(paperID);
-					if (lpb != null && lpb.size() == 1) {
-						pb = lpb.get(0);
-					}
-				}
-				if (pb == null) {
-					status.put(DBMSAction.PaperUpdate, DBMSStatus.NoSuchElement);
-				} else {
-					String ranking = request.getParameter(PaperConstants.RankingOption);
-					if (ranking != null) {
-						pb.setRanking(ranking);
-						manageUpload(request, pb, status);
-						status.putAll(dbms.updatePaper(pb));
-					} else {
-						status.put(DBMSAction.PaperUpdate, DBMSStatus.IllegalArgument);
-					}
-				}
+			case PaperConstants.Action_DeletePaper_Process:
+				manageDeletePaperProcess(request, response);
 				break;
-			}
-			case PaperConstants.DownloadPDF: {
-				String paperID = request.getParameter(PaperConstants.PaperID);
-				if (paperID != null) {
-					List<PaperBean> lpb = dbms.getPaperByID(paperID);
-					if (lpb != null && lpb.size() == 1) {
-						pb = lpb.get(0);
-					}
-				}
-				if (pb == null) {
-					status.put(DBMSAction.PaperPDFRetrieval, DBMSStatus.NoSuchElement);
-				} else {
-					if (manageDownload(response, pb, status)) {
-						return;
-					}
-				}
+			case PaperConstants.Action_ModifyPaper_Process:
+				manageModifyPaperProcess(request, response);
 				break;
-			}
-			case PaperConstants.LinkProjectsToPaper: {
-				String paperID = request.getParameter(PaperConstants.PaperID);
-				if (paperID == null) {
-					status.put(DBMSAction.PaperProjectLink, DBMSStatus.PaperMissingIdentifier);
-					break;
-				}
-				String[] projectIDs = request.getParameterValues(PaperConstants.ProjectID);
-				if (projectIDs == null || projectIDs.length == 0) {
-					status.put(DBMSAction.PaperProjectLink, DBMSStatus.PaperMissingProjects);
-					break;
-				}
-				status.putAll(dbms.storeProjectsForPaper(projectIDs, paperID));
+			case PaperConstants.Action_DownloadPDF:
+				manageDownloadPDF(request, response);
 				break;
-			}
-			case PaperConstants.DelinkProjectsFromPaper: {
-				String paperID = request.getParameter(PaperConstants.PaperID);
-				if (paperID == null) {
-					status.put(DBMSAction.PaperProjectLink, DBMSStatus.PaperMissingIdentifier);
-					break;
-				}
-				String[] projectIDs = request.getParameterValues(ProjectConstants.ProjectID);
-				if (projectIDs == null || projectIDs.length == 0) {
-					status.put(DBMSAction.PaperProjectDelink, DBMSStatus.PaperMissingProjects);
-					break;
-				}
-				status.putAll(dbms.removeProjectsFromPaper(projectIDs, paperID));
+			case PaperConstants.Action_LinkProjectsToPaper_Process:
+				manageLinkProjectsToPaperProcess(request, response);
 				break;
-			}
+			case PaperConstants.Action_DelinkProjectsFromPaper_Process:
+				manageDelinkProjectsFromPaperProcess(request, response);
+				break;
 			default:
+				showForm("index", request, response);
+			}
+		}
+	}
+	
+	private void manageCreateArticleProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
+		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		
+		boolean removeMarkers = false;
+		if (request.getParameter(PaperConstants.Field_RemoveLaTeXMarkers) != null) {
+			removeMarkers = true;
+		}
+		String paperBibtex = request.getParameter(PaperConstants.Field_Bibtex_Article);
+		ArticleParser ap = new ArticleParser(new ByteArrayInputStream(paperBibtex.getBytes()));
+		PaperBean pb = ap.parseArticle(removeMarkers);
+		if (pb == null) {
+			status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
+		} else {
+			pb.setRanking(request.getParameter(PaperConstants.Field_Ranking));
+			manageUpload(request, pb, status);
+			status.putAll(dbms.storePaper(pb));
+		}
+		request.setAttribute(InternalOperationConstants.StatusOperation, status);
+		request.getRequestDispatcher("CreateArticleProcess.jsp").forward(request, response);		
+	}
+
+	private void manageCreateInproceedingsProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
+		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		
+		boolean removeMarkers = false;
+		if (request.getParameter(PaperConstants.Field_RemoveLaTeXMarkers) != null) {
+			removeMarkers = true;
+		}
+		String conferenceBibtex = request.getParameter(PaperConstants.Field_Bibtex_Proceedings);
+		if (conferenceBibtex != null && conferenceBibtex.length() > 10) {
+			ProceedingsParser pp = new ProceedingsParser(new ByteArrayInputStream(conferenceBibtex.getBytes()));
+			ConferenceBean cb = pp.parseProceedings(removeMarkers);
+			if (cb == null) {
+				status.put(DBMSAction.ConferenceInsert, DBMSStatus.ParserError);
+			} else {
+				status.putAll(dbms.storeConference(cb));
+			}
+		}
+		DBMSStatus statusConference = status.get(DBMSAction.ConferenceInsert);
+		if (statusConference == DBMSStatus.Success || statusConference == DBMSStatus.DuplicatedEntry) {
+			String paperBibtex = request.getParameter(PaperConstants.Field_Bibtex_Inproceedings);
+			InproceedingsParser ip = new InproceedingsParser(new ByteArrayInputStream(paperBibtex.getBytes()));
+			PaperBean pb = ip.parseInproceedings(removeMarkers);
+			if (pb == null) {
+				status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
+			} else {
+				pb.setRanking(request.getParameter(PaperConstants.Field_Ranking));
+				manageUpload(request, pb, status);
+				status.putAll(dbms.storePaper(pb));
 			}
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("papers.jsp").forward(request, response);
+		request.getRequestDispatcher("CreateInproceedingsProcess.jsp").forward(request, response);		
+	}
+
+	private void manageDeletePaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
+		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		
+		String paperID = request.getParameter(PaperConstants.Field_PaperID);
+		if (paperID == null) {
+			status.put(DBMSAction.PaperDelete, DBMSStatus.PaperMissingIdentifier);
+		} else {
+			status.putAll(dbms.removePaper(paperID));
+		}
+		request.setAttribute(InternalOperationConstants.StatusOperation, status);
+		request.getRequestDispatcher("DeletePaperProcess.jsp").forward(request, response);		
+	}
+
+	private void manageModifyPaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
+		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		
+		PaperBean pb = null;
+		String paperID = request.getParameter(PaperConstants.Field_PaperID);
+		if (paperID != null) {
+			List<PaperBean> lpb = dbms.getPaperByID(paperID);
+			if (lpb != null && lpb.size() == 1) {
+				pb = lpb.get(0);
+			}
+		}
+		if (pb == null) {
+			status.put(DBMSAction.PaperUpdate, DBMSStatus.NoSuchElement);
+		} else {
+			String ranking = request.getParameter(PaperConstants.Field_Ranking);
+			if (ranking != null) {
+				pb.setRanking(ranking);
+				manageUpload(request, pb, status);
+				status.putAll(dbms.updatePaper(pb));
+			} else {
+				status.put(DBMSAction.PaperUpdate, DBMSStatus.IllegalArgument);
+			}
+		}
+		request.setAttribute(InternalOperationConstants.StatusOperation, status);
+		request.getRequestDispatcher("ModifyPaperProcess.jsp").forward(request, response);		
+	}
+
+	private void manageDownloadPDF(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
+		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		
+		PaperBean pb = null;
+		String paperID = request.getParameter(PaperConstants.Field_PaperID);
+		if (paperID != null) {
+			List<PaperBean> lpb = dbms.getPaperByID(paperID);
+			if (lpb != null && lpb.size() == 1) {
+				pb = lpb.get(0);
+			}
+		}
+		if (pb == null) {
+			status.put(DBMSAction.PaperPDFRetrieval, DBMSStatus.NoSuchElement);
+		} else {
+			if (manageDownload(response, pb, status)) {
+				return;
+			}
+		}
+		request.setAttribute(InternalOperationConstants.StatusOperation, status);
+		request.getRequestDispatcher("Papers").forward(request, response);		
+	}
+
+	private void manageLinkProjectsToPaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
+		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		
+		String paperID = request.getParameter(PaperConstants.Field_PaperID);
+		if (paperID == null) {
+			status.put(DBMSAction.PaperProjectLink, DBMSStatus.PaperMissingIdentifier);
+		} else {
+			String[] projectIDs = request.getParameterValues(PaperConstants.Field_ProjectID);
+			if (projectIDs == null || projectIDs.length == 0) {
+				status.put(DBMSAction.PaperProjectLink, DBMSStatus.PaperMissingProjects);
+			} else {
+				status.putAll(dbms.storeProjectsForPaper(projectIDs, paperID));
+			}
+		}
+		request.setAttribute(InternalOperationConstants.StatusOperation, status);
+		request.getRequestDispatcher("LinkProjectsToPaperProcess.jsp").forward(request, response);		
+	}
+
+	private void manageDelinkProjectsFromPaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
+		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		
+		String paperID = request.getParameter(PaperConstants.Field_PaperID);
+		if (paperID == null) {
+			status.put(DBMSAction.PaperProjectLink, DBMSStatus.PaperMissingIdentifier);
+		} else {
+		String[] projectIDs = request.getParameterValues(ProjectConstants.ProjectID);
+			if (projectIDs == null || projectIDs.length == 0) {
+				status.put(DBMSAction.PaperProjectDelink, DBMSStatus.PaperMissingProjects);
+			} else {
+				status.putAll(dbms.removeProjectsFromPaper(projectIDs, paperID));
+			}
+		}
+		request.setAttribute(InternalOperationConstants.StatusOperation, status);
+		request.getRequestDispatcher("DelinkProjectsFromPaperProcess.jsp").forward(request, response);		
+	}
+
+	private void showForm(String form, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.getRequestDispatcher(form + ".jsp").forward(request, response);		
 	}
 
 	private void manageUpload(HttpServletRequest request, PaperBean pb, Map<DBMSAction, DBMSStatus> status) throws ServletException, IOException {
-		Part part = request.getPart(PaperConstants.PaperFile);
+		Part part = request.getPart(PaperConstants.Field_PaperFile);
 		if (part != null && part.getSize() > 0) {
 			InputStream fileContent = part.getInputStream();
 			String filename = pb.getIdentifier().replace("/", "_").replace(":", "_");
@@ -256,11 +319,8 @@ public class PaperServlet extends HttpServlet {
 		return true;
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
 
 }

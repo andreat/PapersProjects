@@ -26,15 +26,15 @@
        				</div>
 					<div class="wrapper">
 						<a href="${pageContext.request.contextPath}/authors.jsp"><span class="btn_main">Authors</span></a>
-						<a href="${pageContext.request.contextPath}/papers.jsp"><span class="btn_main">Papers</span></a>
+						<a href="${pageContext.request.contextPath}/Papers"><span class="btn_main">Papers</span></a>
 						<a href="${pageContext.request.contextPath}/projects.jsp"><span class="btn_main">Projects</span></a>
 					</div>
 					<div class="wrapper">
-						<c:url value="/papers.jsp" var="ccp">
-							<c:param name="${PaperConstants.Action}" value="${PaperConstants.CreateInproceedings}"/>
+						<c:url value="/Papers" var="ccp">
+							<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreateInproceedings_Form}"/>
 						</c:url><a href="${ccp}"><span class="btn_secondary">Create conference paper</span></a>
-						<c:url value="/papers.jsp" var="cjp">
-							<c:param name="${PaperConstants.Action}" value="${PaperConstants.CreateArticle}"/>
+						<c:url value="/Papers" var="cjp">
+							<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreateArticle_Form}"/>
 						</c:url><a href="${cjp}"><span class="btn_secondary">Create journal paper</span></a>
 						<c:url value="/projects.jsp" var="cp">
 							<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.CreateProject}"/>
