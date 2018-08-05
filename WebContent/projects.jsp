@@ -567,7 +567,7 @@
 								</c:url><a href="${projectfull}"><%= pb.getIdentifier() %>: <%= pb.getTitle() %> (<%= pb.getFunder() %>)</a>
 							</div>
 							<div class="content_block_column2_37_right">
-								<c:url value="/papers.jsp" var="listPapers">
+								<c:url value="/Papers" var="listPapers">
 									<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetPapersForProject}"/>
 									<c:param name="${PaperConstants.Field_ProjectID}" value="<%= pb.getIdentifier() %>"/>
 								</c:url><a href="${listPapers}">List acknowledging papers</a>,
