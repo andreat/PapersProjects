@@ -10,32 +10,18 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
 %><jsp:include page="WEB-INF/jspf/header.jsp" /><% 
 	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
-	String year_str = request.getParameter(PaperConstants.Field_Year);
-	if (year_str == null) {
+	String rank = request.getParameter(PaperConstants.Field_Ranking);
+	if (rank == null) {
 %>					<div class="notification_error">
-						Undefined year.
+						Undefined ranking.
 					</div>
 <%
 	} else {
 		List<PaperBean> papers = null;
-		try {
-			int year = Integer.parseInt(year_str);
-			papers = dbms.getPapersPublishedInYear(year);
-			if (papers != null && papers.size() == 0) {
-%>					<div class="notification_warning">
-						No paper available for year <strong><%= year %></strong>.
-					</div>
-<%
-			}
-		} catch (NumberFormatException nfe) {
-%>					<div class="notification_warning">
-						Illegal year <strong><%= year_str %></strong>.
-					</div>
-<%
-		}
+		papers = dbms.getPapersByRank(rank);
 		if (papers == null || papers.size() == 0) {
 %>					<div class="notification_warning">
-						No paper available for the specified year <%= year_str %>.
+						No paper available with rank <strong><%= PaperConstants.getRank(rank) %></strong>.
 					</div>
 <%
 		} else {
