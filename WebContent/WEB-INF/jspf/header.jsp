@@ -34,7 +34,7 @@
 							<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreateArticle_Form}"/>
 						</c:url><a href="${cjp}"><span class="btn_secondary">Create journal paper</span></a>
 						<c:url value="/Projects" var="cp">
-							<c:param name="${ProjectConstants.Field_Action}" value="${ProjectConstants.Action_CreateProject}"/>
+							<c:param name="${ProjectConstants.Field_Action}" value="${ProjectConstants.Action_CreateProject_Form}"/>
 						</c:url><a href="${cp}"><span class="btn_secondary">Create project</span></a>
 					</div>
 				</div>

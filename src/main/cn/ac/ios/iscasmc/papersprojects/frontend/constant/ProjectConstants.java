@@ -25,9 +25,11 @@ public final class ProjectConstants {
 	public static final String Action_ModifyProject_Process = "ModifyProjectProcess";
 	public static final String Action_DeleteProject_Form = "DeleteProjectForm";
 	public static final String Action_DeleteProject_Process = "DeleteProjectProcess";
+	
 	public static final String Action_LinkPapersToProject_Form = "LinkPapersToProjectForm";
 	public static final String Action_LinkPapersToProject_Process = "LinkPapersToProjectProcess";
-	public static final String Action_DelinkPapersFromProject = "DelinkPapersFromProject";
+	public static final String Action_DelinkPapersFromProject_Process = "DelinkPapersFromProjectProcess";
+	
 	public static final String Action_GetProjectsForAuthor = "GetProjectsForAuthor";
 	public static final String Action_GetProjectsForYear = "GetProjectsForYear";
 	public static final String Action_GetProjectsForPaper = "GetProjectsForPaper";
@@ -36,7 +38,6 @@ public final class ProjectConstants {
 
 	public static final String Field_Action= "Action";
 	public static final String Field_Year = "Year";
-
 	public static final String Field_AuthorID = "AuthorID";
 	public static final String Field_PaperID = "PaperID";
 	public static final String Field_ProjectID = "ProjectID";
