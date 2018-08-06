@@ -8,30 +8,37 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
-%><jsp:include page="WEB-INF/jspf/header.jsp" /><% 
+%><jsp:include page="header.jsp" /><% 
 	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
-	String rank = request.getParameter(PaperConstants.Field_Ranking);
-	if (rank == null) {
+	String year_str = request.getParameter(PaperConstants.Field_Year);
+	if (year_str == null) {
 %>					<div class="notification_error">
-						Undefined ranking.
+						Undefined year.
 					</div>
 <%
 	} else {
 		List<PaperBean> papers = null;
-		papers = dbms.getPapersByRank(rank);
+		boolean thrownException = false;
+		try {
+			int year = Integer.parseInt(year_str);
+			papers = dbms.getPapersPublishedInYear(year);
+		} catch (NumberFormatException nfe) {
+			thrownException = true;
+		}
 		if (papers == null) {
+			if (thrownException) {
+%>					<div class="notification_warning">
+						Illegal year <strong><%= year_str %></strong>.
+					</div>
+<%
+			} else {
 %>					<div class="notification_error">
 						Error with the database during the retrieval of the papers.
 					</div>
 <%
-		} else { 
-			if (papers.size() == 0) {
-%>					<div class="notification_warning">
-						No paper available with rank <strong><%= PaperConstants.getRank(rank) %></strong>.
-					</div>
-<%
-			} else {
-%><jsp:include page="WEB-INF/jspf/paperSelection.jsp" /> 
+			}
+		} else {
+%><jsp:include page="paperSelection.jsp" /> 
 					<div class="content_block_table">
 						<div class="content_block_row">
 							<div class="content_block_column2_64_left content_block_cell_header">
@@ -42,19 +49,19 @@
 							</div>
 						</div>
 <%
-				for (PaperBean pb : papers) {
+			for (PaperBean pb : papers) {
 %>						<div class="content_block_row">
 							<div class="content_block_column2_64_left">
 								<c:url value="/Papers" var="paperfull">
 									<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetFullDetailsForPaper}"/>
 									<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 								</c:url><a href="${paperfull}"><%= pb.getTitle() %></a> (<%= pb.getYear() %>, <%= PaperConstants.getRank(pb.getRanking()) %><% 
-					if (pb.getFilepath() != null) {
+				if (pb.getFilepath() != null) {
 						%><c:url value="/Papers" var="paperpdf">
 							<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DownloadPDF}"/>
 							<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 						</c:url>, <a href="${paperpdf}">PDF</a><%
-					}
+				}
 								%>)
 							</div>
 							<div class="content_block_column2_64_right">
@@ -77,10 +84,9 @@
 							</div>
 						</div>
 <%
-				}
-%>					</div>
-<%		
 			}
+%>					</div>
+<%			
 		}
 	}
-%><jsp:include page="WEB-INF/jspf/footer.jsp" />
+%><jsp:include page="footer.jsp" />

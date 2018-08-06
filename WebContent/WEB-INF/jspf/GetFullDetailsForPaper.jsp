@@ -10,7 +10,7 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
-%><jsp:include page="WEB-INF/jspf/header.jsp" /><% 
+%><jsp:include page="header.jsp" /><% 
 	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
 	String paperID = request.getParameter(PaperConstants.Field_PaperID);
 	if (paperID == null) {
@@ -420,4 +420,4 @@
 			}
 		}
 	}
-%><jsp:include page="WEB-INF/jspf/footer.jsp" />
+%><jsp:include page="footer.jsp" />

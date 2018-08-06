@@ -2,7 +2,7 @@
 %><%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"
 %><%@page contentType="text/html" pageEncoding="UTF-8"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
-%><jsp:include page="WEB-INF/jspf/header.jsp" />					<form action="${pageContext.request.contextPath}/Papers" method="post" enctype="multipart/form-data">
+%><jsp:include page="header.jsp" />					<form action="${pageContext.request.contextPath}/Papers" method="post" enctype="multipart/form-data">
 						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreateArticle_Process}"/>
 						<div class="content_block_table">
 							<div class="content_block_row">
@@ -58,4 +58,4 @@
 							</div>
 						</div>
 					</form>
-<jsp:include page="WEB-INF/jspf/footer.jsp" />
+<jsp:include page="footer.jsp" />

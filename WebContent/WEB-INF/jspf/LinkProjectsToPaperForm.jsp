@@ -8,7 +8,7 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.bean.ProjectBean"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
-%><jsp:include page="WEB-INF/jspf/header.jsp" /><% 
+%><jsp:include page="header.jsp" /><% 
 	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
 	List<PaperBean> papers = null;
 	String paperID = request.getParameter(PaperConstants.Field_PaperID);
@@ -68,4 +68,4 @@
 			}
 		}
 	}
-%><jsp:include page="WEB-INF/jspf/footer.jsp" />
+%><jsp:include page="footer.jsp" />

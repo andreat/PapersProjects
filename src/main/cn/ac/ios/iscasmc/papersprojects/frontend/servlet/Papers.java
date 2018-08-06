@@ -259,7 +259,7 @@ public class Papers extends HttpServlet {
 	}
 
 	private void showForm(String form, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.getRequestDispatcher(form + ".jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/" + form + ".jsp").forward(request, response);		
 	}
 
 	private void manageUpload(HttpServletRequest request, PaperBean pb, Map<DBMSAction, DBMSStatus> status) throws ServletException, IOException {

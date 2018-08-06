@@ -9,7 +9,7 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
-%><jsp:include page="WEB-INF/jspf/header.jsp" /><% 
+%><jsp:include page="header.jsp" /><% 
 	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
 	String projectID = request.getParameter(PaperConstants.Field_ProjectID);
 	if (projectID == null) {
@@ -41,7 +41,7 @@
 			</div>
 <%
 				} else {
-%><jsp:include page="WEB-INF/jspf/paperSelection.jsp" /> 
+%><jsp:include page="paperSelection.jsp" /> 
 					<div class="content_block_table">
 						<div class="content_block_row">
 							<div class="content_block_column2_64_left content_block_cell_header">
@@ -94,4 +94,4 @@
 			}
 		}
 	}
-%><jsp:include page="WEB-INF/jspf/footer.jsp" />
+%><jsp:include page="footer.jsp" />

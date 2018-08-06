@@ -8,7 +8,7 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.bean.PaperBean"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
-%><jsp:include page="WEB-INF/jspf/header.jsp" /><% 
+%><jsp:include page="header.jsp" /><%
 	String paperID = request.getParameter(PaperConstants.Field_PaperID);
 	if (paperID == null) {
 %>					<div class="notification_error">
@@ -25,10 +25,16 @@
 <%				
 		} else {
 			PaperBean pb = lpb.get(0);
-%>					<form action="${pageContext.request.contextPath}/Papers" method="post" enctype="multipart/form-data">
-						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_ModifyPaper_Process}"/>
+%>					<form action="${pageContext.request.contextPath}/Papers" method="post">
+						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DeletePaper_Process}"/>
 						<input type="hidden" name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 						<div class="content_block_table">
+							<div class="content_block_row">
+								<div class="content_block_column1">
+									Do you really want to <strong>delete</strong> the following paper?
+									The operation can not be reverted.
+								</div>
+							</div>
 							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Identifier:
@@ -42,12 +48,7 @@
 									Ranking:
 								</div>
 								<div class="content_block_column2_19_right">
-									<select name="${PaperConstants.Field_Ranking}">
-										<option value="${PaperConstants.RankingNotRanked}"<%= PaperConstants.RankingNotRanked.equals(pb.getRanking()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingNotRanked) %></option>
-										<option value="${PaperConstants.RankingA}"<%= PaperConstants.RankingA.equals(pb.getRanking()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingA) %></option>
-										<option value="${PaperConstants.RankingB}"<%= PaperConstants.RankingB.equals(pb.getRanking()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingB) %></option>
-										<option value="${PaperConstants.RankingC}"<%= PaperConstants.RankingC.equals(pb.getRanking()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingC) %></option>
-									</select>
+									<%= PaperConstants.getRank(pb.getRanking()) %>
 								</div>
 							</div>
 							<div class="content_block_row">
@@ -266,18 +267,24 @@
 <% 
 				}
 			}
+			if (pb.getFilepath() != null) {
 %>							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
-									Paper file:
+									Paper:
 								</div>
 								<div class="content_block_column2_19_right">
-									<input name="${PaperConstants.Field_PaperFile}" type="file"/>
+									<c:url value="/Papers" var="paperpdf">
+										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DownloadPDF}"/>
+										<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
+									</c:url><a href="${paperpdf}">PDF</a>
 								</div>
 							</div>
-							<div class="content_block_row">
+<%
+			}
+%>							<div class="content_block_row">
 								<div class="content_block_column2_19_left"></div>
 								<div class="content_block_column2_19_right">
-									<input type="submit" value="Modify this paper"/>
+									<input type="submit" value="Yes, delete this paper"/>
 								</div>
 							</div>
 						</div>
@@ -285,4 +292,4 @@
 <%
 		}
 	}
-%><jsp:include page="WEB-INF/jspf/footer.jsp" />
+%><jsp:include page="footer.jsp" />
