@@ -51,8 +51,8 @@ public final class PaperConstants {
 	public static final String Field_ProjectID = "ProjectID";
 	public static final String Field_Year = "Year";
 	
-	public static final String YearNotSelected = "YearNotSelected";
-	public static final String RankingNotSelected = "RankingNotSelected";
+	public static final String YearAll = "YearAll";
+	public static final String RankingAll = "RankingAll";
 	
 	public static final String RankingA = "RankingA";
 	public static final String RankingB = "RankingB";
@@ -64,6 +64,8 @@ public final class PaperConstants {
 			return "Not ranked";
 		}
 		switch(rank) {
+		case RankingAll:
+			return "All ranks";
 		case RankingA:
 			return "CCF A/Core A*";
 		case RankingB:

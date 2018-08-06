@@ -14,35 +14,39 @@
 	int firstYear = dbms.getFirstYear();
 	int lastYear = Calendar.getInstance().get(Calendar.YEAR);
 	if (firstYear > 0) {
-%>						<div class="content_block_row">
-							<div class="content_block_column1">
-								<form action="${pageContext.request.contextPath}/Papers" method="post">
-									<input type="submit" value="Show papers published in year:">
-									<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetPapersForYear}"/>
+%>						<form action="${pageContext.request.contextPath}/Papers" method="post">
+							<div class="content_block_row">
+								<div class="content_block_column1">
+									Year: 
 									<select name="${PaperConstants.Field_Year}">
+										<option value="${PaperConstants.YearAll}" selected>All years</option>
 <%					
 		for (int year = firstYear; year <= lastYear; year++){
 %>										<option><%= year %></option>
 <%			
 		}
 %>									</select>
-								</form>
+								</div>
 							</div>
-						</div>
 <%			
 	}
-%>						<div class="content_block_row">
-							<div class="content_block_column1">
-								<form action="${pageContext.request.contextPath}/Papers" method="post">
-									<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetPapersForRank}"/>
-									<input type="submit" value="Show papers ranked as:">
+%>							<div class="content_block_row">
+								<div class="content_block_column1">
+									Ranking: 
 									<select name="${PaperConstants.Field_Ranking}">
-										<option value="${PaperConstants.RankingNotRanked}" selected><%= PaperConstants.getRank(PaperConstants.RankingNotRanked) %></option>
+										<option value="${PaperConstants.RankingAll}" selected><%= PaperConstants.getRank(PaperConstants.RankingAll) %></option>
+										<option value="${PaperConstants.RankingNotRanked}"><%= PaperConstants.getRank(PaperConstants.RankingNotRanked) %></option>
 										<option value="${PaperConstants.RankingA}"><%= PaperConstants.getRank(PaperConstants.RankingA) %></option>
 										<option value="${PaperConstants.RankingB}"><%= PaperConstants.getRank(PaperConstants.RankingB) %></option>
 										<option value="${PaperConstants.RankingC}"><%= PaperConstants.getRank(PaperConstants.RankingC) %></option>
 									</select>
-								</form>
+								</div>
 							</div>
-						</div>
+							<div class="content_block_row">
+								<div class="content_block_column1">
+									<input type="submit" value="Show papers published in year by rank">
+									<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetPapersForYearAndRank}"/>
+								</div>
+							</div>
+						</form>
 					</div>

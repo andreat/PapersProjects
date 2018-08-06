@@ -105,10 +105,10 @@ public class Papers extends HttpServlet {
 		
 		boolean filter_year = true;
 		boolean filter_rank = true;
-		if (year_str == null || year_str.equals(PaperConstants.YearNotSelected)) {
+		if (year_str == null || year_str.equals(PaperConstants.YearAll)) {
 			filter_year = false;
 		}
-		if (rank == null || rank.equals(PaperConstants.RankingNotSelected)) {
+		if (rank == null || rank.equals(PaperConstants.RankingAll)) {
 			filter_rank = false;
 		}
 		String jsp = "WEB-INF/jspf/GetAllPapers.jsp";

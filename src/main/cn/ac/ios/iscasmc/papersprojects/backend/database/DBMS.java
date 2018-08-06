@@ -1145,6 +1145,43 @@ public class DBMS {
 	 * 
 	 * @return <null> if some SQL error occurred
 	 */
+	public List<PaperBean> getPapersPublishedInYearWithRank(int year, String rank) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<PaperBean> papers;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = connection.prepareStatement("select * from paper where year = ? and ranking = ?;");
+			ps.setInt(1, year);
+			ps.setString(2, rank);
+			rs = ps.executeQuery();
+			papers = generatePapers(rs);
+		} catch (SQLException sqle) {
+			papers = null;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
+		}
+		fillAuthors(papers);
+		return papers;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
 	public List<PaperBean> getPapersByRank(String rank) {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
