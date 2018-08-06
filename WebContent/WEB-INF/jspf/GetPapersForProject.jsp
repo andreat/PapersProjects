@@ -10,7 +10,7 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
 %><jsp:include page="header.jsp" /><% 
-	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+	DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 	String projectID = request.getParameter(PaperConstants.Field_ProjectID);
 	if (projectID == null) {
 %>					<div class="notification_error">

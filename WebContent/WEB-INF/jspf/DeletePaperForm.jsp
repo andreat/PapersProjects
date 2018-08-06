@@ -16,7 +16,7 @@
 					</div>
 <%				
 	} else {
-		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 		List<PaperBean> lpb = dbms.getPaperByID(paperID);
 		if (lpb == null || lpb.size() == 0) {
 %>					<div class="notification_error">

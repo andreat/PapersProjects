@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2017 Andrea Turrini
+ * Copyright (C) 2017-2018 Andrea Turrini
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ public class AppContextListener implements ServletContextListener {
     	
 		DBMS connectionManager = new DBMS(connectorClass, host, port, database, user, pwd);
 		if (connectionManager.isInitialized()) {
-			ctx.setAttribute("DBMS", connectionManager);
+			ctx.setAttribute(DBMS.DBMS_ENTITY, connectionManager);
 		} else {
 			System.err.println("Error in initializing the DBMS backend");
 		}
@@ -48,7 +48,7 @@ public class AppContextListener implements ServletContextListener {
 	}
 	
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
-    	DBMS dbms = (DBMS) servletContextEvent.getServletContext().getAttribute("DBMS");
+    	DBMS dbms = (DBMS) servletContextEvent.getServletContext().getAttribute(DBMS.DBMS_ENTITY);
     	if (dbms != null) {
     		dbms.closeConnection();
     	}

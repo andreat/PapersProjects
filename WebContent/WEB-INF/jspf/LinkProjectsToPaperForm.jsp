@@ -9,7 +9,7 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><jsp:include page="header.jsp" /><% 
-	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+	DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 	List<PaperBean> papers = null;
 	String paperID = request.getParameter(PaperConstants.Field_PaperID);
 	if (paperID == null) {

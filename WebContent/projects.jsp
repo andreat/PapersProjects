@@ -16,7 +16,7 @@
 %><jsp:include page="WEB-INF/jspf/header.jsp" /><%
 	Object statusOperation = request.getAttribute(InternalOperationConstants.StatusOperation);
 	String action = request.getParameter(ProjectConstants.Action);
-	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+	DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 	List<ProjectBean> projects;
 	PaperBean paper = null;
 	String authorID = null;

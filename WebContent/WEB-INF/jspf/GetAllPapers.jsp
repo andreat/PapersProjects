@@ -8,7 +8,7 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
 %><jsp:include page="header.jsp" /><% 
-	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+	DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 	List<PaperBean> papers = dbms.getPapers();
 	if (papers == null) {
 %>					<div class="notification_error">

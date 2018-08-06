@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) ${year} Andrea Turrini
+ * Copyright (C) 2017-2018 Andrea Turrini
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ public class ProjectServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
 
-		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 
 		String action = request.getParameter(ProjectConstants.Action);
 		if (action != null) {

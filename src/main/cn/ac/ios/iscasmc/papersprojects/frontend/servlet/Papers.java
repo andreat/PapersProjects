@@ -65,11 +65,12 @@ public class Papers extends HttpServlet {
 			case PaperConstants.Action_LinkProjectsToPaper_Form:
 			case PaperConstants.Action_GetPapersForAuthor:
 			case PaperConstants.Action_GetPapersForProject:
-			case PaperConstants.Action_GetPapersForRank:
-			case PaperConstants.Action_GetPapersForYear:
 			case PaperConstants.Action_GetAllPapers:
 			case PaperConstants.Action_GetFullDetailsForPaper:
 				showForm(action, request, response);
+				break;
+			case PaperConstants.Action_GetPapersForYearAndRank:
+				manageGetPapersForYearAndRank(request, response);
 				break;
 			case PaperConstants.Action_CreateArticle_Process:
 				manageCreateArticleProcess(request, response);
@@ -98,9 +99,36 @@ public class Papers extends HttpServlet {
 		}
 	}
 	
+	private void manageGetPapersForYearAndRank(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String year_str = request.getParameter(PaperConstants.Field_Year);
+		String rank = request.getParameter(PaperConstants.Field_Ranking);
+		
+		boolean filter_year = true;
+		boolean filter_rank = true;
+		if (year_str == null || year_str.equals(PaperConstants.YearNotSelected)) {
+			filter_year = false;
+		}
+		if (rank == null || rank.equals(PaperConstants.RankingNotSelected)) {
+			filter_rank = false;
+		}
+		String jsp = "WEB-INF/jspf/GetAllPapers.jsp";
+		if (filter_year && filter_rank) {
+			jsp = "WEB-INF/jspf/GetPapersForYearAndRank.jsp";
+		} else {
+			if (filter_year) {
+				jsp = "WEB-INF/jspf/GetPapersForYear.jsp";
+			} else {
+				if (filter_rank) {
+					jsp = "WEB-INF/jspf/GetPapersForRank.jsp";
+				}
+			}
+		}
+		request.getRequestDispatcher(jsp).forward(request, response);
+	}
+
 	private void manageCreateArticleProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
-		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 		
 		boolean removeMarkers = false;
 		if (request.getParameter(PaperConstants.Field_RemoveLaTeXMarkers) != null) {
@@ -117,12 +145,12 @@ public class Papers extends HttpServlet {
 			status.putAll(dbms.storePaper(pb));
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("CreateArticleProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/CreateArticleProcess.jsp").forward(request, response);		
 	}
 
 	private void manageCreateInproceedingsProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
-		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 		
 		boolean removeMarkers = false;
 		if (request.getParameter(PaperConstants.Field_RemoveLaTeXMarkers) != null) {
@@ -152,12 +180,12 @@ public class Papers extends HttpServlet {
 			}
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("CreateInproceedingsProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/CreateInproceedingsProcess.jsp").forward(request, response);		
 	}
 
 	private void manageDeletePaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
-		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 		
 		String paperID = request.getParameter(PaperConstants.Field_PaperID);
 		if (paperID == null) {
@@ -166,12 +194,12 @@ public class Papers extends HttpServlet {
 			status.putAll(dbms.removePaper(paperID));
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("DeletePaperProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/DeletePaperProcess.jsp").forward(request, response);		
 	}
 
 	private void manageModifyPaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
-		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 		
 		PaperBean pb = null;
 		String paperID = request.getParameter(PaperConstants.Field_PaperID);
@@ -194,12 +222,12 @@ public class Papers extends HttpServlet {
 			}
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("ModifyPaperProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/ModifyPaperProcess.jsp").forward(request, response);		
 	}
 
 	private void manageDownloadPDF(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
-		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 		
 		PaperBean pb = null;
 		String paperID = request.getParameter(PaperConstants.Field_PaperID);
@@ -222,7 +250,7 @@ public class Papers extends HttpServlet {
 
 	private void manageLinkProjectsToPaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
-		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 		
 		String paperID = request.getParameter(PaperConstants.Field_PaperID);
 		if (paperID == null) {
@@ -236,12 +264,12 @@ public class Papers extends HttpServlet {
 			}
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("LinkProjectsToPaperProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/LinkProjectsToPaperProcess.jsp").forward(request, response);		
 	}
 
 	private void manageDelinkProjectsFromPaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
-		DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 		
 		String paperID = request.getParameter(PaperConstants.Field_PaperID);
 		if (paperID == null) {
@@ -255,7 +283,7 @@ public class Papers extends HttpServlet {
 			}
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("DelinkProjectsFromPaperProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/DelinkProjectsFromPaperProcess.jsp").forward(request, response);		
 	}
 
 	private void showForm(String form, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

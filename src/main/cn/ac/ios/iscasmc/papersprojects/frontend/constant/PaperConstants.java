@@ -30,8 +30,7 @@ public final class PaperConstants {
 	public static final String Action_DownloadPDF = "DownloadPDF";
 
 	public static final String Action_GetPapersForAuthor = "GetPapersForAuthor";
-	public static final String Action_GetPapersForYear = "GetPapersForYear";
-	public static final String Action_GetPapersForRank = "GetPapersForRank";
+	public static final String Action_GetPapersForYearAndRank = "GetPapersForYearAndRank";
 	public static final String Action_GetPapersForProject = "GetPapersForProject";
 	public static final String Action_GetAllPapers = "GetAllPapers";
 	public static final String Action_GetFullDetailsForPaper = "GetFullDetailsForPaper";
@@ -51,6 +50,9 @@ public final class PaperConstants {
 	public static final String Field_PaperID = "PaperID";
 	public static final String Field_ProjectID = "ProjectID";
 	public static final String Field_Year = "Year";
+	
+	public static final String YearNotSelected = "YearNotSelected";
+	public static final String RankingNotSelected = "RankingNotSelected";
 	
 	public static final String RankingA = "RankingA";
 	public static final String RankingB = "RankingB";

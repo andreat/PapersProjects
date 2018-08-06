@@ -38,6 +38,8 @@ import cn.ac.ios.iscasmc.papersprojects.backend.bean.ProjectBean;
  * @author Andrea Turrini
  */
 public class DBMS {
+	public static final String DBMS_ENTITY = "DBMS_ENTITY";
+	
 	/**
 	 * The connection to the database, kept active
 	 */

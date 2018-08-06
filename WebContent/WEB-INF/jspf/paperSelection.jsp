@@ -10,7 +10,7 @@
 %><%@page import="java.text.MessageFormat"
 %>					<div class="content_block_table">
 <%
-	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+	DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 	int firstYear = dbms.getFirstYear();
 	int lastYear = Calendar.getInstance().get(Calendar.YEAR);
 	if (firstYear > 0) {

@@ -7,7 +7,7 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
 %><%@page import="java.util.List"
 %><jsp:include page="WEB-INF/jspf/header.jsp" /><%
-	DBMS dbms = (DBMS) getServletContext().getAttribute("DBMS");
+	DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 	List<AuthorBean> authors =  dbms.getAuthors();
 	if (authors == null) {
 %>					<div class="notification_error">
