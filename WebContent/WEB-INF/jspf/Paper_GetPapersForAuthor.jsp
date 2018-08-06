@@ -9,7 +9,6 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
 %><jsp:include page="header.jsp" /><% 
-	DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 	String authorID = request.getParameter(PaperConstants.Field_AuthorID);
 	if (authorID == null) {
 %>					<div class="notification_error">
@@ -17,6 +16,7 @@
 					</div>
 <%
 	} else {
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 		AuthorBean author = dbms.getAuthorByID(authorID);
 		if (author == null) {
 %>					<div class="notification_error">
