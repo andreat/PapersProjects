@@ -111,15 +111,15 @@ public class Papers extends HttpServlet {
 		if (rank == null || rank.equals(PaperConstants.RankingAll)) {
 			filter_rank = false;
 		}
-		String jsp = "WEB-INF/jspf/GetAllPapers.jsp";
+		String jsp = "WEB-INF/jspf/Paper_GetAllPapers.jsp";
 		if (filter_year && filter_rank) {
-			jsp = "WEB-INF/jspf/GetPapersForYearAndRank.jsp";
+			jsp = "WEB-INF/jspf/Paper_GetPapersForYearAndRank.jsp";
 		} else {
 			if (filter_year) {
-				jsp = "WEB-INF/jspf/GetPapersForYear.jsp";
+				jsp = "WEB-INF/jspf/Paper_GetPapersForYear.jsp";
 			} else {
 				if (filter_rank) {
-					jsp = "WEB-INF/jspf/GetPapersForRank.jsp";
+					jsp = "WEB-INF/jspf/Paper_GetPapersForRank.jsp";
 				}
 			}
 		}
@@ -145,7 +145,7 @@ public class Papers extends HttpServlet {
 			status.putAll(dbms.storePaper(pb));
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("WEB-INF/jspf/CreateArticleProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/Paper_CreateArticleProcess.jsp").forward(request, response);		
 	}
 
 	private void manageCreateInproceedingsProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -180,7 +180,7 @@ public class Papers extends HttpServlet {
 			}
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("WEB-INF/jspf/CreateInproceedingsProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/Paper_CreateInproceedingsProcess.jsp").forward(request, response);		
 	}
 
 	private void manageDeletePaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -194,7 +194,7 @@ public class Papers extends HttpServlet {
 			status.putAll(dbms.removePaper(paperID));
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("WEB-INF/jspf/DeletePaperProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/Paper_DeletePaperProcess.jsp").forward(request, response);		
 	}
 
 	private void manageModifyPaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -222,7 +222,7 @@ public class Papers extends HttpServlet {
 			}
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("WEB-INF/jspf/ModifyPaperProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/Paper_ModifyPaperProcess.jsp").forward(request, response);		
 	}
 
 	private void manageDownloadPDF(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -264,7 +264,7 @@ public class Papers extends HttpServlet {
 			}
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("WEB-INF/jspf/LinkProjectsToPaperProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/Paper_LinkProjectsToPaperProcess.jsp").forward(request, response);		
 	}
 
 	private void manageDelinkProjectsFromPaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -275,7 +275,7 @@ public class Papers extends HttpServlet {
 		if (paperID == null) {
 			status.put(DBMSAction.PaperProjectLink, DBMSStatus.PaperMissingIdentifier);
 		} else {
-		String[] projectIDs = request.getParameterValues(ProjectConstants.ProjectID);
+		String[] projectIDs = request.getParameterValues(ProjectConstants.Field_ProjectID);
 			if (projectIDs == null || projectIDs.length == 0) {
 				status.put(DBMSAction.PaperProjectDelink, DBMSStatus.PaperMissingProjects);
 			} else {
@@ -283,11 +283,11 @@ public class Papers extends HttpServlet {
 			}
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		request.getRequestDispatcher("WEB-INF/jspf/DelinkProjectsFromPaperProcess.jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/Paper_DelinkProjectsFromPaperProcess.jsp").forward(request, response);		
 	}
 
 	private void showForm(String form, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.getRequestDispatcher("WEB-INF/jspf/" + form + ".jsp").forward(request, response);		
+		request.getRequestDispatcher("WEB-INF/jspf/Paper_" + form + ".jsp").forward(request, response);		
 	}
 
 	private void manageUpload(HttpServletRequest request, PaperBean pb, Map<DBMSAction, DBMSStatus> status) throws ServletException, IOException {

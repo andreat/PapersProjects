@@ -193,9 +193,9 @@
 									Actions:
 								</div>
 								<div class="content_block_column2_19_right">
-									<c:url value="/projects.jsp" var="listProjects">
-										<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.GetProjectsForPaper}"/>
-										<c:param name="${ProjectConstants.PaperID}" value="<%= pb.getIdentifier() %>"/>
+									<c:url value="/Projects" var="listProjects">
+										<c:param name="${ProjectConstants.Field_Action}" value="${ProjectConstants.Action_GetProjectsForPaper}"/>
+										<c:param name="${ProjectConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
 									</c:url><a href="${listProjects}">List acknowledged projects</a>,
 									<c:url value="/Paper" var="linkProjects">
 										<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_LinkProjectsToPaper_Form}"/>

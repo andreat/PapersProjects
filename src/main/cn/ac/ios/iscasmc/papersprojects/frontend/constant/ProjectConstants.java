@@ -18,35 +18,40 @@
 package cn.ac.ios.iscasmc.papersprojects.frontend.constant;
 
 public final class ProjectConstants {
-	public static final String Action= "action";
-	public static final String Year = "year";
-	public static final String CreateProject = "createProject";
-	public static final String ModifyProject = "modifyProject";
-	public static final String DeleteProject = "deleteProject";
-	public static final String DeleteProjectConfirm = "deleteProjectConfirm";
-	public static final String GetProjectsForAuthor = "getProjectsForAuthor";
-	public static final String GetProjectsForYear = "getProjectsForYear";
-	public static final String GetProjectsForPaper = "getProjectsForPaper";
-	public static final String GetProjects = "getProjects";
-	public static final String GetFullDetailsForProject = "getFullDetailsForProject";
+	
+	public static final String Action_CreateProject_Form = "CreateProjectForm";
+	public static final String Action_CreateProject_Process = "CreateProjectProcess";
+	public static final String Action_ModifyProject_Form = "ModifyProjectForm";
+	public static final String Action_ModifyProject_Process = "ModifyProjectProcess";
+	public static final String Action_DeleteProject_Form = "DeleteProjectForm";
+	public static final String Action_DeleteProject_Process = "DeleteProjectProcess";
+	public static final String Action_LinkPapersToProject_Form = "LinkPapersToProjectForm";
+	public static final String Action_LinkPapersToProject_Process = "LinkPapersToProjectProcess";
+	public static final String Action_DelinkPapersFromProject = "DelinkPapersFromProject";
+	public static final String Action_GetProjectsForAuthor = "GetProjectsForAuthor";
+	public static final String Action_GetProjectsForYear = "GetProjectsForYear";
+	public static final String Action_GetProjectsForPaper = "GetProjectsForPaper";
+	public static final String Action_GetAllProjects = "GetAllProjects";
+	public static final String Action_GetFullDetailsForProject = "GetFullDetailsForProject";
 
-	public static final String AuthorID = "authorID";
-	public static final String PaperID = "paperID";
-	public static final String ProjectID = "projectID";
+	public static final String Field_Action= "Action";
+	public static final String Field_Year = "Year";
+
+	public static final String Field_AuthorID = "AuthorID";
+	public static final String Field_PaperID = "PaperID";
+	public static final String Field_ProjectID = "ProjectID";
 	
-	public static final String ProjectIdentifierTextField = "ProjectIdentifierTextField";
-	public static final String ProjectTitleTextField = "ProjectTitleTextField";
-	public static final String ProjectFunderTextField = "ProjectFunderTextField";
-	public static final String ProjectAckTextField = "ProjectAckTextField";
-	public static final String ProjectStartDateYear = "ProjectStartDateYear";
-	public static final String ProjectStartDateMonth = "ProjectStartDateMonth";
-	public static final String ProjectStartDateDay = "ProjectStartDateDay";
-	public static final String ProjectEndDateYear = "ProjectEndDateYear";
-	public static final String ProjectEndDateMonth = "ProjectEndDateMonth";
-	public static final String ProjectEndDateDay = "ProjectEndDateDay";
+	public static final String Field_ProjectIdentifier = "ProjectIdentifier";
+	public static final String Field_ProjectTitle = "ProjectTitle";
+	public static final String Field_ProjectFunder = "ProjectFunder";
+	public static final String Field_ProjectAck = "ProjectAck";
+	public static final String Field_ProjectStartDateYear = "ProjectStartDateYear";
+	public static final String Field_ProjectStartDateMonth = "ProjectStartDateMonth";
+	public static final String Field_ProjectStartDateDay = "ProjectStartDateDay";
+	public static final String Field_ProjectEndDateYear = "ProjectEndDateYear";
+	public static final String Field_ProjectEndDateMonth = "ProjectEndDateMonth";
+	public static final String Field_ProjectEndDateDay = "ProjectEndDateDay";
 	
-	public static final String LinkPapersToProject = "linkPapersToProject";
-	public static final String DelinkPapersFromProject = "delinkPapersFromProject";
 	
 	private ProjectConstants() {};
 }

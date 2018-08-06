@@ -41,9 +41,9 @@
 									<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetPapersForAuthor}"/>
 									<c:param name="${PaperConstants.Field_AuthorID}" value="<%= ab.getName() %>"/>
 								</c:url><a href="${papers}">List papers</a>,
-								<c:url value="/projects.jsp" var="projects">
-									<c:param name="${ProjectConstants.Action}" value="${ProjectConstants.GetProjectsForAuthor}"/>
-									<c:param name="${ProjectConstants.AuthorID}" value="<%= ab.getName() %>"/>
+								<c:url value="/Projects" var="projects">
+									<c:param name="${ProjectConstants.Field_Action}" value="${ProjectConstants.Action_GetProjectsForAuthor}"/>
+									<c:param name="${ProjectConstants.Field_AuthorID}" value="<%= ab.getName() %>"/>
 								</c:url><a href="${projects}">List projects</a>
 							</div>
 						</div>
