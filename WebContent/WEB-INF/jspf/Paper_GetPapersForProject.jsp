@@ -35,7 +35,7 @@
 				if (papers.size() == 0) {
 %>					<div class="notification_warning">
 				<c:url value="/Projects" var="linkPapers">
-					<c:param name="${ProjectConstants.Field_Action}" value="${ProjectConstants.Action_LinkPapersToProject}"/>
+					<c:param name="${ProjectConstants.Field_Action}" value="${ProjectConstants.Action_LinkPapersToProject_Form}"/>
 					<c:param name="${ProjectConstants.Field_ProjectID}" value="<%= project.getIdentifier() %>"/>
 				</c:url>No paper acknowledging the project. First <a href="${linkPapers}">link one</a>.
 			</div>

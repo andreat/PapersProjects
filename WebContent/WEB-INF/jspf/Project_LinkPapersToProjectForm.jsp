@@ -39,7 +39,7 @@
 %>							<div class="content_block_row">
 								<div class="content_block_column1">
 									<label>
-										<input type="checkbox" name="${ProjectConstants.PaperID}" value="<%= lpb.getIdentifier() %>"/>
+										<input type="checkbox" name="${ProjectConstants.Field_PaperID}" value="<%= lpb.getIdentifier() %>"/>
 										<%= lpb.getTitle() %>
 									</label>
 								</div>
