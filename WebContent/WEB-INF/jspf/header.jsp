@@ -22,7 +22,7 @@
         				<h1 class="system">Papers and Projects management system</h1>
        				</div>
 					<div class="wrapper">
-						<a href="${pageContext.request.contextPath}/authors.jsp"><span class="btn_main">Authors</span></a>
+						<a href="${pageContext.request.contextPath}/Authors"><span class="btn_main">Authors</span></a>
 						<a href="${pageContext.request.contextPath}/Papers"><span class="btn_main">Papers</span></a>
 						<a href="${pageContext.request.contextPath}/Projects"><span class="btn_main">Projects</span></a>
 					</div>

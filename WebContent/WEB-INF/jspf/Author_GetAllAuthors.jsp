@@ -6,9 +6,9 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants"
 %><%@page import="java.util.List"
-%><jsp:include page="WEB-INF/jspf/header.jsp" /><%
+%><jsp:include page="header.jsp" /><%
 	DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
-	List<AuthorBean> authors =  dbms.getAuthors();
+	List<AuthorBean> authors = dbms.getAuthors();
 	if (authors == null) {
 %>					<div class="notification_error">
 						Error with the database during the retrieval of the authors.
@@ -53,4 +53,4 @@
 <%
 		}
 	}
-%><jsp:include page="WEB-INF/jspf/footer.jsp" />
+%><jsp:include page="footer.jsp" />
