@@ -224,7 +224,6 @@ public class Projects extends HttpServlet {
 
 	private void manageDelinkPapersFromProjectProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
-		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
 		showDefault(request, response);
