@@ -45,10 +45,18 @@
 							</div>
 							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
-									Ranking:
+									CCF Ranking:
 								</div>
 								<div class="content_block_column2_19_right">
-									<%= PaperConstants.getRank(pb.getRanking()) %>
+									<%= PaperConstants.getRank(pb.getRankingCCF()) %>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									CORE Ranking:
+								</div>
+								<div class="content_block_column2_19_right">
+									<%= PaperConstants.getRank(pb.getRankingCORE()) %>
 								</div>
 							</div>
 							<div class="content_block_row">

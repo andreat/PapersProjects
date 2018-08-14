@@ -55,6 +55,9 @@ public class Papers extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = request.getParameter(PaperConstants.Field_Action);
 		if (action == null) {
+			DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
+			List<PaperBean> papers = dbms.getPapers();
+			request.setAttribute(PaperConstants.PAPER_LIST_ENTITY, papers);
 			showForm(PaperConstants.Action_GetAllPapers, request, response);
 		} else {
 			switch (action) {
@@ -65,8 +68,13 @@ public class Papers extends HttpServlet {
 			case PaperConstants.Action_LinkProjectsToPaper_Form:
 			case PaperConstants.Action_GetPapersForAuthor:
 			case PaperConstants.Action_GetPapersForProject:
-			case PaperConstants.Action_GetAllPapers:
 			case PaperConstants.Action_GetFullDetailsForPaper:
+				showForm(action, request, response);
+				break;
+			case PaperConstants.Action_GetAllPapers:
+				DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
+				List<PaperBean> papers = dbms.getPapers();
+				request.setAttribute(PaperConstants.PAPER_LIST_ENTITY, papers);
 				showForm(action, request, response);
 				break;
 			case PaperConstants.Action_GetPapersForYearAndRank:
@@ -101,29 +109,56 @@ public class Papers extends HttpServlet {
 	
 	private void manageGetPapersForYearAndRank(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String year_str = request.getParameter(PaperConstants.Field_Year);
-		String rank = request.getParameter(PaperConstants.Field_Ranking);
+		String rank_ccf = request.getParameter(PaperConstants.Field_Ranking_CCF);
+		String rank_core = request.getParameter(PaperConstants.Field_Ranking_CORE);
+		int year = 0;
 		
-		boolean filter_year = true;
-		boolean filter_rank = true;
+		int choice = 0;
 		if (year_str == null || year_str.equals(PaperConstants.YearAll)) {
-			filter_year = false;
-		}
-		if (rank == null || rank.equals(PaperConstants.RankingAll)) {
-			filter_rank = false;
-		}
-		String jsp = "WEB-INF/jspf/Paper_GetAllPapers.jsp";
-		if (filter_year && filter_rank) {
-			jsp = "WEB-INF/jspf/Paper_GetPapersForYearAndRank.jsp";
+			choice += 1;
 		} else {
-			if (filter_year) {
-				jsp = "WEB-INF/jspf/Paper_GetPapersForYear.jsp";
-			} else {
-				if (filter_rank) {
-					jsp = "WEB-INF/jspf/Paper_GetPapersForRank.jsp";
-				}
-			}
+	        try {
+                year = Integer.parseInt(year_str);
+	        } catch (NumberFormatException nfe) {
+                choice +=1;
+	        }			
 		}
-		request.getRequestDispatcher(jsp).forward(request, response);
+		if (rank_ccf == null || rank_ccf.equals(PaperConstants.RankingAll)) {
+			choice += 2;
+		}
+		if (rank_core == null || rank_core.equals(PaperConstants.RankingAll)) {
+			choice += 4;
+		}
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
+		List<PaperBean> papers;
+		switch (choice) {
+		case 0 :
+            papers = dbms.getPapersPublishedInYearWithCCFandCORE(year, rank_ccf, rank_core);
+			break;
+		case 1 :
+            papers = dbms.getPapersPublishedWithCCFandCORE(rank_ccf, rank_core);
+			break;
+		case 2 :
+            papers = dbms.getPapersPublishedInYearWithCORE(year, rank_core);
+			break;
+		case 3 :
+            papers = dbms.getPapersPublishedWithCORE(rank_core);
+			break;
+		case 4 :
+            papers = dbms.getPapersPublishedInYearWithCCF(year, rank_ccf);
+			break;
+		case 5 :
+            papers = dbms.getPapersPublishedWithCCF(rank_ccf);
+			break;
+		case 6 :
+            papers = dbms.getPapersPublishedInYear(year);
+			break;
+		default:
+			papers = dbms.getPapers();
+			break;
+		}
+		request.setAttribute(PaperConstants.PAPER_LIST_ENTITY, papers);
+		showForm(PaperConstants.Action_GetAllPapers, request, response);		
 	}
 
 	private void manageCreateArticleProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -140,7 +175,8 @@ public class Papers extends HttpServlet {
 		if (pb == null) {
 			status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
 		} else {
-			pb.setRanking(request.getParameter(PaperConstants.Field_Ranking));
+			pb.setRankingCCF(request.getParameter(PaperConstants.Field_Ranking_CCF));
+			pb.setRankingCORE(request.getParameter(PaperConstants.Field_Ranking_CORE));
 			manageUpload(request, pb, status);
 			status.putAll(dbms.storePaper(pb));
 		}
@@ -174,7 +210,8 @@ public class Papers extends HttpServlet {
 			if (pb == null) {
 				status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
 			} else {
-				pb.setRanking(request.getParameter(PaperConstants.Field_Ranking));
+				pb.setRankingCCF(request.getParameter(PaperConstants.Field_Ranking_CCF));
+				pb.setRankingCORE(request.getParameter(PaperConstants.Field_Ranking_CORE));
 				manageUpload(request, pb, status);
 				status.putAll(dbms.storePaper(pb));
 			}
@@ -212,9 +249,11 @@ public class Papers extends HttpServlet {
 		if (pb == null) {
 			status.put(DBMSAction.PaperUpdate, DBMSStatus.NoSuchElement);
 		} else {
-			String ranking = request.getParameter(PaperConstants.Field_Ranking);
-			if (ranking != null) {
-				pb.setRanking(ranking);
+			String ranking_ccf = request.getParameter(PaperConstants.Field_Ranking_CCF);
+			String ranking_core = request.getParameter(PaperConstants.Field_Ranking_CORE);
+			if (ranking_ccf != null && ranking_core != null) {
+				pb.setRankingCCF(ranking_ccf);
+				pb.setRankingCORE(ranking_core);
 				manageUpload(request, pb, status);
 				status.putAll(dbms.updatePaper(pb));
 			} else {
@@ -287,6 +326,9 @@ public class Papers extends HttpServlet {
 	}
 
 	private void showDefault(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
+		List<PaperBean> papers = dbms.getPapers();
+		request.setAttribute(PaperConstants.PAPER_LIST_ENTITY, papers);
 		showForm(PaperConstants.Action_GetAllPapers, request, response);		
 	}
 

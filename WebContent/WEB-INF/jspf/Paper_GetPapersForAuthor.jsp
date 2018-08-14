@@ -59,7 +59,7 @@
 								<c:url value="/Papers" var="paperfull">
 									<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetFullDetailsForPaper}"/>
 									<c:param name="${PaperConstants.Field_PaperID}" value="<%= pb.getIdentifier() %>"/>
-								</c:url><a href="${paperfull}"><%= pb.getTitle() %></a> (<%= pb.getYear() %>, <%= PaperConstants.getRank(pb.getRanking()) %><% 
+								</c:url><a href="${paperfull}"><%= pb.getTitle() %></a> (<%= pb.getYear() %>, <%= PaperConstants.getRank(pb.getRankingCCF()) %>/<%= PaperConstants.getRank(pb.getRankingCORE()) %><% 
 						if (pb.getFilepath() != null) {
 						%><c:url value="/Papers" var="paperpdf">
 							<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_DownloadPDF}"/>

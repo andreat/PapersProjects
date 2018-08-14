@@ -39,14 +39,28 @@
 							</div>
 							<div class="content_block_row">
 								<div class="content_block_column2_28_left">
-									Ranking:
+									CCF Ranking:
 								</div>
 								<div class="content_block_column2_28_right">
-									<select name="${PaperConstants.Field_Ranking}">
+									<select name="${PaperConstants.Field_Ranking_CCF}">
+										<option value="${PaperConstants.RankingCCF_A}"><%= PaperConstants.getRank(PaperConstants.RankingCCF_A) %></option>
+										<option value="${PaperConstants.RankingCCF_B}"><%= PaperConstants.getRank(PaperConstants.RankingCCF_B) %></option>
+										<option value="${PaperConstants.RankingCCF_C}"><%= PaperConstants.getRank(PaperConstants.RankingCCF_C) %></option>
 										<option value="${PaperConstants.RankingNotRanked}" selected><%= PaperConstants.getRank(PaperConstants.RankingNotRanked) %></option>
-										<option value="${PaperConstants.RankingA}"><%= PaperConstants.getRank(PaperConstants.RankingA) %></option>
-										<option value="${PaperConstants.RankingB}"><%= PaperConstants.getRank(PaperConstants.RankingB) %></option>
-										<option value="${PaperConstants.RankingC}"><%= PaperConstants.getRank(PaperConstants.RankingC) %></option>
+									</select>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_28_left">
+									CORE Ranking:
+								</div>
+								<div class="content_block_column2_28_right">
+									<select name="${PaperConstants.Field_Ranking_CORE}">
+										<option value="${PaperConstants.RankingCORE_AStar}"><%= PaperConstants.getRank(PaperConstants.RankingCORE_AStar) %></option>
+										<option value="${PaperConstants.RankingCORE_A}"><%= PaperConstants.getRank(PaperConstants.RankingCORE_A) %></option>
+										<option value="${PaperConstants.RankingCORE_B}"><%= PaperConstants.getRank(PaperConstants.RankingCORE_B) %></option>
+										<option value="${PaperConstants.RankingCORE_C}"><%= PaperConstants.getRank(PaperConstants.RankingCORE_C) %></option>
+										<option value="${PaperConstants.RankingNotRanked}" selected><%= PaperConstants.getRank(PaperConstants.RankingNotRanked) %></option>
 									</select>
 								</div>
 							</div>

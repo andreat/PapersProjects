@@ -238,7 +238,7 @@ public class DBMS {
 			if (isPresent) {
 				statusMap.put(DBMSAction.PaperInsert, DBMSStatus.DuplicatedEntry);
 			} else {
-				ps = connection.prepareStatement("insert into paper values(?,?,?,?,?,?,?,?,?,?,?,?,?)");
+				ps = connection.prepareStatement("insert into paper values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 				ps.setString(1, pb.getIdentifier());
 				ps.setString(2, pb.getTitle());
 				ps.setString(3, pb.getBooktitle());
@@ -256,7 +256,8 @@ public class DBMS {
 				ps.setString(10, pb.getDoi());
 				ps.setString(11, pb.getUrl());
 				ps.setString(12, pb.getFilepath());
-				ps.setString(13, pb.getRanking());
+				ps.setString(13, pb.getRankingCCF());
+				ps.setString(14, pb.getRankingCORE());
 				ps.executeUpdate();
 				connection.commit();
 				statusMap.put(DBMSAction.PaperInsert, DBMSStatus.Success);
@@ -346,9 +347,10 @@ public class DBMS {
 		PreparedStatement psf = null;
 		try {
 			connection.setAutoCommit(false);
-			psr = connection.prepareStatement("update paper set ranking = ? where identifier = ?");
-			psr.setString(1, pb.getRanking());
-			psr.setString(2, pb.getIdentifier());
+			psr = connection.prepareStatement("update paper set ranking_CCF = ?, ranking_CORE=? where identifier = ?");
+			psr.setString(1, pb.getRankingCCF());
+			psr.setString(2, pb.getRankingCORE());
+			psr.setString(3, pb.getIdentifier());
 			int updates = psr.executeUpdate();
 			if (pb.getFilepath() != null) {
 				psf = connection.prepareStatement("update paper set filepath = ? where identifier = ?");
@@ -1145,7 +1147,7 @@ public class DBMS {
 	 * 
 	 * @return <null> if some SQL error occurred
 	 */
-	public List<PaperBean> getPapersPublishedInYearWithRank(int year, String rank) {
+	public List<PaperBean> getPapersPublishedInYearWithCCFandCORE(int year, String ccf, String core) {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
 			return null;
@@ -1155,9 +1157,10 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = connection.prepareStatement("select * from paper where year = ? and ranking = ?;");
+			ps = connection.prepareStatement("select * from paper where year = ? and ranking_ccf = ? and ranking_core = ?;");
 			ps.setInt(1, year);
-			ps.setString(2, rank);
+			ps.setString(2, ccf);
+			ps.setString(3, core);
 			rs = ps.executeQuery();
 			papers = generatePapers(rs);
 		} catch (SQLException sqle) {
@@ -1182,7 +1185,7 @@ public class DBMS {
 	 * 
 	 * @return <null> if some SQL error occurred
 	 */
-	public List<PaperBean> getPapersByRank(String rank) {
+	public List<PaperBean> getPapersPublishedInYearWithCCF(int year, String ccf) {
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
 			return null;
@@ -1192,7 +1195,154 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = connection.prepareStatement("select * from paper where ranking = ?;");
+			ps = connection.prepareStatement("select * from paper where year = ? and ranking_ccf = ?;");
+			ps.setInt(1, year);
+			ps.setString(2, ccf);
+			rs = ps.executeQuery();
+			papers = generatePapers(rs);
+		} catch (SQLException sqle) {
+			papers = null;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
+		}
+		fillAuthors(papers);
+		return papers;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
+	public List<PaperBean> getPapersPublishedInYearWithCORE(int year, String core) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<PaperBean> papers;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = connection.prepareStatement("select * from paper where year = ? and ranking_core = ?;");
+			ps.setInt(1, year);
+			ps.setString(2, core);
+			rs = ps.executeQuery();
+			papers = generatePapers(rs);
+		} catch (SQLException sqle) {
+			papers = null;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
+		}
+		fillAuthors(papers);
+		return papers;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
+	public List<PaperBean> getPapersPublishedWithCCFandCORE(String ccf, String core) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<PaperBean> papers;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = connection.prepareStatement("select * from paper where ranking_ccf = ? and ranking_core = ?;");
+			ps.setString(1, ccf);
+			ps.setString(2, core);
+			rs = ps.executeQuery();
+			papers = generatePapers(rs);
+		} catch (SQLException sqle) {
+			papers = null;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
+		}
+		fillAuthors(papers);
+		return papers;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
+	public List<PaperBean> getPapersPublishedWithCCF(String rank) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<PaperBean> papers;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = connection.prepareStatement("select * from paper where ranking_ccf = ?;");
+			ps.setString(1, rank);
+			rs = ps.executeQuery();
+			papers = generatePapers(rs);
+		} catch (SQLException sqle) {
+			papers = null;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException se) {}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException se) {}
+		}
+		fillAuthors(papers);
+		return papers;
+	}
+	
+	/**
+	 * 
+	 * @return <null> if some SQL error occurred
+	 */
+	public List<PaperBean> getPapersPublishedWithCORE(String rank) {
+		DBMSStatus status = establishConnection();
+		if (status != DBMSStatus.Success) {
+			return null;
+		}
+
+		List<PaperBean> papers;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = connection.prepareStatement("select * from paper where ranking_core = ?;");
 			ps.setString(1, rank);
 			rs = ps.executeQuery();
 			papers = generatePapers(rs);
@@ -1704,7 +1854,8 @@ public class DBMS {
 			pb.setDoi(rs.getString("doi"));
 			pb.setUrl(rs.getString("url"));
 			pb.setFilepath(rs.getString("filepath"));
-			pb.setRanking(rs.getString("ranking"));
+			pb.setRankingCCF(rs.getString("ranking_ccf"));
+			pb.setRankingCORE(rs.getString("ranking_core"));
 			papers.add(pb);
 		}
 		return papers;

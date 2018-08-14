@@ -18,6 +18,8 @@
 package cn.ac.ios.iscasmc.papersprojects.frontend.constant;
 
 public final class PaperConstants {
+	public static final String PAPER_LIST_ENTITY = "PaperListEntity";
+	
 	public static final String Action_CreateArticle_Form = "CreateArticleForm";
 	public static final String Action_CreateArticle_Process = "CreateArticleProcess";
 	public static final String Action_CreateInproceedings_Form = "CreateInproceedingsForm";
@@ -42,7 +44,8 @@ public final class PaperConstants {
 	public static final String Field_Bibtex_Inproceedings = "InproceedingsContent";
 	public static final String Field_Bibtex_Proceedings = "ProceedingsContent";
 	public static final String Field_Bibtex_Article = "ArticleContent";
-	public static final String Field_Ranking = "Ranking";
+	public static final String Field_Ranking_CCF = "RankingCCF";
+	public static final String Field_Ranking_CORE = "RankingCORE";
 	public static final String Field_PaperFile = "PaperFile";
 	public static final String Field_RemoveLaTeXMarkers = "RemoveLaTeXMarkers";
 	public static final String Field_Action= "Action";
@@ -54,9 +57,13 @@ public final class PaperConstants {
 	public static final String YearAll = "YearAll";
 	public static final String RankingAll = "RankingAll";
 	
-	public static final String RankingA = "RankingA";
-	public static final String RankingB = "RankingB";
-	public static final String RankingC = "RankingC";
+	public static final String RankingCCF_A = "RankingCCF_A";
+	public static final String RankingCCF_B = "RankingCCF_B";
+	public static final String RankingCCF_C = "RankingCCF_C";
+	public static final String RankingCORE_AStar = "RankingCORE_AStar";
+	public static final String RankingCORE_A = "RankingCORE_A";
+	public static final String RankingCORE_B = "RankingCORE_B";
+	public static final String RankingCORE_C = "RankingCORE_C";
 	public static final String RankingNotRanked = "RankingNotRanked";
 	
 	public static String getRank(String rank) {
@@ -66,12 +73,20 @@ public final class PaperConstants {
 		switch(rank) {
 		case RankingAll:
 			return "All ranks";
-		case RankingA:
-			return "CCF A/Core A*";
-		case RankingB:
-			return "CCF B/Core A";
-		case RankingC:
-			return "CCF C/Core B";
+		case RankingCCF_A:
+			return "CCF A";
+		case RankingCCF_B:
+			return "CCF B";
+		case RankingCCF_C:
+			return "CCF C";
+		case RankingCORE_AStar:
+			return "Core A*";
+		case RankingCORE_A:
+			return "Core A";
+		case RankingCORE_B:
+			return "Core B";
+		case RankingCORE_C:
+			return "Core C";
 		default:
 			return "Not ranked";
 		}

@@ -40,7 +40,8 @@ public class PaperBean implements Serializable {
 	private String doi = null;
 	private String url = null;
 	private String filepath = null;
-	private String ranking = null;
+	private String rankingCCF = null;
+	private String rankingCORE = null;
 	 
 	private ConferenceBean conference;
 	private JournalBean journal;
@@ -157,12 +158,20 @@ public class PaperBean implements Serializable {
 		this.filepath = filepath;
 	}
 	
-	public String getRanking() {
-		return ranking;
+	public String getRankingCCF() {
+		return rankingCCF;
 	}
 	
-	public void setRanking(String ranking) {
-		this.ranking = ranking;
+	public void setRankingCCF(String ranking) {
+		this.rankingCCF = ranking;
+	}
+
+	public String getRankingCORE() {
+		return rankingCORE;
+	}
+	
+	public void setRankingCORE(String ranking) {
+		this.rankingCORE = ranking;
 	}
 
 	public void setConference(ConferenceBean conference) {

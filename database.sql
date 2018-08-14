@@ -30,7 +30,8 @@ CREATE TABLE paper (
 	doi TEXT DEFAULT NULL,
 	url TEXT DEFAULT NULL,
 	filepath TEXT DEFAULT NULL,
-	ranking VARCHAR(20) NOT NULL,
+	ranking_ccf VARCHAR(20) NOT NULL,
+	ranking_core VARCHAR(20) NOT NULL,
 
 	PRIMARY KEY(identifier),
 	FOREIGN KEY(crossref) REFERENCES conference(identifier) ON DELETE SET NULL

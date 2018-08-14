@@ -38,15 +38,25 @@
 								</div>
 							</div>
 							<div class="content_block_row">
-								<div class="content_block_column2_19_left">
-									Ranking:
+								<div class="content_block_column1">
+									CCF Ranking: 
+									<select name="${PaperConstants.Field_Ranking_CCF}">
+										<option value="${PaperConstants.RankingCCF_A}"<%= PaperConstants.RankingCCF_A.equals(pb.getRankingCCF()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCCF_A) %></option>
+										<option value="${PaperConstants.RankingCCF_B}"<%= PaperConstants.RankingCCF_B.equals(pb.getRankingCCF()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCCF_B) %></option>
+										<option value="${PaperConstants.RankingCCF_C}"<%= PaperConstants.RankingCCF_C.equals(pb.getRankingCCF()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCCF_C) %></option>
+										<option value="${PaperConstants.RankingNotRanked}"<%= PaperConstants.RankingNotRanked.equals(pb.getRankingCCF()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingNotRanked) %></option>
+									</select>
 								</div>
-								<div class="content_block_column2_19_right">
-									<select name="${PaperConstants.Field_Ranking}">
-										<option value="${PaperConstants.RankingNotRanked}"<%= PaperConstants.RankingNotRanked.equals(pb.getRanking()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingNotRanked) %></option>
-										<option value="${PaperConstants.RankingA}"<%= PaperConstants.RankingA.equals(pb.getRanking()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingA) %></option>
-										<option value="${PaperConstants.RankingB}"<%= PaperConstants.RankingB.equals(pb.getRanking()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingB) %></option>
-										<option value="${PaperConstants.RankingC}"<%= PaperConstants.RankingC.equals(pb.getRanking()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingC) %></option>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column1">
+									CORE Ranking: 
+									<select name="${PaperConstants.Field_Ranking_CORE}">
+										<option value="${PaperConstants.RankingCORE_AStar}"<%= PaperConstants.RankingCORE_AStar.equals(pb.getRankingCORE()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCORE_AStar) %></option>
+										<option value="${PaperConstants.RankingCORE_A}"<%= PaperConstants.RankingCORE_A.equals(pb.getRankingCORE()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCORE_A) %></option>
+										<option value="${PaperConstants.RankingCORE_B}"<%= PaperConstants.RankingCORE_C.equals(pb.getRankingCORE()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCORE_B) %></option>
+										<option value="${PaperConstants.RankingCORE_C}"<%= PaperConstants.RankingCORE_C.equals(pb.getRankingCORE()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCORE_C) %></option>
+										<option value="${PaperConstants.RankingNotRanked}"<%= PaperConstants.RankingNotRanked.equals(pb.getRankingCORE()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingNotRanked) %></option>
 									</select>
 								</div>
 							</div>
