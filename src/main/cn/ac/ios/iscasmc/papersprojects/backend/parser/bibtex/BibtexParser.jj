@@ -210,7 +210,23 @@ private void ProceedingsParser() :
 				cb.setIsbn(stringValue);
 			}
 		|
-			< BE_OTHER >
+			(
+				< BE_OTHER >
+			|
+				< BE_AUTHOR >
+			|
+				< BE_BOOKTITLE >
+			|
+				< BE_JOURNAL >
+			|
+				< BE_NUMBER >
+			|
+				< BE_PAGES >
+			|
+				< BE_CROSSREF >
+			|
+				< BE_DOI >
+			)
 			< BE_EQUAL >
 			stringValue = parseStringValue()
 		)
@@ -292,7 +308,23 @@ private PaperBean InProceedingsParser() :
 				pb.setDoi(stringValue);
 			}
 		|
-			< BE_OTHER >
+			(
+				< BE_OTHER >
+			|
+				< BE_EDITOR >
+			|
+				< BE_JOURNAL >
+			|
+				< BE_SERIES >
+			|
+				< BE_VOLUME >
+			|
+				< BE_NUMBER >
+			|
+				< BE_PUBLISHER >
+			|
+				< BE_ISBN >
+			)
 			< BE_EQUAL >
 			stringValue = parseStringValue()
 		)
@@ -386,7 +418,21 @@ private PaperBean ArticleParser() :
 				pb.setDoi(stringValue);
 			}
 		|
-			< BE_OTHER >
+			(
+				< BE_OTHER >
+			|
+				< BE_EDITOR >
+			|
+				< BE_BOOKTITLE >
+			|
+				< BE_SERIES >
+			|
+				< BE_PUBLISHER >
+			|
+				< BE_CROSSREF >
+			|
+				< BE_ISBN >
+			)
 			< BE_EQUAL >
 			stringValue = parseStringValue()
 		)

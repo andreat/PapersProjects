@@ -21,8 +21,8 @@ import java.io.InputStream;
 import java.sql.Date;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.ConferenceBean;
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.PaperBean;
@@ -123,7 +123,7 @@ public class AllTests {
 		int i = 0;
 	}
 	
-	
+	@Ignore
 	@Test
 	public void insertConference() {
 		InputStream stream = new ByteArrayInputStream((inproceedings + "\n" + proceedings).getBytes());
@@ -136,6 +136,7 @@ public class AllTests {
 		assertEquals(DBMSStatus.Success, statusMap.get(DBMSAction.ConferenceInsert));
 	}
 
+	@Ignore
 	@Test
 	public void insertInproceedings() {
 		InputStream stream = new ByteArrayInputStream((inproceedings + "\n" + proceedings).getBytes());
@@ -147,6 +148,7 @@ public class AllTests {
 		assertEquals(DBMSStatus.Success, statusMap.get(DBMSAction.PaperInsert));
 	}
 
+	@Ignore
 	@Test
 	public void insertArticle() {
 		InputStream stream = new ByteArrayInputStream(article.getBytes());
@@ -158,6 +160,7 @@ public class AllTests {
 		assertEquals(DBMSStatus.Success, statusMap.get(DBMSAction.PaperInsert));
 	}
 	
+	@Ignore
 	@Test
 	public void insertProject() {
 		ProjectBean pb = new ProjectBean();
