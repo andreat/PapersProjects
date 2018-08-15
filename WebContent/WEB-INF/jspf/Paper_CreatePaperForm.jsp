@@ -3,27 +3,19 @@
 %><%@page contentType="text/html" pageEncoding="UTF-8"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><jsp:include page="header.jsp" />					<form action="${pageContext.request.contextPath}/Papers" method="post" enctype="multipart/form-data">
-						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreateInproceedings_Process}"/>
+						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreateArticle_Process}"/>
 						<div class="content_block_table">
 							<div class="content_block_row">
 								<div class="content_block_column1">
-									The BibTeX entries must be in the format produced by <a href="http://dblp.uni-trier.de/" target="_blank">DBLP</a>. Other formats are <strong>not</strong> supported. 
+									The BibTeX entry must be in the format produced by <a href="http://dblp.uni-trier.de/" target="_blank">DBLP</a>. Other formats are <strong>not</strong> supported. 
 								</div>
 							</div>
 							<div class="content_block_row">
 								<div class="content_block_column2_28_left">
-									Paper (inproceedings) entry:
+									BibTeX content:
 								</div>
 								<div class="content_block_column2_28_right">
-									<textarea name="${PaperConstants.Field_Bibtex_Inproceedings}" rows="10" cols="100"></textarea>
-								</div>
-							</div>
-							<div class="content_block_row">
-								<div class="content_block_column2_28_left">
-									Conference (proceedings) entry:
-								</div>
-								<div class="content_block_column2_28_right">
-									<textarea name="${PaperConstants.Field_Bibtex_Proceedings}" rows="10" cols="100"></textarea>
+									<textarea name="${PaperConstants.Field_Bibtex_Content}" rows="10" cols="100"></textarea>
 								</div>
 							</div>
 							<div class="content_block_row">
@@ -75,7 +67,7 @@
 							<div class="content_block_row">
 								<div class="content_block_column2_28_left"></div>
 								<div class="content_block_column2_28_right">
-									<input type="submit" value="Create conference paper"/>
+									<input type="submit" value="Create article"/>
 								</div>
 							</div>
 						</div>

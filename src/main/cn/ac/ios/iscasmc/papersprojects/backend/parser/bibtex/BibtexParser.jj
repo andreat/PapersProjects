@@ -21,26 +21,46 @@ options
   STATIC = false;
 }
 
-PARSER_BEGIN(ArticleParser)
-package cn.ac.ios.iscasmc.papersprojects.backend.parser.article;
-import cn.ac.ios.iscasmc.papersprojects.backend.parser.UtilParser;
-import cn.ac.ios.iscasmc.papersprojects.backend.bean.PaperBean;
+PARSER_BEGIN(BibtexParser)
+package cn.ac.ios.iscasmc.papersprojects.backend.parser.bibtex;
+import cn.ac.ios.iscasmc.papersprojects.backend.bean.ConferenceBean;
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.JournalBean;
+import cn.ac.ios.iscasmc.papersprojects.backend.bean.PaperBean;
+import cn.ac.ios.iscasmc.papersprojects.backend.parser.UtilParser;
 
-public final class ArticleParser {
+public final class BibtexParser {
 	private boolean removeMarkers;
+	private boolean isArticle;
+	private boolean isInproceedings;
+	private ConferenceBean cb;
 
-	public PaperBean parseArticle(boolean removeMarkers) {
+	public PaperBean parseBibTeX(boolean removeMarkers) {
 		this.removeMarkers = removeMarkers;
+		this.isArticle = false;
+		this.isInproceedings = false;
+		this.cb = null;
+		
 		try {
 			return actualParser();
 		} catch (ParseException pe) {
 			return null;
 		}
 	}
+	
+	public boolean isArticle() {
+		return isArticle;
+	}
+	
+	public boolean isInproceedings() {
+		return isInproceedings;
+	}
+	
+	public ConferenceBean getConference() {
+		return cb;
+	}
 }
 
-PARSER_END(ArticleParser)
+PARSER_END(BibtexParser)
 
 TOKEN_MGR_DECLS : {
 	int nestingLevel;
@@ -57,6 +77,8 @@ TOKEN_MGR_DECLS : {
 TOKEN :
 {
 	< ARTICLE : "@article" >
+|	< INPROCEEDINGS : "@inproceedings" >
+|	< PROCEEDINGS : "@proceedings" >
 |	< BRACKET_OPEN : "{" >
 |	< COMMA : "," > : BIBENTRY_ENV
 |	< IDENTIFIER : ([ "A"-"Z","a"-"z",":","/","0"-"9","-" ])+ >
@@ -67,14 +89,20 @@ TOKEN :
 	< BE_BRACKET_OPEN : "{" > { nestingLevel = 0; } : ENTRY_ENV 
 |	< BE_BRACKET_CLOSE : "}" > : DEFAULT 
 |	< BE_AUTHOR : "author" >
+|	< BE_EDITOR : "editor" >
 |	< BE_TITLE : "title" >
+|	< BE_BOOKTITLE : "booktitle" >
 |	< BE_JOURNAL : "journal" >
+|	< BE_SERIES : "series" >
 |	< BE_VOLUME : "volume" >
 |	< BE_NUMBER : "number" >
 |	< BE_PAGES : "pages" >
+|	< BE_PUBLISHER : "publisher" >
 |	< BE_YEAR : "year" >
+|	< BE_CROSSREF : "crossref" >
 |	< BE_URL : "url" >
 |	< BE_DOI : "doi" >
+|	< BE_ISBN : "isbn" >
 |	< BE_OTHER : (["a"-"z"])+ >
 |	< BE_COMMA : "," >
 |	< BE_EQUAL : "=" >
@@ -83,7 +111,7 @@ TOKEN :
 < ENTRY_ENV > TOKEN :
 {
 	< E_BRACKET_OPEN : "{" > { nestingLevel++; } 
-|	< E_BRACKET_CLOSE : "}" >
+|	< E_BRACKET_CLOSE : "}" > 
 |	< E_TEXT : ( ~["{","}"])+ >
 }
 
@@ -94,7 +122,191 @@ TOKEN :
 
 private PaperBean actualParser() :
 {
+	PaperBean pb = null;
+}
+{
+	(
+		pb = InProceedingsParser()
+		ProceedingsParser()
+	|
+		pb = ArticleParser()
+	)
+	<EOF>
+	{
+		return pb;
+	}
+}
+
+private void ProceedingsParser() :
+{
 	Token t;
+	cb = new ConferenceBean();
+	String stringValue;
+}
+{
+	< PROCEEDINGS >
+	< BRACKET_OPEN >
+	t = < IDENTIFIER > { cb.setIdentifier(t.toString()); }
+	(
+	    (
+		      < COMMA >
+	    |
+		      < BE_COMMA >
+	  	)
+	  	(
+			< BE_EDITOR >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setEditor(stringValue);
+			}
+		|
+			< BE_TITLE >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setTitle(stringValue);
+			}
+		|
+			< BE_SERIES >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setSeries(stringValue);
+			}
+		|
+			< BE_YEAR >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setYear(stringValue);
+			}
+		|
+			< BE_VOLUME >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setVolume(stringValue);
+			}
+		|
+			< BE_PUBLISHER >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setPublisher(stringValue);
+			}
+		|
+			< BE_URL >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setUrl(stringValue);
+			}
+		|
+			< BE_ISBN >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				cb.setIsbn(stringValue);
+			}
+		|
+			< BE_OTHER >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+		)
+	)+
+	< BE_BRACKET_CLOSE >
+}
+
+private PaperBean InProceedingsParser() :
+{
+	Token t;
+	isInproceedings = true;
+	PaperBean pb = new PaperBean();
+	String stringValue;
+}
+{
+	< INPROCEEDINGS >
+	< BRACKET_OPEN >
+	t = < IDENTIFIER > { pb.setIdentifier(t.toString()); }
+	(
+	    (
+		      < COMMA >
+	    |
+		      < BE_COMMA >
+	  	)
+	  	(
+			< BE_AUTHOR >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				pb.setAuthorsFromBibtex(stringValue);
+			}
+		|
+			< BE_TITLE >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				pb.setTitle(stringValue);
+			}
+		|
+			< BE_BOOKTITLE >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				pb.setBooktitle(stringValue);
+			}
+		|
+			< BE_PAGES >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				pb.setPages(stringValue);
+			}
+		|
+			< BE_YEAR >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				pb.setYear(stringValue);
+			}
+		|
+			< BE_CROSSREF >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				pb.setCrossref(stringValue);
+			}
+		|
+			< BE_URL >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				pb.setUrl(stringValue);
+			}
+		|
+			< BE_DOI >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+			{
+				pb.setDoi(stringValue);
+			}
+		|
+			< BE_OTHER >
+			< BE_EQUAL >
+			stringValue = parseStringValue()
+		)
+	)+
+	< BE_BRACKET_CLOSE >
+	{
+		return pb;
+	}
+}
+
+private PaperBean ArticleParser() :
+{
+	Token t;
+	isArticle = true;
 	PaperBean pb = new PaperBean();
 	String stringValue;
 }
@@ -180,7 +392,6 @@ private PaperBean actualParser() :
 		)
 	)+
 	< BE_BRACKET_CLOSE >
-	<EOF>
 	{
 		return pb;
 	}

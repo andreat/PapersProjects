@@ -30,10 +30,8 @@ import cn.ac.ios.iscasmc.papersprojects.backend.bean.ProjectBean;
 import cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS;
 import cn.ac.ios.iscasmc.papersprojects.backend.database.DBMSAction;
 import cn.ac.ios.iscasmc.papersprojects.backend.database.DBMSStatus;
-import cn.ac.ios.iscasmc.papersprojects.backend.parser.article.ArticleParser;
-import cn.ac.ios.iscasmc.papersprojects.backend.parser.inproceedings.InproceedingsParser;
+import cn.ac.ios.iscasmc.papersprojects.backend.parser.bibtex.BibtexParser;
 import cn.ac.ios.iscasmc.papersprojects.backend.parser.marker.MarkersParser;
-import cn.ac.ios.iscasmc.papersprojects.backend.parser.proceedings.ProceedingsParser;
 
 public class AllTests {
 	
@@ -102,34 +100,36 @@ public class AllTests {
 	
 	@Test
 	public void testProceedingsParser() {
-		InputStream stream = new ByteArrayInputStream(proceedings.getBytes());
-		ProceedingsParser pp = new ProceedingsParser(stream);
-		ConferenceBean cb = pp.parseProceedings(true);
+		InputStream stream = new ByteArrayInputStream((inproceedings + "\n" + proceedings).getBytes());
+		BibtexParser pp = new BibtexParser(stream);
+		pp.parseBibTeX(true);
+		ConferenceBean cb = pp.getConference();
 		int i = 0;
 	}
 	
 	@Test
 	public void testInproceedingsParser() {
-		InputStream stream = new ByteArrayInputStream(inproceedings.getBytes());
-		InproceedingsParser pp = new InproceedingsParser(stream);
-		PaperBean pb = pp.parseInproceedings(true);
+		InputStream stream = new ByteArrayInputStream((inproceedings + "\n" + proceedings).getBytes());
+		BibtexParser pp = new BibtexParser(stream);
+		PaperBean pb = pp.parseBibTeX(true);
 		int i = 0;
 	}
 	
 	@Test
 	public void testArticleParser() {
 		InputStream stream = new ByteArrayInputStream(article.getBytes());
-		ArticleParser ap = new ArticleParser(stream);
-		PaperBean pb = ap.parseArticle(true);
+		BibtexParser ap = new BibtexParser(stream);
+		PaperBean pb = ap.parseBibTeX(true);
 		int i = 0;
 	}
 	
 	
 	@Test
 	public void insertConference() {
-		InputStream stream = new ByteArrayInputStream(proceedings.getBytes());
-		ProceedingsParser pp = new ProceedingsParser(stream);
-		ConferenceBean cb = pp.parseProceedings(false);
+		InputStream stream = new ByteArrayInputStream((inproceedings + "\n" + proceedings).getBytes());
+		BibtexParser pp = new BibtexParser(stream);
+		pp.parseBibTeX(false);
+		ConferenceBean cb = pp.getConference();
 		
 		DBMS dbms = new DBMS("com.mysql.jdbc.Driver", "localhost", "3306", "papersprojects", "ppuser", "pppassword");
 		Map<DBMSAction, DBMSStatus> statusMap = dbms.storeConference(cb);
@@ -138,9 +138,9 @@ public class AllTests {
 
 	@Test
 	public void insertInproceedings() {
-		InputStream stream = new ByteArrayInputStream(inproceedings.getBytes());
-		InproceedingsParser ip = new InproceedingsParser(stream);
-		PaperBean pb = ip.parseInproceedings(false);
+		InputStream stream = new ByteArrayInputStream((inproceedings + "\n" + proceedings).getBytes());
+		BibtexParser ip = new BibtexParser(stream);
+		PaperBean pb = ip.parseBibTeX(false);
 		
 		DBMS dbms = new DBMS("com.mysql.jdbc.Driver", "localhost", "3306", "papersprojects", "ppuser", "pppassword");
 		Map<DBMSAction, DBMSStatus> statusMap = dbms.storePaper(pb);
@@ -150,8 +150,8 @@ public class AllTests {
 	@Test
 	public void insertArticle() {
 		InputStream stream = new ByteArrayInputStream(article.getBytes());
-		ArticleParser ap = new ArticleParser(stream);
-		PaperBean pb = ap.parseArticle(false);
+		BibtexParser ap = new BibtexParser(stream);
+		PaperBean pb = ap.parseBibTeX(false);
 		
 		DBMS dbms = new DBMS("com.mysql.jdbc.Driver", "localhost", "3306", "papersprojects", "ppuser", "pppassword");
 		Map<DBMSAction, DBMSStatus> statusMap = dbms.storePaper(pb);

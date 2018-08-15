@@ -28,11 +28,8 @@
 					</div>
 					<div class="wrapper">
 						<c:url value="/Papers" var="ccp">
-							<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreateInproceedings_Form}"/>
-						</c:url><a href="${ccp}"><span class="btn_secondary">Create conference paper</span></a>
-						<c:url value="/Papers" var="cjp">
-							<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreateArticle_Form}"/>
-						</c:url><a href="${cjp}"><span class="btn_secondary">Create journal paper</span></a>
+							<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreatePaper_Form}"/>
+						</c:url><a href="${ccp}"><span class="btn_secondary">Create paper</span></a>
 						<c:url value="/Projects" var="cp">
 							<c:param name="${ProjectConstants.Field_Action}" value="${ProjectConstants.Action_CreateProject_Form}"/>
 						</c:url><a href="${cp}"><span class="btn_secondary">Create project</span></a>

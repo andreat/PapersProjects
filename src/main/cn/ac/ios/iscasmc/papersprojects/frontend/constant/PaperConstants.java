@@ -20,10 +20,8 @@ package cn.ac.ios.iscasmc.papersprojects.frontend.constant;
 public final class PaperConstants {
 	public static final String PAPER_LIST_ENTITY = "PaperListEntity";
 	
-	public static final String Action_CreateArticle_Form = "CreateArticleForm";
-	public static final String Action_CreateArticle_Process = "CreateArticleProcess";
-	public static final String Action_CreateInproceedings_Form = "CreateInproceedingsForm";
-	public static final String Action_CreateInproceedings_Process = "CreateInproceedingsProcess";
+	public static final String Action_CreatePaper_Form = "CreatePaperForm";
+	public static final String Action_CreatePaper_Process = "CreatePaperProcess";
 	public static final String Action_DeletePaper_Form = "DeletePaperForm";
 	public static final String Action_DeletePaper_Process = "DeletePaperProcess";
 	public static final String Action_ModifyPaper_Form = "ModifyPaperForm";
@@ -41,9 +39,7 @@ public final class PaperConstants {
 	public static final String Action_LinkProjectsToPaper_Process = "LinkProjectsToPaperProcess";
 	public static final String Action_DelinkProjectsFromPaper_Process = "DelinkProjectsFromPaperProcess";
 	
-	public static final String Field_Bibtex_Inproceedings = "InproceedingsContent";
-	public static final String Field_Bibtex_Proceedings = "ProceedingsContent";
-	public static final String Field_Bibtex_Article = "ArticleContent";
+	public static final String Field_Bibtex_Content = "BibtexContent";
 	public static final String Field_Ranking_CCF = "RankingCCF";
 	public static final String Field_Ranking_CORE = "RankingCORE";
 	public static final String Field_PaperFile = "PaperFile";

@@ -42,9 +42,7 @@ import cn.ac.ios.iscasmc.papersprojects.backend.constant.InternalOperationConsta
 import cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS;
 import cn.ac.ios.iscasmc.papersprojects.backend.database.DBMSAction;
 import cn.ac.ios.iscasmc.papersprojects.backend.database.DBMSStatus;
-import cn.ac.ios.iscasmc.papersprojects.backend.parser.article.ArticleParser;
-import cn.ac.ios.iscasmc.papersprojects.backend.parser.inproceedings.InproceedingsParser;
-import cn.ac.ios.iscasmc.papersprojects.backend.parser.proceedings.ProceedingsParser;
+import cn.ac.ios.iscasmc.papersprojects.backend.parser.bibtex.BibtexParser;
 import cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants;
 import cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants;
 
@@ -61,8 +59,7 @@ public class Papers extends HttpServlet {
 			showForm(PaperConstants.Action_GetAllPapers, request, response);
 		} else {
 			switch (action) {
-			case PaperConstants.Action_CreateArticle_Form:
-			case PaperConstants.Action_CreateInproceedings_Form:
+			case PaperConstants.Action_CreatePaper_Form:
 			case PaperConstants.Action_DeletePaper_Form:
 			case PaperConstants.Action_ModifyPaper_Form:
 			case PaperConstants.Action_LinkProjectsToPaper_Form:
@@ -80,11 +77,8 @@ public class Papers extends HttpServlet {
 			case PaperConstants.Action_GetPapersForYearAndRank:
 				manageGetPapersForYearAndRank(request, response);
 				break;
-			case PaperConstants.Action_CreateArticle_Process:
-				manageCreateArticleProcess(request, response);
-				break;
-			case PaperConstants.Action_CreateInproceedings_Process:
-				manageCreateInproceedingsProcess(request, response);
+			case PaperConstants.Action_CreatePaper_Process:
+				manageCreatePaperProcess(request, response);
 				break;
 			case PaperConstants.Action_DeletePaper_Process:
 				manageDeletePaperProcess(request, response);
@@ -161,7 +155,7 @@ public class Papers extends HttpServlet {
 		showForm(PaperConstants.Action_GetAllPapers, request, response);		
 	}
 
-	private void manageCreateArticleProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void manageCreatePaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
 		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
 		
@@ -169,47 +163,21 @@ public class Papers extends HttpServlet {
 		if (request.getParameter(PaperConstants.Field_RemoveLaTeXMarkers) != null) {
 			removeMarkers = true;
 		}
-		String paperBibtex = request.getParameter(PaperConstants.Field_Bibtex_Article);
-		ArticleParser ap = new ArticleParser(new ByteArrayInputStream(paperBibtex.getBytes()));
-		PaperBean pb = ap.parseArticle(removeMarkers);
-		if (pb == null) {
-			status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
-		} else {
-			pb.setRankingCCF(request.getParameter(PaperConstants.Field_Ranking_CCF));
-			pb.setRankingCORE(request.getParameter(PaperConstants.Field_Ranking_CORE));
-			manageUpload(request, pb, status);
-			status.putAll(dbms.storePaper(pb));
-		}
-		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		showDefault(request, response);
-	}
-
-	private void manageCreateInproceedingsProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Map<DBMSAction, DBMSStatus> status = new HashMap<>();
-		DBMS dbms = (DBMS) getServletContext().getAttribute(DBMS.DBMS_ENTITY);
-		
-		boolean removeMarkers = false;
-		if (request.getParameter(PaperConstants.Field_RemoveLaTeXMarkers) != null) {
-			removeMarkers = true;
-		}
-		String conferenceBibtex = request.getParameter(PaperConstants.Field_Bibtex_Proceedings);
+		String conferenceBibtex = request.getParameter(PaperConstants.Field_Bibtex_Content);
 		if (conferenceBibtex != null && conferenceBibtex.length() > 10) {
-			ProceedingsParser pp = new ProceedingsParser(new ByteArrayInputStream(conferenceBibtex.getBytes()));
-			ConferenceBean cb = pp.parseProceedings(removeMarkers);
-			if (cb == null) {
-				status.put(DBMSAction.ConferenceInsert, DBMSStatus.ParserError);
-			} else {
-				status.putAll(dbms.storeConference(cb));
-			}
-		}
-		DBMSStatus statusConference = status.get(DBMSAction.ConferenceInsert);
-		if (statusConference == DBMSStatus.Success || statusConference == DBMSStatus.DuplicatedEntry) {
-			String paperBibtex = request.getParameter(PaperConstants.Field_Bibtex_Inproceedings);
-			InproceedingsParser ip = new InproceedingsParser(new ByteArrayInputStream(paperBibtex.getBytes()));
-			PaperBean pb = ip.parseInproceedings(removeMarkers);
+			BibtexParser bp = new BibtexParser(new ByteArrayInputStream(conferenceBibtex.getBytes()));
+			PaperBean pb = bp.parseBibTeX(removeMarkers);
 			if (pb == null) {
 				status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
 			} else {
+				if (bp.isInproceedings()) {
+					ConferenceBean cb = bp.getConference();
+					if (cb == null) {
+						status.put(DBMSAction.ConferenceInsert, DBMSStatus.ParserError);
+					} else {
+						status.putAll(dbms.storeConference(cb));
+					}
+				}
 				pb.setRankingCCF(request.getParameter(PaperConstants.Field_Ranking_CCF));
 				pb.setRankingCORE(request.getParameter(PaperConstants.Field_Ranking_CORE));
 				manageUpload(request, pb, status);
