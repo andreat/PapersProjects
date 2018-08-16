@@ -65,18 +65,18 @@
 								</div>
 								<div class="content_block_column2_19_right">
 <%
-			List<AuthorBean> authors = pb.getAuthors();
-			int nAuthors = authors.size();
-			int curAuthor = 0;
-			for (AuthorBean ab : authors) {
-				curAuthor++;
-				StringBuilder sb = new StringBuilder(ab.getName());
-				if (curAuthor != nAuthors && !(curAuthor == 1 && nAuthors == 2)) {
-					sb.append(",");
-				}
-				if (curAuthor == nAuthors - 1) {
-					sb.append(" and");
-				}
+	List<AuthorBean> authors = pb.getAuthors();
+	int nAuthors = authors.size();
+	int curAuthor = 0;
+	for (AuthorBean ab : authors) {
+		curAuthor++;
+		StringBuilder sb = new StringBuilder(ab.getIdentifier());
+		if (curAuthor != nAuthors && !(curAuthor == 1 && nAuthors == 2)) {
+			sb.append(",");
+		}
+		if (curAuthor == nAuthors - 1) {
+			sb.append(" and");
+		}
 %>									<%= sb.toString() %>
 <%
 			}

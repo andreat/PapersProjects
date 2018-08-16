@@ -25,11 +25,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +50,7 @@ import cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants;
 import cn.ac.ios.iscasmc.papersprojects.frontend.constant.ProjectConstants;
 
 @WebServlet("/Papers")
+@MultipartConfig
 public class Papers extends HttpServlet {
 	private static final long serialVersionUID = 7609707217755694013L;
 
@@ -219,11 +223,12 @@ public class Papers extends HttpServlet {
 		} else {
 			String ranking_ccf = request.getParameter(PaperConstants.Field_Ranking_CCF);
 			String ranking_core = request.getParameter(PaperConstants.Field_Ranking_CORE);
-			if (ranking_ccf != null && ranking_core != null) {
+			String[] authorIDs = request.getParameterValues(PaperConstants.Field_AuthorID);
+			if (ranking_ccf != null && ranking_core != null && authorIDs != null) {
 				pb.setRankingCCF(ranking_ccf);
 				pb.setRankingCORE(ranking_core);
 				manageUpload(request, pb, status);
-				status.putAll(dbms.updatePaper(pb));
+				status.putAll(dbms.updatePaper(pb, new HashSet<>(Arrays.asList(authorIDs))));
 			} else {
 				status.put(DBMSAction.PaperUpdate, DBMSStatus.IllegalArgument);
 			}

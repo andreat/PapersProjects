@@ -3,7 +3,7 @@
 %><%@page contentType="text/html" pageEncoding="UTF-8"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><jsp:include page="header.jsp" />					<form action="${pageContext.request.contextPath}/Papers" method="post" enctype="multipart/form-data">
-						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreateArticle_Process}"/>
+						<input type="hidden" name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_CreatePaper_Process}"/>
 						<div class="content_block_table">
 							<div class="content_block_row">
 								<div class="content_block_column1">

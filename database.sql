@@ -1,6 +1,6 @@
 CREATE TABLE author (
-	name VARCHAR(100) NOT NULL,
-	PRIMARY KEY(name)
+	identifier VARCHAR(100) NOT NULL,
+	PRIMARY KEY(identifier)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE conference (
@@ -39,13 +39,14 @@ CREATE TABLE paper (
 
 CREATE TABLE paperAuthor (
 	paperIdentifier VARCHAR(100) NOT NULL,
-	authorName VARCHAR(100) NOT NULL,
+	authorIdentifier VARCHAR(100) NOT NULL,
 	authorOrder INT,
+	isCorresponding BOOLEAN DEFAULT FALSE,
 
-	PRIMARY KEY(paperIdentifier,authorName),
+	PRIMARY KEY(paperIdentifier,authorIdentifier),
 	UNIQUE (paperIdentifier, authorOrder),
 	FOREIGN KEY(paperIdentifier) REFERENCES paper(identifier) ON DELETE CASCADE,
-	FOREIGN KEY(authorName) REFERENCES author(name) ON DELETE CASCADE
+	FOREIGN KEY(authorIdentifier) REFERENCES author(identifier) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE project (

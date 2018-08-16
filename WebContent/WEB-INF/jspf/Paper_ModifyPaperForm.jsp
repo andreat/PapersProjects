@@ -38,8 +38,10 @@
 								</div>
 							</div>
 							<div class="content_block_row">
-								<div class="content_block_column1">
-									CCF Ranking: 
+								<div class="content_block_column2_19_left">
+									Ranking:
+								</div>
+								<div class="content_block_column2_19_right">
 									<select name="${PaperConstants.Field_Ranking_CCF}">
 										<option value="${PaperConstants.RankingCCF_A}"<%= PaperConstants.RankingCCF_A.equals(pb.getRankingCCF()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCCF_A) %></option>
 										<option value="${PaperConstants.RankingCCF_B}"<%= PaperConstants.RankingCCF_B.equals(pb.getRankingCCF()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCCF_B) %></option>
@@ -49,8 +51,8 @@
 								</div>
 							</div>
 							<div class="content_block_row">
-								<div class="content_block_column1">
-									CORE Ranking: 
+								<div class="content_block_column2_19_left"></div>
+								<div class="content_block_column2_19_right">
 									<select name="${PaperConstants.Field_Ranking_CORE}">
 										<option value="${PaperConstants.RankingCORE_AStar}"<%= PaperConstants.RankingCORE_AStar.equals(pb.getRankingCORE()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCORE_AStar) %></option>
 										<option value="${PaperConstants.RankingCORE_A}"<%= PaperConstants.RankingCORE_A.equals(pb.getRankingCORE()) ? " selected" : "" %>><%= PaperConstants.getRank(PaperConstants.RankingCORE_A) %></option>
@@ -62,27 +64,27 @@
 							</div>
 							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
-									Authors:
+									Authors (corresponding marked):
 								</div>
-								<div class="content_block_column2_19_right">
 <%
-			List<AuthorBean> authors = pb.getAuthors();
-			int nAuthors = authors.size();
 			int curAuthor = 0;
+			List<AuthorBean> authors = pb.getAuthors();
 			for (AuthorBean ab : authors) {
-				curAuthor++;
-				StringBuilder sb = new StringBuilder(ab.getName());
-				if (curAuthor != nAuthors && !(curAuthor == 1 && nAuthors == 2)) {
-					sb.append(",");
+				if (curAuthor > 0) {
+%>							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_19_left"></div>
+<%
 				}
-				if (curAuthor == nAuthors - 1) {
-					sb.append(" and");
-				}
-%>									<%= sb.toString() %>
+%>								<div class="content_block_column2_19_right">
+									<label>
+										<input type="checkbox" name="${PaperConstants.Field_AuthorID}" value="<%= ab.getIdentifier() %>"<%= ab.isCorresponding() ? " checked" : ""%>/>
+										<%=ab.getIdentifier()%>
+									</label>
+								</div>
 <%
 			}
-%>								</div>
-							</div>
+%>							</div>
 							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
 									Title:

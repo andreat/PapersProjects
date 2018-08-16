@@ -41,7 +41,7 @@
 					<div class="content_block_table">
 						<div class="content_block_row">
 							<div class="content_block_column1">
-								Author: <%= author.getName() %>
+								Author: <%=author.getIdentifier()%>
 							</div>
 						</div>
 						<div class="content_block_row">

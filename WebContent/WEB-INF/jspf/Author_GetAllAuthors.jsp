@@ -34,16 +34,16 @@
 			for (AuthorBean ab : authors) {
 %>						<div class="content_block_row">
 							<div class="content_block_column2_28_left">
-								<%= ab.getName() %>
+								<%=ab.getIdentifier()%>
 							</div>
 							<div class="content_block_column2_28_right">
 								<c:url value="/Papers" var="papers">
 									<c:param name="${PaperConstants.Field_Action}" value="${PaperConstants.Action_GetPapersForAuthor}"/>
-									<c:param name="${PaperConstants.Field_AuthorID}" value="<%= ab.getName() %>"/>
+									<c:param name="${PaperConstants.Field_AuthorID}" value="<%= ab.getIdentifier() %>"/>
 								</c:url><a href="${papers}">List papers</a>,
 								<c:url value="/Projects" var="projects">
 									<c:param name="${ProjectConstants.Field_Action}" value="${ProjectConstants.Action_GetProjectsForAuthor}"/>
-									<c:param name="${ProjectConstants.Field_AuthorID}" value="<%= ab.getName() %>"/>
+									<c:param name="${ProjectConstants.Field_AuthorID}" value="<%= ab.getIdentifier() %>"/>
 								</c:url><a href="${projects}">List projects</a>
 							</div>
 						</div>

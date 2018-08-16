@@ -53,7 +53,7 @@ public class PaperBean implements Serializable {
 		this.authors = new ArrayList<>(split.length);
 		for (String s : split) {
 			AuthorBean ab = new AuthorBean();
-			ab.setName(s.trim());
+			ab.setIdentifier(s.trim());
 			this.authors.add(ab);
 		}
 	}

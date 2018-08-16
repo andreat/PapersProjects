@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.AuthorBean;
 import cn.ac.ios.iscasmc.papersprojects.backend.bean.ConferenceBean;
@@ -176,7 +177,7 @@ public class DBMS {
 			connection.setAutoCommit(false);
 			ps = connection.prepareStatement("insert ignore into author values(?)");
 			for (AuthorBean ab : listAuthors) {
-				ps.setString(1, ab.getName());
+				ps.setString(1, ab.getIdentifier());
 				ps.addBatch();
 			}
 			ps.executeBatch();
@@ -335,16 +336,16 @@ public class DBMS {
 		return statusMap;
 	}
 	
-	public Map<DBMSAction, DBMSStatus> updatePaper(PaperBean pb) {
+	public Map<DBMSAction, DBMSStatus> updatePaper(PaperBean pb, Set<String> correspondingAuthorIDs) {
 		Map<DBMSAction, DBMSStatus> statusMap = new HashMap<>();
 		DBMSStatus status = establishConnection();
 		if (status != DBMSStatus.Success) {
 			statusMap.put(DBMSAction.ConnectDatabase, status);
 			return statusMap;
 		}
-		
 		PreparedStatement psr = null;
 		PreparedStatement psf = null;
+		PreparedStatement psa = null;
 		try {
 			connection.setAutoCommit(false);
 			psr = connection.prepareStatement("update paper set ranking_CCF = ?, ranking_CORE=? where identifier = ?");
@@ -357,6 +358,17 @@ public class DBMS {
 				psf.setString(1, pb.getFilepath());
 				psf.setString(2, pb.getIdentifier());
 				updates += psf.executeUpdate();
+			}
+			psa = connection.prepareStatement("update paperAuthor set isCorresponding = ? where paperIdentifier = ? and authorIdentifier = ?");
+			for (AuthorBean ab : pb.getAuthors()) {
+				psa.setBoolean(1, correspondingAuthorIDs.contains(ab.getIdentifier()));
+				psa.setString(2, pb.getIdentifier());
+				psa.setString(3, ab.getIdentifier());
+				psa.addBatch();
+			}
+			int[] upds = psa.executeBatch();
+			for (int u : upds) {
+				updates += u;
 			}
 			connection.commit();
 			if (updates > 0) {
@@ -382,6 +394,11 @@ public class DBMS {
 				try {
 					if (psf != null) {
 						psf.close();
+					}
+				} catch (SQLException se) {}
+				try {
+					if (psa != null) {
+						psa.close();
 					}
 				} catch (SQLException se) {}
 			}
@@ -465,12 +482,13 @@ public class DBMS {
 				}
 			} catch (SQLException se) {}
 			if (isPresent) {
-				ps = connection.prepareStatement("insert ignore into paperAuthor values(?,?,?)");
+				ps = connection.prepareStatement("insert ignore into paperAuthor values(?,?,?,?)");
 				int order = 1;
 				for (AuthorBean ab : pb.getAuthors()) {
 					ps.setString(1, pb.getIdentifier());
-					ps.setString(2, ab.getName());
+					ps.setString(2, ab.getIdentifier());
 					ps.setInt(3, order++);
+					ps.setBoolean(4, ab.isCorresponding());
 					ps.addBatch();
 				}
 				ps.executeBatch();
@@ -1002,7 +1020,7 @@ public class DBMS {
 			ps = connection.prepareStatement(
 					"select * from paper "
 					+ "inner join paperAuthor on paper.identifier = paperAuthor.paperIdentifier "
-					+ "where authorName = ?;"
+					+ "where authorIdentifier = ?;"
 					);
 			ps.setString(1, authorID);
 			rs = ps.executeQuery();
@@ -1455,7 +1473,7 @@ public class DBMS {
 					"select * from project "
 					+ "inner join projectPaper on project.identifier = projectPaper.projectIdentifier "
 					+ "inner join paperAuthor on projectPaper.paperIdentifier = paperAuthor.paperIdentifier "
-					+ "where authorName = ? "
+					+ "where authorIdentifier = ? "
 					+ "group by project.identifier;");
 			ps.setString(1, authorID);
 			rs = ps.executeQuery();
@@ -1608,7 +1626,7 @@ public class DBMS {
 		try {
 			st = connection.createStatement();
 			rs = st.executeQuery("select * from author;");
-			authors = generateAuthors(rs);
+			authors = generateAuthors(rs, false);
 		} catch (SQLException sqle) {
 			authors = null;
 		} finally {
@@ -1640,10 +1658,10 @@ public class DBMS {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = connection.prepareStatement("select * from author where name = ?;");
+			ps = connection.prepareStatement("select * from author where identifier = ?;");
 			ps.setString(1, authorID);
 			rs = ps.executeQuery();
-			authors = generateAuthors(rs);
+			authors = generateAuthors(rs, false);
 		} catch (SQLException sqle) {
 			authors = null;
 		} finally {
@@ -1876,11 +1894,14 @@ public class DBMS {
 		return projects;
 	}
 	
-	private List<AuthorBean> generateAuthors(ResultSet rs) throws SQLException {
+	private List<AuthorBean> generateAuthors(ResultSet rs, boolean setCorresponding) throws SQLException {
 		List<AuthorBean> authors = new ArrayList<>();
 		while (rs.next()) {
 			AuthorBean ab = new AuthorBean();
-			ab.setName(rs.getString("name"));
+			ab.setIdentifier(rs.getString("identifier"));
+			if (setCorresponding) {
+				ab.setCorresponding(rs.getBoolean("isCorresponding"));
+			}
 			authors.add(ab);
 		}
 		return authors;
@@ -1896,10 +1917,10 @@ public class DBMS {
 			PreparedStatement ps = null;
 			ResultSet rs = null;
 			try {
-				ps = connection.prepareStatement("select authorName as name from paperAuthor where paperIdentifier = ? order by authorOrder;");
+				ps = connection.prepareStatement("select authorIdentifier as identifier, isCorresponding from paperAuthor where paperIdentifier = ? order by authorOrder;");
 				ps.setString(1, pb.getIdentifier());
 				rs = ps.executeQuery();
-				pb.setAuthors(generateAuthors(rs));
+				pb.setAuthors(generateAuthors(rs, true));
 			} catch (SQLException sqle) {
 			} finally {
 				try {

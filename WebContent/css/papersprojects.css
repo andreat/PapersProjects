@@ -37,6 +37,19 @@ p {
 	padding-top: 6px;
 }
 
+label input {
+	margin-right: 0.5em;	
+}
+
+.notification_success {
+	background-color: #d0ffd0;
+}
+
+.notification_error {
+	background-color: #ff0000;
+	font-weight: bold;
+}
+
 .maincontainer{
 	width: 100%;
 	min-width: 800px;

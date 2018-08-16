@@ -85,22 +85,45 @@
 								</div>
 								<div class="content_block_column2_19_right">
 <%
-				List<AuthorBean> authors = pb.getAuthors();
-				int nAuthors = authors.size();
-				int curAuthor = 0;
-				for (AuthorBean ab : authors) {
-					curAuthor++;
-					StringBuilder sb = new StringBuilder(ab.getName());
-					if (curAuthor != nAuthors && !(curAuthor == 1 && nAuthors == 2)) {
-						sb.append(",");
-					}
-					if (curAuthor == nAuthors - 1) {
-						sb.append(" and");
-					}
-%>								<%= sb.toString() %>
+	List<AuthorBean> authors = pb.getAuthors();
+		int nAuthors = authors.size();
+		int curAuthor = 0;
+		StringBuilder sb = new StringBuilder();
+		for (AuthorBean ab : authors) {
+			curAuthor++;
+			sb.append(ab.getIdentifier());
+			if (curAuthor != nAuthors && !(curAuthor == 1 && nAuthors == 2)) {
+				sb.append(", ");
+			}
+			if (curAuthor == nAuthors - 1) {
+				sb.append(" and ");
+			}
+		}
+%>									<%=sb.toString()%>
+								</div>
+							</div>
+							<div class="content_block_row">
+								<div class="content_block_column2_19_left">
+									Corresponding:
+								</div>
+								<div class="content_block_column2_19_right">
 <%
+	curAuthor = 0;
+		sb = new StringBuilder();
+		for (AuthorBean ab : authors) {
+			if (ab.isCorresponding()) {
+				if (curAuthor > 0) {
+					sb.append(", ");
 				}
-%>								</div>
+				sb.append(ab.getIdentifier());
+				curAuthor++;
+			}
+		}
+		if (curAuthor == 0) {
+			sb.append("No corresponding author");
+		}
+%>									<%= sb.toString() %>
+								</div>
 							</div>
 							<div class="content_block_row">
 								<div class="content_block_column2_19_left">
@@ -135,7 +158,7 @@
 				}
 				JournalBean jb = pb.getJournal();
 				if (jb != null) {
-					StringBuilder sb = new StringBuilder(jb.getIdentifier());
+					sb = new StringBuilder(jb.getIdentifier());
 					if (pb.getVolume() != null) {
 						sb.append(" ").append(pb.getVolume());
 					}

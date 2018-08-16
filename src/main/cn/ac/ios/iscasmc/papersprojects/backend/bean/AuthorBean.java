@@ -24,20 +24,28 @@ import java.io.Serializable;
  */
 public class AuthorBean implements Serializable {
 	private static final long serialVersionUID = 7936945986041845081L;
-	private String name;
+	private String authorID;
+	private boolean corresponding;
 
 	/**
-	 * @return the name
+	 * @return the identifier
 	 */
-	public String getName() {
-		return name;
+	public String getIdentifier() {
+		return authorID;
 	}
 
 	/**
-	 * @param name the name to set
+	 * @param identifier the identifier to set
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setIdentifier(String identifier) {
+		this.authorID = identifier;
 	}
 	
+	public boolean isCorresponding() {
+		return corresponding;
+	}
+	
+	public void setCorresponding(boolean corresponding) {
+		this.corresponding = corresponding;
+	}
 }
