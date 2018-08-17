@@ -44,22 +44,32 @@ TOKEN :
 |	< A_ACUTE_LC : "\\'" ( "{a}" | "a" ) >
 |	< A_GRAVE_UC : "\\`" ( "{A}" | "A" ) >
 |	< A_GRAVE_LC : "\\`" ( "{a}" | "a" ) >
+|	< A_CIRC_UC : "\\^" ( "{A}" | "A" ) >
+|	< A_CIRC_LC : "\\^" ( "{a}" | "a" ) >
 |	< E_ACUTE_UC : "\\'" ( "{E}" | "E" ) >
 |	< E_ACUTE_LC : "\\'" ( "{e}" | "e" ) >
 |	< E_GRAVE_UC : "\\`" ( "{E}" | "E" ) >
 |	< E_GRAVE_LC : "\\`" ( "{e}" | "e" ) >
+|	< E_CIRC_UC : "\\^" ( "{E}" | "E" ) >
+|	< E_CIRC_LC : "\\^" ( "{e}" | "e" ) >
 |	< I_ACUTE_UC : "\\'" ( "{I}" | "I" ) >
 |	< I_ACUTE_LC : "\\'" ( "{\\i}" | "{i}" | "\\i" | "i" ) >
 |	< I_GRAVE_UC : "\\`" ( "{I}" | "I" ) >
 |	< I_GRAVE_LC : "\\`" ( "{\\i}" | "{i}" | "\\i" | "i" ) >
+|	< I_CIRC_UC : "\\^" ( "{I}" | "I" ) >
+|	< I_CIRC_LC : "\\^" ( "{\\i}" | "{i}" | "\\i" | "i" ) >
 |	< O_ACUTE_UC : "\\'" ( "{O}" | "O" ) >
 |	< O_ACUTE_LC : "\\'" ( "{o}" | "o" ) >
 |	< O_GRAVE_UC : "\\`" ( "{O}" | "O" ) >
 |	< O_GRAVE_LC : "\\`" ( "{o}" | "o" ) >
+|	< O_CIRC_UC : "\\^" ( "{O}" | "O" ) >
+|	< O_CIRC_LC : "\\^" ( "{o}" | "o" ) >
 |	< U_ACUTE_UC : "\\'" ( "{U}" | "U" ) >
 |	< U_ACUTE_LC : "\\'" ( "{u}" | "u" ) >
 |	< U_GRAVE_UC : "\\`" ( "{U}" | "U" ) >
 |	< U_GRAVE_LC : "\\`" ( "{u}" | "u" ) >
+|	< U_CIRC_UC : "\\^" ( "{U}" | "U" ) >
+|	< U_CIRC_LC : "\\^" ( "{u}" | "u" ) >
 |	< U_UML_UC : "\\\"" ( "{U}" | "U" ) >
 |	< U_UML_LC : "\\\"" ( "{u}" | "u" ) >
 |	< E_UML_UC : "\\\"" ( "{E}" | "E" ) >
@@ -139,22 +149,32 @@ private String actualParser() :
 	|	< A_ACUTE_LC > { sb.append("á"); }
 	|	< A_GRAVE_UC > { sb.append("À"); }
 	|	< A_GRAVE_LC > { sb.append("à"); }
+	|	< A_CIRC_UC > { sb.append("Â"); }
+	|	< A_CIRC_LC > { sb.append("â"); }
 	|	< E_ACUTE_UC > { sb.append("É"); }
 	|	< E_ACUTE_LC > { sb.append("é"); }
 	|	< E_GRAVE_UC > { sb.append("È"); }
 	|	< E_GRAVE_LC > { sb.append("è"); }
+	|	< E_CIRC_UC > { sb.append("Ê"); }
+	|	< E_CIRC_LC > { sb.append("ê"); }
 	|	< I_ACUTE_UC > { sb.append("Í"); }
 	|	< I_ACUTE_LC > { sb.append("ı́"); }
 	|	< I_GRAVE_UC > { sb.append("Ì"); }
 	|	< I_GRAVE_LC > { sb.append("ı̀"); }
+	|	< I_CIRC_UC > { sb.append("Î"); }
+	|	< I_CIRC_LC > { sb.append("î"); }
 	|	< O_ACUTE_UC > { sb.append("Ó"); }
 	|	< O_ACUTE_LC > { sb.append("ó"); }
 	|	< O_GRAVE_UC > { sb.append("Ò"); }
 	|	< O_GRAVE_LC > { sb.append("ò"); }
+	|	< O_CIRC_UC > { sb.append("Ô"); }
+	|	< O_CIRC_LC > { sb.append("ô"); }
 	|	< U_ACUTE_UC > { sb.append("Ú"); }
 	|	< U_ACUTE_LC > { sb.append("ú"); }
 	|	< U_GRAVE_UC > { sb.append("Ù"); }
 	|	< U_GRAVE_LC > { sb.append("ù"); }
+	|	< U_CIRC_UC > { sb.append("Û"); }
+	|	< U_CIRC_LC > { sb.append("û"); }
 	|	< U_UML_UC > { sb.append("Ü"); }
 	|	< U_UML_LC > { sb.append("ü"); }
 	|	< E_UML_UC > { sb.append("Ë"); }
