@@ -9,7 +9,7 @@
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.backend.database.DBMS"
 %><%@page import="cn.ac.ios.iscasmc.papersprojects.frontend.constant.PaperConstants"
 %><jsp:include page="header.jsp" /><% 
-	String paperID = request.getParameter(PaperConstants.Field_PaperID);
+	String paperID = (String) request.getAttribute(PaperConstants.Field_PaperID);
 	if (paperID == null) {
 %>					<div class="notification_error">
 						No paper available for the given identifier.

@@ -63,9 +63,9 @@ public class Papers extends HttpServlet {
 			showForm(PaperConstants.Action_GetAllPapers, request, response);
 		} else {
 			switch (action) {
+			case PaperConstants.Action_ModifyPaper_Form:
 			case PaperConstants.Action_CreatePaper_Form:
 			case PaperConstants.Action_DeletePaper_Form:
-			case PaperConstants.Action_ModifyPaper_Form:
 			case PaperConstants.Action_LinkProjectsToPaper_Form:
 			case PaperConstants.Action_GetPapersForAuthor:
 			case PaperConstants.Action_GetPapersForProject:
@@ -168,9 +168,10 @@ public class Papers extends HttpServlet {
 			removeMarkers = true;
 		}
 		String conferenceBibtex = request.getParameter(PaperConstants.Field_Bibtex_Content);
+		PaperBean pb = null;
 		if (conferenceBibtex != null && conferenceBibtex.length() > 10) {
 			BibtexParser bp = new BibtexParser(new ByteArrayInputStream(conferenceBibtex.getBytes()));
-			PaperBean pb = bp.parseBibTeX(removeMarkers);
+			pb = bp.parseBibTeX(removeMarkers);
 			if (pb == null) {
 				status.put(DBMSAction.PaperInsert, DBMSStatus.ParserError);
 			} else {
@@ -189,7 +190,12 @@ public class Papers extends HttpServlet {
 			}
 		}
 		request.setAttribute(InternalOperationConstants.StatusOperation, status);
-		showDefault(request, response);
+		if (DBMSStatus.Success.equals(status.get(DBMSAction.PaperInsert))) {
+			request.setAttribute(PaperConstants.Field_PaperID, pb.getIdentifier());
+			showForm(PaperConstants.Action_ModifyPaper_Form, request, response);
+		} else {
+			showDefault(request, response);
+		}
 	}
 
 	private void manageDeletePaperProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
